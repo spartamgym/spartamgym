@@ -84,7 +84,7 @@ final class HomeController extends AbstractController
                     $ultimoId = $id;
                 }
 
-                usleep(500000);
+                sleep(1);
             }
         });
     }
