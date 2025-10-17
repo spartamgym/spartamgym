@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UsuarioRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UsuarioRepository::class)]
@@ -42,6 +44,18 @@ class Usuario
 
     #[ORM\Column(length: 255)]
     private ?string $img = null;
+
+    /**
+     * @var Collection<int, Datofisico>
+     */
+    #[ORM\OneToMany(targetEntity: Datofisico::class, mappedBy: 'usuario')]
+    private Collection $datofisicos;
+
+    public function __construct()
+    {
+        $this->datofisicos = new ArrayCollection();
+    }
+
 
     public function getId(): ?int
     {
@@ -155,6 +169,36 @@ class Usuario
         return $this;
     }
 
+    /**
+     * @return Collection<int, Datofisico>
+     */
+    public function getDatofisicos(): Collection
+    {
+        return $this->datofisicos;
+    }
+
+    public function addDatofisico(Datofisico $datofisico): static
+    {
+        if (!$this->datofisicos->contains($datofisico)) {
+            $this->datofisicos->add($datofisico);
+            $datofisico->setUsuario($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDatofisico(Datofisico $datofisico): static
+    {
+        if ($this->datofisicos->removeElement($datofisico)) {
+            // set the owning side to null (unless already changed)
+            if ($datofisico->getUsuario() === $this) {
+                $datofisico->setUsuario(null);
+            }
+        }
+
+        return $this;
+    }
+
     public function toArray(): array
 {
     return [
@@ -168,6 +212,9 @@ class Usuario
         'correo'          => $this->getCorreo(),
         'code'            => $this->getCode(),
         'img'             => $this->getImg(),
+        'datofisicos'     => array_map(fn($df) => $df->toArray(), $this->getDatofisicos()->toArray()),
     ];
 }
+
+
 }

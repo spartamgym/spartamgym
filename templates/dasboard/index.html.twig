@@ -87,35 +87,25 @@
 								</div>
 
 								<div class="tab-pane fade profile-edit pt-3" id="profile-edit">
-									<div class="row">
-										<div class="col-lg-3 col-md-4 label ">Peso</div>
-										<div class="col-lg-9 col-md-8">Kevin Anderson</div>
-									</div>
+									<table class="table table-sm" id="table_menu" data-toggle="table">
+										<thead>
+											<tr>
+												<th colspan="9" class="text-center bg-dark text-white">Datos</th>
+											</tr>
+											<tr>
+												<th data-field="id">ID</th>
+												<th data-field="peso">Peso(Kg)</th>
+												<th data-field="cintura">Cintura(cm)</th>
+												<th data-field="gluteos">Glúteos(cm)</th>
+												<th data-field="brazo">Braz(cm)</th>
+												<th data-field="pecho">Pecho(cm)</th>
+												<th data-field="pierna">Pierna(cm)</th>
+												<th data-field="pantorrilla">Pantorrilla(cm)</th>
+												<th data-field="createAt">Creado</th>
+											</tr>
+										</thead>
+									</table>
 
-									<div class="row">
-										<div class="col-lg-3 col-md-4 label ">Cintura</div>
-										<div class="col-lg-9 col-md-8">Kevin Anderson</div>
-									</div>
-									<div class="row">
-										<div class="col-lg-3 col-md-4 label ">Gluteos</div>
-										<div class="col-lg-9 col-md-8">Kevin Anderson</div>
-									</div>
-									<div class="row">
-										<div class="col-lg-3 col-md-4 label ">Brazo</div>
-										<div class="col-lg-9 col-md-8">Kevin Anderson</div>
-									</div>
-									<div class="row">
-										<div class="col-lg-3 col-md-4 label ">Pecho</div>
-										<div class="col-lg-9 col-md-8">Kevin Anderson</div>
-									</div>
-									<div class="row">
-										<div class="col-lg-3 col-md-4 label ">Pierna</div>
-										<div class="col-lg-9 col-md-8">Kevin Anderson</div>
-									</div>
-									<div class="row">
-										<div class="col-lg-3 col-md-4 label ">Pantorrilla</div>
-										<div class="col-lg-9 col-md-8">Kevin Anderson</div>
-									</div>
 								</div>
 
 								<div class="tab-pane fade pt-3" id="profile-settings"></div>
@@ -149,14 +139,16 @@ try {
 const userData = JSON.parse(event.data);
 imgPerfil.src = userData.img;
 nombrePerfil.textContent = userData.nombre;
-  document.getElementById('nombre').textContent = userData.nombre;
-  document.getElementById('celular').textContent = userData.celular;
-  document.getElementById('cedula').textContent = userData.cedula;
-  document.getElementById('direccion').textContent = userData.direccion;
-  document.getElementById('fecha_nacimiento').textContent = userData.fecha_nacimiento;
-  document.getElementById('eps').textContent = userData.eps;
-  document.getElementById('correo').textContent = userData.correo;
+document.getElementById('nombre').textContent = userData.nombre;
+document.getElementById('celular').textContent = userData.celular;
+document.getElementById('cedula').textContent = userData.cedula;
+document.getElementById('direccion').textContent = userData.direccion;
+document.getElementById('fecha_nacimiento').textContent = userData.fecha_nacimiento;
+document.getElementById('eps').textContent = userData.eps;
+document.getElementById('correo').textContent = userData.correo;
+$('#table_menu').bootstrapTable('load', userData.datofisicos);
 console.log('Datos recibidos:', userData);
+
 } catch (e) {
 console.warn('Error al parsear datos SSE:', e);
 }

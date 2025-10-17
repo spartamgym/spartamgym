@@ -13,6 +13,7 @@ use App\Entity\Card;
 use App\Entity\Cards;
 use App\Repository\CardsRepository;
 use App\Repository\UsuarioRepository;
+use App\Repository\DatofisicoRepository;
 
 
 
@@ -24,7 +25,8 @@ final class HomeController extends AbstractController
     public function __construct(
         private CardRepository $cardRepository,
         private CardsRepository $cardsRepository,
-        private UsuarioRepository $userRepository
+        private UsuarioRepository $userRepository,
+        private DatofisicoRepository $datofisicoRepository
     ) {}
 
     #[Route('/', name: 'app_home')]
