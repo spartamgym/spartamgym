@@ -1,136 +1,171 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello DasboardController!{% endblock %}
+{% block title %}Hello DasboardController!
+{% endblock %}
 
 {% block body %}
-  <main id="main" class="container-fluid">
+	<main id="main" class="container-fluid">
 
-    <div class="pagetitle">
-      <h1>Profile</h1>
-    </div><!-- End Page Title -->
+		<div class="row m-0 py-4">
+			<div class="col-12">
+				<h1>Bienvenido apreciado cliente</h1>
+			</div>
+		</div>
+		<!-- End Page Title -->
 
-    <section class="section profile">
-      <div class="row">
-        <div class="col-xl-4">
-          <div class="card">
-            <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
-              <img id="img-perfil" src="img/profile-img.jpeg" alt="Profile" class="rounded-circle img-fluid" style="width: 150px; aspect-ratio: 1 / 1; object-fit: cover;">
-              <h2 id="nombre-perfil"></h2>
-            </div>
-          </div>
+		<section class="section profile">
+			<div class="row">
+				<div class="col-xl-4">
+					<div class="card">
+						<div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+							<img id="img-perfil" src="img/profile-img.jpeg" alt="Profile" class="rounded-circle img-fluid" style="width: 150px; aspect-ratio: 1 / 1; object-fit: cover;">
+							<h2 id="nombre-perfil"></h2>
+						</div>
+					</div>
+				</div>
 
-        </div>
+				<div class="col-xl-8">
 
-        <div class="col-xl-8">
+					<div class="card">
+						<div
+							class="card-body pt-3">
+							<!-- Bordered Tabs -->
+							<ul class="nav nav-tabs nav-tabs-bordered">
 
-          <div class="card">
-            <div class="card-body pt-3">
-              <!-- Bordered Tabs -->
-              <ul class="nav nav-tabs nav-tabs-bordered">
+								<li class="nav-item">
+									<button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Datos Personales</button>
+								</li>
 
-                <li class="nav-item">
-                  <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Overview</button>
-                </li>
+								<li class="nav-item">
+									<button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Datos Fisicos</button>
+								</li>
 
-                <li class="nav-item">
-                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit Profile</button>
-                </li>
-
-                <li class="nav-item">
-                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Settings</button>
-                </li>
-
-
-              </ul>
-              <div class="tab-content pt-2">
-
-                <div class="tab-pane fade show active profile-overview" id="profile-overview">
-
-                  <h5 class="card-title">Profile Details</h5>
-
-                  <div class="row">
-                    <div class="col-lg-3 col-md-4 label ">Full Name</div>
-                    <div class="col-lg-9 col-md-8">Kevin Anderson</div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-lg-3 col-md-4 label">Company</div>
-                    <div class="col-lg-9 col-md-8">Lueilwitz, Wisoky and Leuschke</div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-lg-3 col-md-4 label">Job</div>
-                    <div class="col-lg-9 col-md-8">Web Designer</div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-lg-3 col-md-4 label">Country</div>
-                    <div class="col-lg-9 col-md-8">USA</div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-lg-3 col-md-4 label">Address</div>
-                    <div class="col-lg-9 col-md-8">A108 Adam Street, New York, NY 535022</div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-lg-3 col-md-4 label">Phone</div>
-                    <div class="col-lg-9 col-md-8">(436) 486-3538 x29071</div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-lg-3 col-md-4 label">Email</div>
-                    <div class="col-lg-9 col-md-8">k.anderson@example.com</div>
-                  </div>
-
-                </div>
-
-                <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
-
-                </div>
-
-                <div class="tab-pane fade pt-3" id="profile-settings">
-
-     
-                </div>
+								<li class="nav-item">
+									<button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Plan</button>
+								</li>
 
 
-              </div><!-- End Bordered Tabs -->
+							</ul>
+							<div class="tab-content pt-2">
 
-            </div>
-          </div>
 
-        </div>
-      </div>
-    </section>
+								<div class="tab-pane fade show active profile-overview" id="profile-overview">
+									<div class="row">
+										<div class="col-lg-3 col-md-4 label">Nombre</div>
+										<div class="col-lg-9 col-md-8" id="nombre"></div>
+									</div>
 
-  </main><!-- End #main -->
-<script>
-  const imgPerfil = document.getElementById('img-perfil');
-  const nombrePerfil = document.getElementById('nombre-perfil');
+									<div class="row">
+										<div class="col-lg-3 col-md-4 label">WhatsApp</div>
+										<div class="col-lg-9 col-md-8" id="celular"></div>
+									</div>
 
-  // Configura la conexión SSE
-  const eventSource = new EventSource('/sse');
+									<div class="row">
+										<div class="col-lg-3 col-md-4 label">Cedula</div>
+										<div class="col-lg-9 col-md-8" id="cedula"></div>
+									</div>
 
-  eventSource.onopen = () => {
-    console.log('Conexión SSE abierta');
-  };
+									<div class="row">
+										<div class="col-lg-3 col-md-4 label">Direccion</div>
+										<div class="col-lg-9 col-md-8" id="direccion"></div>
+									</div>
 
-  eventSource.onmessage = (event) => {
-    try {
-      const data = JSON.parse(event.data);
-      imgPerfil.src = data.imageUrl;
-      nombrePerfil.textContent = data.name;
-      console.log('Datos recibidos:', data);
-    } catch (e) {
-      console.warn('Error al parsear datos SSE:', e);
-    }
-  };
+									<div class="row">
+										<div class="col-lg-3 col-md-4 label">Cumpleaños</div>
+										<div class="col-lg-9 col-md-8" id="fecha_nacimiento"></div>
+									</div>
 
-  eventSource.onerror = (error) => {
-    console.error('Error SSE:', error.message);
-    // El navegador intentará reconectar automáticamente
-  };
-</script>
+									<div class="row">
+										<div class="col-lg-3 col-md-4 label">EPS</div>
+										<div class="col-lg-9 col-md-8" id="eps"></div>
+									</div>
+
+									<div class="row">
+										<div class="col-lg-3 col-md-4 label">Email</div>
+										<div class="col-lg-9 col-md-8" id="correo"></div>
+									</div>
+								</div>
+
+								<div class="tab-pane fade profile-edit pt-3" id="profile-edit">
+									<div class="row">
+										<div class="col-lg-3 col-md-4 label ">Peso</div>
+										<div class="col-lg-9 col-md-8">Kevin Anderson</div>
+									</div>
+
+									<div class="row">
+										<div class="col-lg-3 col-md-4 label ">Cintura</div>
+										<div class="col-lg-9 col-md-8">Kevin Anderson</div>
+									</div>
+									<div class="row">
+										<div class="col-lg-3 col-md-4 label ">Gluteos</div>
+										<div class="col-lg-9 col-md-8">Kevin Anderson</div>
+									</div>
+									<div class="row">
+										<div class="col-lg-3 col-md-4 label ">Brazo</div>
+										<div class="col-lg-9 col-md-8">Kevin Anderson</div>
+									</div>
+									<div class="row">
+										<div class="col-lg-3 col-md-4 label ">Pecho</div>
+										<div class="col-lg-9 col-md-8">Kevin Anderson</div>
+									</div>
+									<div class="row">
+										<div class="col-lg-3 col-md-4 label ">Pierna</div>
+										<div class="col-lg-9 col-md-8">Kevin Anderson</div>
+									</div>
+									<div class="row">
+										<div class="col-lg-3 col-md-4 label ">Pantorrilla</div>
+										<div class="col-lg-9 col-md-8">Kevin Anderson</div>
+									</div>
+								</div>
+
+								<div class="tab-pane fade pt-3" id="profile-settings"></div>
+
+
+							</div>
+							<!-- End Bordered Tabs -->
+
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</section>
+
+	</main>
+	<!-- End #main -->
+	<script>
+		const imgPerfil = document.getElementById('img-perfil');
+const nombrePerfil = document.getElementById('nombre-perfil');
+
+// Configura la conexión SSE
+const eventSource = new EventSource('/sse');
+
+eventSource.onopen = () => {
+console.log('Conexión SSE abierta');
+};
+
+eventSource.onmessage = (event) => {
+try {
+const userData = JSON.parse(event.data);
+imgPerfil.src = userData.img;
+nombrePerfil.textContent = userData.nombre;
+  document.getElementById('nombre').textContent = userData.nombre;
+  document.getElementById('celular').textContent = userData.celular;
+  document.getElementById('cedula').textContent = userData.cedula;
+  document.getElementById('direccion').textContent = userData.direccion;
+  document.getElementById('fecha_nacimiento').textContent = userData.fecha_nacimiento;
+  document.getElementById('eps').textContent = userData.eps;
+  document.getElementById('correo').textContent = userData.correo;
+console.log('Datos recibidos:', userData);
+} catch (e) {
+console.warn('Error al parsear datos SSE:', e);
+}
+};
+
+eventSource.onerror = (error) => {
+console.error('Error SSE:', error.message);
+// El navegador intentará reconectar automáticamente
+};
+	</script>
 
 {% endblock %}

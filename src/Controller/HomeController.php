@@ -6,15 +6,27 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use App\Repository\IdTempRepository;
+use App\Repository\CardRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use App\Entity\IdTemp;
+use App\Entity\Card;
+use App\Entity\Cards;
+use App\Repository\CardsRepository;
+use App\Repository\UsuarioRepository;
+
+
 
 
 
 final class HomeController extends AbstractController
 {
+    //crear contructor
+    public function __construct(
+        private CardRepository $cardRepository,
+        private CardsRepository $cardsRepository,
+        private UsuarioRepository $userRepository
+    ) {}
+
     #[Route('/', name: 'app_home')]
     public function index(): Response
     {
@@ -22,56 +34,55 @@ final class HomeController extends AbstractController
     }
 
     #[Route('/update_identificador', name: 'app_home_updated')]
-    public function app_home_updated(IdTempRepository $idTempRepository, Request $request): JsonResponse
+    public function app_home_updated(Request $request): JsonResponse
     {
-        $entity = $idTempRepository->find(1);
-        $newId = $request->request->get('id');
-        $entity->setIdentificador($newId);
-        if (!$entity instanceof IdTemp) {
-            return new JsonResponse(['status' => 'error', 'message' => 'Entidad no encontrada'], 404);
+
+        //validar que venga el id
+        if (!$request->request->has('id')) {
+            return new JsonResponse(['message' => 'Falta el id'], 400);
         }
-        $idTempRepository->save($entity, true);
-        return new JsonResponse(['status' => 'ok']);
+        $code = $request->request->get('id');
+
+        //validar si hay una cards por code
+        $cards = $this->cardsRepository->findOneBy(['code' => $code]);
+
+        if (!$cards instanceof Cards) {
+            return new JsonResponse([ 'message' => 'usted no esta registrado'], 200);
+        }
+
+        $card = $this->cardRepository->find(1);
+        if (!$card instanceof Card) {
+            return new JsonResponse(['message' => 'Entidad no encontrada'], 404);
+        }
+        $card->setCode($cards->getCode());
+
+        $this->cardRepository->save($card, true);
+        return new JsonResponse(['status' => 'success', 'message' => 'Identificador verificado correctamente'], 200);
     }
 
 
     #[Route('/sse', name: 'sse')]
-    public function sse(IdTempRepository $idTempRepository): StreamedResponse
+    public function sse(): StreamedResponse
     {
-        $response = new StreamedResponse(function () use ($idTempRepository) {
+        return new StreamedResponse(function () {
             // 🔧 Headers SSE
             header('Content-Type: text/event-stream');
             header('Cache-Control: no-cache');
             header('Connection: keep-alive');
 
-            // 🔧 Datos simulados
-            $empty = [
-                'id' => 0,
-                'name' => 'No encontrado',
-                'accion' => 'desconocida',
-                'imageUrl' => 'img/default.jpeg'
-            ];
 
-            $datos = [
-                ['id' => 1, 'name' => 'Carlos Carolina', 'accion' => 'ingreso', 'imageUrl' => 'img/profile-img.jpeg'],
-                ['id' => 2, 'name' => 'Diana Carolina', 'accion' => 'ingreso', 'imageUrl' => 'img/profile-img.jpeg'],
-                ['id' => 3, 'name' => 'Carolina', 'accion' => 'ingreso', 'imageUrl' => 'img/profile-img.jpeg'],
-                ['id' => 4, 'name' => 'Pedro Carolina', 'accion' => 'ingreso', 'imageUrl' => 'img/profile-img.jpeg']
-            ];
 
             $ultimoId = null;
             while (true) {
-                $id = $idTempRepository->getIdentificador();
+                $id = $this->cardRepository->getIdentificador();
                 if ($id !== $ultimoId) {
-                    $data = array_values(array_filter($datos, fn($d) => $d['id'] === $id))[0] ?? $empty;
-                    echo "data: " . json_encode($data) . "\n\n";
+                    $data = $this->userRepository->findOneBy(['code' => $id]);
+                    echo "data: " . json_encode($data->toArray()) . "\n\n";
                     flush();
                     $ultimoId = $id;
                 }
-
                 sleep(1); // 0.5 segundos
             }
         });
-        return $response;
     }
 }
