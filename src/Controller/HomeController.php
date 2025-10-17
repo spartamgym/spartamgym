@@ -22,70 +22,56 @@ final class HomeController extends AbstractController
     }
 
     #[Route('/update_identificador', name: 'app_home_updated')]
-    public function app_home_updated(IdTempRepository $idTempRepository,Request $request): JsonResponse
+    public function app_home_updated(IdTempRepository $idTempRepository, Request $request): JsonResponse
     {
         $entity = $idTempRepository->find(1);
         $newId = $request->request->get('id');
         $entity->setIdentificador($newId);
-        if(!$entity instanceof IdTemp){
+        if (!$entity instanceof IdTemp) {
             return new JsonResponse(['status' => 'error', 'message' => 'Entidad no encontrada'], 404);
         }
         $idTempRepository->save($entity, true);
         return new JsonResponse(['status' => 'ok']);
     }
 
+
     #[Route('/sse', name: 'sse')]
     public function sse(IdTempRepository $idTempRepository): StreamedResponse
     {
-        return new StreamedResponse(function () use ($idTempRepository) {
+        $response = new StreamedResponse(function () use ($idTempRepository) {
+            // 🔧 Headers SSE
             header('Content-Type: text/event-stream');
             header('Cache-Control: no-cache');
+            header('Connection: keep-alive');
 
-
-
-            $empty = ['id' => 0, 'name' => 'No encontrado', 'accion' => 'desconocida', 'imageUrl' => 'img/default.jpeg'];
-            $datos = [
-
-                [
-                    'id' => 1,
-                    'name' => 'Carlos Carolina',
-                    'accion' => 'ingreso',
-                    'imageUrl' => 'img/profile-img.jpeg'
-                ],
-                [
-                    'id' => 2,
-                    'name' => 'Diana Carolina',
-                    'accion' => 'ingreso',
-                    'imageUrl' => 'img/profile-img.jpeg'
-                ],
-                [
-                    'id' => 3,
-                    'name' => 'Carolina',
-                    'accion' => 'ingreso',
-                    'imageUrl' => 'img/profile-img.jpeg'
-                ],
-                [
-                    'id' => 4,
-                    'name' => 'Pedro Carolina',
-                    'accion' => 'ingreso',
-                    'imageUrl' => 'img/profile-img.jpeg'
-                ]
+            // 🔧 Datos simulados
+            $empty = [
+                'id' => 0,
+                'name' => 'No encontrado',
+                'accion' => 'desconocida',
+                'imageUrl' => 'img/default.jpeg'
             ];
+
+            $datos = [
+                ['id' => 1, 'name' => 'Carlos Carolina', 'accion' => 'ingreso', 'imageUrl' => 'img/profile-img.jpeg'],
+                ['id' => 2, 'name' => 'Diana Carolina', 'accion' => 'ingreso', 'imageUrl' => 'img/profile-img.jpeg'],
+                ['id' => 3, 'name' => 'Carolina', 'accion' => 'ingreso', 'imageUrl' => 'img/profile-img.jpeg'],
+                ['id' => 4, 'name' => 'Pedro Carolina', 'accion' => 'ingreso', 'imageUrl' => 'img/profile-img.jpeg']
+            ];
+
             $ultimoId = null;
-
             while (true) {
-                $id = (int) $idTempRepository->find(1)->getIdentificador();
-
+                $id = $idTempRepository->getIdentificador();
                 if ($id !== $ultimoId) {
-                    $data = array_values(array_filter($datos, fn($d) => $d['id'] == $id))[0] ?? $empty;
+                    $data = array_values(array_filter($datos, fn($d) => $d['id'] === $id))[0] ?? $empty;
                     echo "data: " . json_encode($data) . "\n\n";
-                    ob_flush();
                     flush();
                     $ultimoId = $id;
                 }
 
-                sleep(1);
+                sleep(1); // 0.5 segundos
             }
         });
+        return $response;
     }
 }

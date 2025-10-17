@@ -105,18 +105,32 @@
     </section>
 
   </main><!-- End #main -->
-  <script>
-    const imgPerfil = document.getElementById('img-perfil');
-    const nombrePerfil = document.getElementById('nombre-perfil');
+<script>
+  const imgPerfil = document.getElementById('img-perfil');
+  const nombrePerfil = document.getElementById('nombre-perfil');
 
-        // Configura la conexión SSE
-    const eventSource = new EventSource('/sse');
-        eventSource.onmessage = (event) => {
-          const data = JSON.parse(event.data);
-          imgPerfil.src = data.imageUrl;
-          nombrePerfil.innerHTML = data.name;
-          // Actualiza el contenido del dashboard con los datos recibidos 
-            console.log(data); // Aquí puedes manejar los datos recibidos
-        };
-  </script>
+  // Configura la conexión SSE
+  const eventSource = new EventSource('/sse');
+
+  eventSource.onopen = () => {
+    console.log('Conexión SSE abierta');
+  };
+
+  eventSource.onmessage = (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      imgPerfil.src = data.imageUrl;
+      nombrePerfil.textContent = data.name;
+      console.log('Datos recibidos:', data);
+    } catch (e) {
+      console.warn('Error al parsear datos SSE:', e);
+    }
+  };
+
+  eventSource.onerror = (error) => {
+    console.error('Error SSE:', error.message);
+    // El navegador intentará reconectar automáticamente
+  };
+</script>
+
 {% endblock %}
