@@ -5,9 +5,14 @@ namespace App\Entity;
 use App\Repository\CardRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+
 #[ORM\Entity(repositoryClass: CardRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Card
 {
+
+    use \App\Other\EntityExtends;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

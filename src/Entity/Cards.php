@@ -6,8 +6,11 @@ use App\Repository\CardsRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CardsRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Cards
 {
+    use \App\Other\EntityExtends;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
