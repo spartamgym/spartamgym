@@ -29,7 +29,7 @@ final class HomeController extends AbstractController
         private DatoFisicoRepository $datofisicoRepository
     ) {}
 
-    #[Route('/', name: 'app_home')]
+    #[Route('/', name: 'app_ingreso')]
     public function index(): Response
     {
         return $this->render('home/index.html.twig');

@@ -6,13 +6,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-final class DasboardController extends AbstractController
+final class PanelController extends AbstractController
 {
-    #[Route('/dasboard', name: 'app_dashboard')]
+    #[Route('/panel', name: 'app_panel')]
     public function index(): Response
     {
-        return $this->render('dasboard/index.html.twig', [
-            'controller_name' => 'DasboardController',
-        ]);
+        return $this->render('panel/index.html.twig');
     }
 }
