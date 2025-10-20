@@ -51,9 +51,16 @@ class Usuario
     #[ORM\OneToMany(targetEntity: Datofisico::class, mappedBy: 'usuario')]
     private Collection $datofisicos;
 
+    /**
+     * @var Collection<int, PlanUsuario>
+     */
+    #[ORM\OneToMany(targetEntity: PlanUsuario::class, mappedBy: 'usuario')]
+    private Collection $plan;
+
     public function __construct()
     {
         $this->datofisicos = new ArrayCollection();
+        $this->plan = new ArrayCollection();
     }
 
 
@@ -213,8 +220,39 @@ class Usuario
         'code'            => $this->getCode(),
         'img'             => $this->getImg(),
         'datofisicos'     => array_map(fn($df) => $df->toArray(), $this->getDatofisicos()->toArray()),
+        'planes'            => array_map(fn($pu) => $pu->toArray(), $this->getPlan()->toArray()),
     ];
 }
+
+    /**
+     * @return Collection<int, PlanUsuario>
+     */
+    public function getPlan(): Collection
+    {
+        return $this->plan;
+    }
+
+    public function addPlan(PlanUsuario $plan): static
+    {
+        if (!$this->plan->contains($plan)) {
+            $this->plan->add($plan);
+            $plan->setUsuario($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlan(PlanUsuario $plan): static
+    {
+        if ($this->plan->removeElement($plan)) {
+            // set the owning side to null (unless already changed)
+            if ($plan->getUsuario() === $this) {
+                $plan->setUsuario(null);
+            }
+        }
+
+        return $this;
+    }
 
 
 }
