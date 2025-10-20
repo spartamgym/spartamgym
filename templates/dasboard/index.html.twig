@@ -102,6 +102,9 @@
 								</div>
 
 								<div class="tab-pane fade profile-edit pt-3" id="profile-edit">
+								  <div class="chart-container">
+   <canvas id="radarMedidas" ></canvas>
+  </div>
 									<table class="table table-sm" id="table_menu" data-toggle="table">
 										<thead>
 											<tr>
@@ -193,8 +196,8 @@ console.log(userData.planes);
 $('#table_planes').bootstrapTable('load', planes);
 const plan = userData.planes.find(p => p.isActive).plan;	
 
-//$('#table_planes').bootstrapTable('load', userData.planes);
 
+crearGrafica(userData.datofisicos);
 console.log('Datos recibidos:', userData);
 // 🔧 Rellenar plantilla
 document.getElementById("titulo").textContent = plan.nombre;
@@ -227,6 +230,51 @@ function activoFormatter(value, row, index) {
   }
 }
 
+// Gráfico de Araña para Datos Físicos
+
+
+
+function crearGrafica(datos) {
+
+  const labels = [
+    'Peso', 'Cintura', 'Glúteos', 'Brazo', 'Pecho', 'Pierna', 'Pantorrilla', 'Altura', 'IMC'
+  ];
+
+
+const datasets = datos.map(d => ({
+  label: `Mediciones (${d.createAt})`,
+  data: [d.peso, d.cintura, d.gluteos, d.brazo, d.pecho, d.pierna, d.pantorrilla, d.altura, d.imc],
+  fill: true,
+  backgroundColor: 'rgba(54, 162, 235, 0.2)',
+  borderColor: 'rgba(54, 162, 235, 1)'
+}));
+
+  const options = {
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: 'Gráfico de Araña - Medidas Corporales'
+      }
+    },
+    scales: {
+      r: {
+        beginAtZero: true
+      }
+    }
+  };
+
+  new Chart(document.getElementById('radarMedidas'), {
+    type: 'radar',
+    data : {
+	  labels: labels,
+	  datasets: datasets
+	},
+    options
+  });
+
+
+}
 
 	</script>
 
