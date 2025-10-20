@@ -8,6 +8,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\UsuarioRepository;
+use App\Repository\DatoFisicoRepository;
 
 final class UsuarioController extends AbstractController
 {
@@ -41,8 +42,8 @@ final class UsuarioController extends AbstractController
             $usuario = $usuarioRepository->find($id);
             if (!$usuario instanceof \App\Entity\Usuario) {
                 return new JsonResponse(['status' => 'error', 'message' => 'Usuario no encontrado.'], 404);
-            }           
-        }else{
+            }
+        } else {
             //validar que no exista otro usuario con la misma cedula
             $existingUsuario = $usuarioRepository->findOneBy(['cedula' => $cedula]);
             if ($existingUsuario instanceof \App\Entity\Usuario) {
@@ -52,7 +53,7 @@ final class UsuarioController extends AbstractController
             $usuario->setCedula($cedula);
         }
         $usuario->setNombre($nombre);
-    
+
         $usuario->setCelular($celular);
         $usuario->setDireccion($direccion);
         $usuario->setFechaNacimiento(new \DateTime($fecha_nacimiento));
@@ -86,5 +87,51 @@ final class UsuarioController extends AbstractController
         }
 
         return new JsonResponse($data);
-    }       
+    }
+
+    #[Route('/usuario/dato_fisico', name: 'app_datos_fisicos_registro')]
+    public function detalle(
+        Request $request,
+        UsuarioRepository $usuarioRepository,
+        DatoFisicoRepository $datoFisicoRepository
+    ): JsonResponse {
+        
+        $id = $request->request->get('id');
+        $usuario = $usuarioRepository->find($id);
+        if (!$usuario instanceof \App\Entity\Usuario) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Usuario no encontrado.'], 404);
+        }
+
+        $peso        = $request->request->get('peso');
+        $altura      = $request->request->get('altura');
+        $imc         = $request->request->get('imc');
+        $cintura     = $request->request->get('cintura');
+        $gluteos     = $request->request->get('gluteos');
+        $brazo       = $request->request->get('brazo');
+        $pecho       = $request->request->get('pecho');
+        $pierna      = $request->request->get('pierna');
+        $pantorrilla = $request->request->get('pantorrilla');
+
+        //validar todos los campos
+        if (empty($altura) ||empty($imc) ||empty($peso) || empty($cintura) || empty($gluteos) || empty($brazo) || empty($pecho) || empty($pierna) || empty($pantorrilla)) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Todos los campos son obligatorios.'], 400);
+        }
+        $datoFisico = new \App\Entity\DatoFisico();
+        $datoFisico->setUsuario($usuario);
+        $datoFisico->setPeso($peso);
+         $datoFisico->setAltura($altura);
+         $datoFisico->setImc($imc);
+        $datoFisico->setCintura($cintura);
+        $datoFisico->setGluteos($gluteos);
+        $datoFisico->setBrazo($brazo);
+        $datoFisico->setPecho($pecho);
+        $datoFisico->setPierna($pierna);
+        $datoFisico->setPantorrilla($pantorrilla);
+
+        $datoFisicoRepository->save($datoFisico);
+
+
+
+        return new JsonResponse(['status' => 'success', 'message' => 'Registro de usuario exitoso.']);
+    }
 }

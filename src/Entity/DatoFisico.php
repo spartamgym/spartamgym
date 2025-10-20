@@ -2,12 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\DatofisicoRepository;
+use App\Repository\DatoFisicoRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: DatofisicoRepository::class)]
+#[ORM\Entity(repositoryClass: DatoFisicoRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class Datofisico
+class DatoFisico
 {
         use \App\Other\EntityExtends;
 
@@ -36,6 +36,12 @@ class Datofisico
 
     #[ORM\Column(nullable: true)]
     private ?int $pantorrilla = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $altura = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $imc = null;
 
     #[ORM\ManyToOne(inversedBy: 'datofisicos')]
     private ?Usuario $usuario = null;
@@ -143,6 +149,29 @@ class Datofisico
         return $this;
     }
 
+    public function getAltura(): ?int
+    {
+        return $this->altura;
+    }
+
+    public function setAltura(?int $altura): static
+    {
+        $this->altura = $altura;
+
+        return $this;
+    }
+
+    public function getImc(): ?float
+    {
+        return $this->imc;
+    }
+
+    public function setImc(?float $imc): static
+    {
+        $this->imc = $imc;
+
+        return $this;
+    }
 
     public function toArray(): array
     {
@@ -159,6 +188,8 @@ class Datofisico
             'createAt' => $this->getCreateAt() ? $this->getCreateAt()->format('Y-m-d H:i:s') : null,
             'UpdateAt' => $this->getUpdateAt() ? $this->getUpdateAt()->format('Y-m-d H:i:s') : null,
             'active' => $this->isActive(),  
+            'altura' => $this->getAltura(),
+            'imc' => $this->getImc(),
 
         ];
     }

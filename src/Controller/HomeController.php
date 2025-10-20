@@ -13,7 +13,7 @@ use App\Entity\Card;
 use App\Entity\Cards;
 use App\Repository\CardsRepository;
 use App\Repository\UsuarioRepository;
-use App\Repository\DatofisicoRepository;
+use App\Repository\DatoFisicoRepository;
 
 
 
@@ -26,7 +26,7 @@ final class HomeController extends AbstractController
         private CardRepository $cardRepository,
         private CardsRepository $cardsRepository,
         private UsuarioRepository $userRepository,
-        private DatofisicoRepository $datofisicoRepository
+        private DatoFisicoRepository $datofisicoRepository
     ) {}
 
     #[Route('/', name: 'app_home')]

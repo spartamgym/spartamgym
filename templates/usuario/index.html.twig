@@ -66,7 +66,7 @@
 </div>
 <div class="container mt-4">
 	<h3 class="mb-4">Registro de Medidas Corporales</h3>
-	<form>
+	<form id="form-datos-fisicos">
 		<div class="row g-3">
 
 			<div class="col-md-4">
@@ -98,12 +98,25 @@
 				<label for="pantorrilla" class="form-label">Pantorrilla (cm)</label>
 				<input type="number" class="form-control" id="pantorrilla" name="pantorrilla" min="0">
 			</div>
+
+			<div class="col-md-4">
+				<label for="peso" class="form-label">Peso (kg)</label>
+				<input type="number" class="form-control" id="peso" name="peso" min="0" step="0.1">	
+			</div>
+
+			<div class="col-md-4">
+				<label for="altura" class="form-label">Altura (cm)</label>
+				<input type="number" class="form-control" id="altura" name="altura" min="0" step="0.1">		
+			</div>
+			<div class="col-md-4">
+				<label for="imc" class="form-label">IMC</label>
+				<input type="number" class="form-control" id="imc" name="imc" min="0" step="0.1">
+				</div>
 		</div>
 
 		<!-- Botones -->
 		<div class="mt-4">
 			<button type="submit" class="btn btn-primary">Guardar</button>
-			<button type="reset" class="btn btn-secondary">Limpiar</button>
 		</div>
 	</form>
 </div>
@@ -149,8 +162,6 @@
 		return `
 				<button class="btn btn-sm btn-primary editar" data-id="${row.id
 			}"><i class='bi bi-pencil-square'></i></button>
-				<button class="btn btn-sm btn-danger eliminar" data-id="${row.id
-			}"><i class="bi bi-trash"></i></button>
 			`;
 	}
 
@@ -216,5 +227,35 @@
 		event.preventDefault();
 		resetForm();
 	});
+
+	document.getElementById('form-datos-fisicos').addEventListener('submit', function (event) {
+		event.preventDefault();
+		const formData = new FormData(this);
+		// agregar id de usuario al formData si el ide es diferente de 0
+		let usuarioId = document.getElementById('id').value;
+		if (usuarioId && usuarioId != 0) {
+			formData.append('id', usuarioId);
+		} else {
+			Swal.fire({ title: '¡Error!', text: 'Debe seleccionar un usuario para registrar sus datos físicos', icon: 'error', confirmButtonText: 'Aceptar' });
+			return;
+		}
+
+		fetch('{{ path('app_datos_fisicos_registro') }}', {
+			method: 'POST',
+			body: formData
+		}).then(response => response.json()).then(data => {
+			if (data.status === 'success') {
+				Swal.fire({ title: '¡Éxito!', text: 'Los datos físicos fueron guardados correctamente', icon: 'success', confirmButtonText: 'Aceptar' });
+				// resetear formulario
+				this.reset();
+					resetForm();
+			} else {
+				Swal.fire({ title: '¡Error!', text: data.message, icon: 'error', confirmButtonText: 'Aceptar' });
+			}
+		}).catch(error => {
+			Swal.fire({ title: '¡Error!', text: error.message, icon: 'error', confirmButtonText: 'Aceptar' });
+		});
+	});
+
 </script>
 {% endblock %}

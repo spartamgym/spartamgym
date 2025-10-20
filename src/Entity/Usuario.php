@@ -48,7 +48,7 @@ class Usuario
     /**
      * @var Collection<int, Datofisico>
      */
-    #[ORM\OneToMany(targetEntity: Datofisico::class, mappedBy: 'usuario')]
+    #[ORM\OneToMany(targetEntity: DatoFisico::class, mappedBy: 'usuario')]
     private Collection $datofisicos;
 
     /**
