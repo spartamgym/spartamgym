@@ -1,0 +1,101 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vincular usuario a plan{% endblock %}
+
+{% block body %}
+<div class="container-fluid my-4">
+  <!-- Título y botón -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0 text-primary">vincular usuario a un plan</h3>
+    <button id="btn-unir" class="btn btn-success btn-sm">
+      <i class="bi bi-link-45deg me-1"></i> vincular
+    </button>
+  </div>
+
+  <div class="row">
+    <!-- Tabla de planes -->
+<div class="col-md-6">
+  <h5 class="text-center text-muted mb-2">Planes</h5>
+  <table id="table_planes"
+         class="table table-bordered table-hover table-sm"
+         data-url="{{ path('app_panel_planes_listar') }}"
+         data-toggle="table"
+         data-search="true"
+         data-pagination="true"
+         data-page-size="5"
+         data-page-list="[5, 10, 20, All]"
+         data-click-to-select="true"
+         data-single-select="true">
+    <thead class="table-dark">
+      <tr>
+        <th data-field="state" data-checkbox="true"></th>
+        <th data-field="id" data-sortable="true">ID</th>
+        <th data-field="nombre" data-sortable="true">Nombre</th>
+        <th data-field="precio" data-sortable="true">Precio</th>
+        <th data-field="tiempo" data-sortable="true">Tiempo</th>
+        <th data-field="detalle" data-sortable="true">Detalle</th>
+      </tr>
+    </thead>
+  </table>
+</div>
+
+
+    <!-- Tabla de Usuarios -->
+    <div class="col-md-6">
+      <h5 class="text-center text-muted mb-2">Usuarios</h5>
+      <table id="table_usuarios"
+             class="table table-bordered table-hover table-sm"
+             data-url="{{ path('app_panel_usuarios_sin_plan') }}"
+             data-toggle="table"
+             data-search="true"
+             data-pagination="true"
+             data-page-size="5"
+             data-page-list="[5, 10, 20, All]"
+             data-click-to-select="true"
+             data-single-select="true">
+        <thead class="table-dark">
+          <tr>
+            <th data-field="state" data-checkbox="true"></th>
+            <th data-field="id" data-sortable="true">ID</th>
+            <th data-field="nombre" data-sortable="true">Nombre</th>
+            <th data-field="cedula" data-sortable="true">Cédula</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </div>
+</div>
+<script>
+    document.getElementById('btn-unir').addEventListener('click', function() {
+        const selectedUser = $('#table_usuarios').bootstrapTable('getSelections')[0];
+        const selectedPlan = $('#table_planes').bootstrapTable('getSelections')[0];
+    
+        if (!selectedUser || !selectedPlan) {
+        Swal.fire({ title: '¡Error!', text: 'Debe seleccionar un plan y un usuario.', icon: 'error', confirmButtonText: 'Aceptar' });
+        return;
+        }
+
+        const formData = new FormData();
+        formData.append('id_usuario', selectedUser.id);
+        formData.append('id_plan', selectedPlan.id);
+
+
+        fetch('{{ path('app_panel_vincular_usuario_plan') }}', {
+        method: 'POST',
+        body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+        if (data.status === "success") {
+           $('#table_usuarios').bootstrapTable('refresh');        
+        } 
+            Swal.fire({ title: '¡Server!', text: data.message, icon: data.status, confirmButtonText: 'Aceptar' });
+     
+        })
+        .catch(error => {
+        console.error('Error:', error);
+     
+        });
+    }); 
+</script>
+{% endblock %}

@@ -137,28 +137,27 @@
 
               <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-body">
-<table class="table table-sm table-hover align-middle text-center"
-       id="table_menu"
-       data-toggle="table">
-  <thead class="table-dark small">
-    <tr>
-      <th colspan="11" class="text-center">Datos</th>
-    </tr>
-    <tr>
-      <th data-field="id" data-formatter="smallFormatter">ID</th>
-      <th data-field="peso" data-formatter="smallFormatter">Peso (Kg)</th>
-      <th data-field="cintura" data-formatter="smallFormatter">Cintura (cm)</th>
-      <th data-field="gluteos" data-formatter="smallFormatter">Glúteos (cm)</th>
-      <th data-field="brazo" data-formatter="smallFormatter">Brazo (cm)</th>
-      <th data-field="pecho" data-formatter="smallFormatter">Pecho (cm)</th>
-      <th data-field="pierna" data-formatter="smallFormatter">Pierna (cm)</th>
-      <th data-field="pantorrilla" data-formatter="smallFormatter">Pantorrilla (cm)</th>
-      <th data-field="altura" data-formatter="smallFormatter">Altura (cm)</th>
-      <th data-field="imc" data-formatter="smallFormatter">IMC</th>
-      <th data-field="createAt" data-formatter="smallFormatter">Creado</th>
-    </tr>
-  </thead>
-</table>
+                  <table class="table table-sm table-hover align-middle text-center" id="table_menu"
+                    data-toggle="table">
+                    <thead class="table-dark small">
+                      <tr>
+                        <th colspan="11" class="text-center">Datos</th>
+                      </tr>
+                      <tr>
+                        <th data-field="id" data-formatter="smallFormatter">ID</th>
+                        <th data-field="peso" data-formatter="smallFormatter">Peso (Kg)</th>
+                        <th data-field="cintura" data-formatter="smallFormatter">Cintura (cm)</th>
+                        <th data-field="gluteos" data-formatter="smallFormatter">Glúteos (cm)</th>
+                        <th data-field="brazo" data-formatter="smallFormatter">Brazo (cm)</th>
+                        <th data-field="pecho" data-formatter="smallFormatter">Pecho (cm)</th>
+                        <th data-field="pierna" data-formatter="smallFormatter">Pierna (cm)</th>
+                        <th data-field="pantorrilla" data-formatter="smallFormatter">Pantorrilla (cm)</th>
+                        <th data-field="altura" data-formatter="smallFormatter">Altura (cm)</th>
+                        <th data-field="imc" data-formatter="smallFormatter">IMC</th>
+                        <th data-field="createAt" data-formatter="smallFormatter">Creado</th>
+                      </tr>
+                    </thead>
+                  </table>
 
 
                 </div>
@@ -227,34 +226,37 @@
         detalle: item.plan.detalle.join(", ")
       }));
 
-if (userData.datofisicos.length > 0){
-   crearGrafica(userData.datofisicos);
-}
-
-     
- 
-      if (userData.planes.length === 0) {
-        document.getElementById("titulo").textContent = "Sin plan activo";
-        document.getElementById("precio").textContent = "$0.00 COP";
-        document.getElementById("periodo").textContent = "";
-        return;
+      if (userData.datofisicos.length > 0) {
+        crearGrafica(userData.datofisicos);
       }
-      // 🔧 Rellenar plantilla
-      document.getElementById("titulo").textContent = plan.nombre;
-      document.getElementById("precio").textContent = "$" + plan.precio.toFixed(2) + " COP";
-      document.getElementById("periodo").textContent = plan.periodo;
-
-      const lista = document.getElementById("beneficios");
-      plan.detalle.forEach(b => {
-        const li = document.createElement("li");
-        li.className = "list-group-item";
-        li.innerHTML = "<i class ='bi bi-check-circle text-success'></i> " + b;
-        lista.appendChild(li);
-      });
-
-      // Inicializar tabla con Bootstrap Table
+   // Inicializar tabla con Bootstrap Table
       $('#table_planes').bootstrapTable('load', planes);
-      const plan = userData.planes.find(p => p.isActive).plan;
+
+// Buscar plan activo (si existe)
+const activePlan = userData.planes?.find(p => p.isActive)?.plan;
+
+// Limpiar lista siempre
+document.getElementById("beneficios").innerHTML = "";
+
+if (!activePlan) {
+  document.getElementById("titulo").textContent  = "Sin plan activo";
+  document.getElementById("precio").textContent  = "$0.00 COP";
+  document.getElementById("periodo").textContent = "";
+  return
+} 
+  document.getElementById("titulo").textContent  = activePlan.nombre;
+  document.getElementById("precio").textContent  = `$${Number(activePlan.precio).toFixed(2)} COP`;
+  document.getElementById("periodo").textContent = activePlan.periodo;
+
+  activePlan.detalle.forEach(b => {
+    const li = document.createElement("li");
+    li.className = "list-group-item";
+    li.innerHTML = `<i class="bi bi-check-circle text-success"></i> ${b}`;
+    document.getElementById("beneficios").appendChild(li);
+  });
+
+
+
     } catch (e) {
       console.warn('Error al parsear datos SSE:', e);
     }
@@ -365,8 +367,8 @@ if (userData.datofisicos.length > 0){
   });
 
   function smallFormatter(value, row, index) {
-  return '<span class="small">' + (value ?? '') + '</span>';
-}
+    return '<span class="small">' + (value ?? '') + '</span>';
+  }
 
 </script>
 

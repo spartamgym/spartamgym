@@ -261,4 +261,14 @@ class Usuario
 
         return $this;
     }
+
+    public function hasActivePlan(): bool
+    {
+        foreach ($this->plan as $planUsuario) {
+            if ($planUsuario->isActive()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

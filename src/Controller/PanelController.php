@@ -10,6 +10,7 @@ use App\Repository\PlanRepository;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\CardsRepository;
 use App\Repository\UsuarioRepository;
+use App\Repository\PlanUsuarioRepository;
 
 
 final class PanelController extends AbstractController
@@ -122,7 +123,7 @@ final class PanelController extends AbstractController
                 'id' => $card->getId(),
                 'code' => $card->getCode(),
                 'usuario' => $card->getUsuario() ? $card->getUsuario()->getNombre() : 'sin asignar',
-  
+
             ];
         }
         return new JsonResponse($data);
@@ -167,12 +168,12 @@ final class PanelController extends AbstractController
         return new JsonResponse($data);
     }
 
-        #[Route('/panel/vincular_targeta_procesar', name: 'app_panel_vincular_targeta_procesar')]
+    #[Route('/panel/vincular_targeta_procesar', name: 'app_panel_vincular_targeta_procesar')]
     public function vincularUnaTargeta(
         Request $request,
         CardsRepository $cardsRepository,
-        UsuarioRepository $usuarioRepository): JsonResponse
-    {
+        UsuarioRepository $usuarioRepository
+    ): JsonResponse {
         $idCard = $request->request->get('id_card');
         $idUsuario = $request->request->get('id_usuario');
 
@@ -193,5 +194,57 @@ final class PanelController extends AbstractController
         return new JsonResponse(['status' => 'success', 'message' => 'Tarjeta vinculada al usuario exitosamente.']);
     }
 
-    
+
+    #[Route('/panel/vincular_usuarios_sin_plan', name: 'app_panel_vincular_usuarios_sin_plan')]
+    public function usuariosSinPlanView(): Response
+    {
+        return $this->render('panel/vincular_usuarios_sin_plan.html.twig');
+    }
+    #[Route('/panel/listar_usuario_sin_plan', name: 'app_panel_usuarios_sin_plan')]
+    public function usuariosSinPlan(UsuarioRepository $usuarioRepository): JsonResponse
+    {
+        $usuarios = $usuarioRepository->findUsuariosWithoutActivePlan();
+
+        $data = [];
+        foreach ($usuarios as $usuario) {
+            $data[] = [
+                'id' => $usuario->getId(),
+                'nombre' => $usuario->getNombre(),
+                'cedula' => $usuario->getCedula(),
+            ];
+        }
+        return new JsonResponse($data);
+    }
+
+    #[Route('/panel/vincular_usuario_plan', name: 'app_panel_vincular_usuario_plan')]
+    public function vincularUsuarioPlan(
+        Request $request,
+        UsuarioRepository $usuarioRepository,
+        PlanRepository $planRepository,
+        PlanUsuarioRepository $planUsuarioRepository
+    ): JsonResponse {
+        $idUsuario = $request->request->get('id_usuario');
+        $idPlan = $request->request->get('id_plan');    
+        //buscar el usuario y el plan por id
+        $usuario = $usuarioRepository->find($idUsuario);
+        $plan = $planRepository->find($idPlan);
+        //verificar que existan
+        if (!$usuario instanceof \App\Entity\Usuario) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Usuario no encontrado.'], 404);
+        }
+        if (!$plan instanceof \App\Entity\Plan) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Plan no encontrado.'], 404);
+        }
+        //validar que no haya un plan activo
+        if ($usuario->hasActivePlan()) {
+            return new JsonResponse(['status' => 'error', 'message' => 'El usuario ya tiene un plan activo.'], 400);
+        }
+        //luego vincular el plan al usuario
+        $planUsuario = new \App\Entity\PlanUsuario();
+        $planUsuario->setUsuario($usuario);
+        $planUsuario->setPlan($plan);
+        $planUsuarioRepository->save($planUsuario);
+       
+        return new JsonResponse(['status' => 'success', 'message' => 'Plan vinculado al usuario exitosamente.']);
+    }
 }

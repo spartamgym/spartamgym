@@ -31,4 +31,19 @@ class UsuarioRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    public function findUsuariosWithoutActivePlan(): array
+    {
+        $usuarios = $this->findAll();
+        $result = [];
+
+        foreach ($usuarios as $usuario) {
+            if (!$usuario->hasActivePlan()) {
+                $result[] = $usuario;
+            }
+        }
+
+        return $result;
+    }
+
+
 }
