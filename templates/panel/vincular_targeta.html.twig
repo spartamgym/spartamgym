@@ -62,5 +62,39 @@
     </div>
   </div>
 </div>
+<script>
+document.getElementById('btn-unir').addEventListener('click', function() {
+    const selectedCard = $('#table_cards').bootstrapTable('getSelections')[0];
+    const selectedUsuario = $('#table_usuarios').bootstrapTable('getSelections')[0];
+
+    if (!selectedCard || !selectedUsuario) {
+        Swal.fire({ title: '¡Error!', text: 'Debe seleccionar una tarjeta y un usuario.', icon: 'error', confirmButtonText: 'Aceptar' });
+        return;
+    }
+
+const formData = new FormData();
+formData.append('id_card', selectedCard.id);
+formData.append('id_usuario', selectedUsuario.id);
+    fetch('{{ path('app_panel_vincular_targeta_procesar') }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {         
+            $('#table_cards').bootstrapTable('refresh');
+            $('#table_usuarios').bootstrapTable('refresh');
+        } 
+             Swal.fire({ title: '¡Server!', text: data.message, icon: data.status, confirmButtonText: 'Aceptar' });
+        
+
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Ocurrió un error al procesar la solicitud.');
+    });
+});
+</script>
+
 
 {% endblock %}

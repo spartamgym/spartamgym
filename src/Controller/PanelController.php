@@ -164,4 +164,32 @@ final class PanelController extends AbstractController
         }
         return new JsonResponse($data);
     }
+
+        #[Route('/panel/vincular_targeta_procesar', name: 'app_panel_vincular_targeta_procesar')]
+    public function vincularUnaTargeta(
+        Request $request,
+        CardsRepository $cardsRepository,
+        UsuarioRepository $usuarioRepository): JsonResponse
+    {
+        $idCard = $request->request->get('id_card');
+        $idUsuario = $request->request->get('id_usuario');
+
+        //buscar la targeta y el usuario por id
+        $card = $cardsRepository->find($idCard);
+        $usuario = $usuarioRepository->find($idUsuario);
+        //verificar que existan
+        if (!$card instanceof \App\Entity\Cards) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Tarjeta no encontrada.'], 404);
+        }
+        if (!$usuario instanceof \App\Entity\Usuario) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Usuario no encontrado.'], 404);
+        }
+        $usuario->setCard($card);
+        $usuarioRepository->save($usuario, true);
+        //luego vincular la targeta al usuario
+
+        return new JsonResponse(['status' => 'success', 'message' => 'Tarjeta vinculada al usuario exitosamente.']);
+    }
+
+    
 }

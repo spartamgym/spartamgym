@@ -54,7 +54,7 @@ class Usuario
     #[ORM\OneToMany(targetEntity: PlanUsuario::class, mappedBy: 'usuario')]
     private Collection $plan;
 
-    #[ORM\OneToOne(inversedBy: 'user', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'usuario', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true)]
     private ?Cards $card = null;
 

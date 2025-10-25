@@ -226,14 +226,19 @@
         isActive: item.isActive,
         detalle: item.plan.detalle.join(", ")
       }));
-      console.log(userData.planes);
-      // Inicializar tabla con Bootstrap Table
-      $('#table_planes').bootstrapTable('load', planes);
-      const plan = userData.planes.find(p => p.isActive).plan;
 
+if (userData.datofisicos.length > 0){
+   crearGrafica(userData.datofisicos);
+}
 
-      crearGrafica(userData.datofisicos);
-      console.log('Datos recibidos:', userData);
+     
+ 
+      if (userData.planes.length === 0) {
+        document.getElementById("titulo").textContent = "Sin plan activo";
+        document.getElementById("precio").textContent = "$0.00 COP";
+        document.getElementById("periodo").textContent = "";
+        return;
+      }
       // 🔧 Rellenar plantilla
       document.getElementById("titulo").textContent = plan.nombre;
       document.getElementById("precio").textContent = "$" + plan.precio.toFixed(2) + " COP";
@@ -246,6 +251,10 @@
         li.innerHTML = "<i class ='bi bi-check-circle text-success'></i> " + b;
         lista.appendChild(li);
       });
+
+      // Inicializar tabla con Bootstrap Table
+      $('#table_planes').bootstrapTable('load', planes);
+      const plan = userData.planes.find(p => p.isActive).plan;
     } catch (e) {
       console.warn('Error al parsear datos SSE:', e);
     }
