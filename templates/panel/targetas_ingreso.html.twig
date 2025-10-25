@@ -15,7 +15,7 @@
         <div class="row mb-3">
           <div class="col-12">
             <label for="code" class="form-label">Código</label>
-            <input type="text" class="form-control rounded-3" id="code" name="code" maxlength="255" placeholder="Ej. PLAN001">
+            <input type="text" class="form-control rounded-3" id="code" name="code" maxlength="255" placeholder="Ej. CODIGO001">
           </div>
         </div>
 
@@ -29,7 +29,7 @@
 </div>
 
 <div class="container mt-4">
-  <h3 class="mb-3">Lista de Planes</h3>
+  <h3 class="mb-2">Lista de Targetas</h3>
   <table id="table_planes"
          class="table table-bordered table-hover table-sm"
          data-url="{{ path('app_panel_listar_targetas') }}"
@@ -42,6 +42,10 @@
       <tr>
         <th data-field="id" data-sortable="true">ID</th>
         <th data-field="code" data-sortable="true">Código</th>
+        <th data-field="usuario" data-sortable="true">Usuario</th>
+        <th data-field="status" data-sortable="true">Estado</th>
+        <th data-field="createdAt" data-sortable="true">Fecha de Creación</th>
+        <th data-field="updatedAt" data-sortable="true">Fecha de Actualización</th>
         <th data-field="operate" data-align="center" data-width="120"
             data-formatter="accionesFormatter" data-events="operateEvents">Acciones</th>
       </tr>

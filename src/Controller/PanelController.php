@@ -121,6 +121,8 @@ final class PanelController extends AbstractController
             $data[] = [
                 'id' => $card->getId(),
                 'code' => $card->getCode(),
+                'usuario' => $card->getUsuario() ? $card->getUsuario()->getNombre() : 'sin asignar',
+  
             ];
         }
         return new JsonResponse($data);
