@@ -23,13 +23,5 @@ class CardRepository extends ServiceEntityRepository
         $flush && $this->getEntityManager()->flush();
     }
 
-    public function getIdentificador(): int
-    {
-        return $this->createQueryBuilder('i')
-            ->select('i.code')
-            ->where('i.id = :id')
-            ->setParameter('id', 1)
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
+
 }

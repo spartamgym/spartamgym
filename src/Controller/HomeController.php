@@ -71,17 +71,14 @@ final class HomeController extends AbstractController
             header('Content-Type: text/event-stream');
             header('Cache-Control: no-cache');
             header('Connection: keep-alive');
-
-
-
             $ultimoId = null;
             while (true) {
-                $id = $this->cardRepository->getIdentificador();
-                if ($id !== $ultimoId) {
-                    $data = $this->userRepository->findOneBy(['code' => $id]);
+                $card = $this->cardRepository->find(1);
+                if ($card->getId() !== $ultimoId) {
+                    $data = $this->userRepository->findOneBy(['card' => $card]);
                     echo "data: " . json_encode($data->toArray()) . "\n\n";
                     flush();
-                    $ultimoId = $id;
+                    $ultimoId = $card->getId();
                 }
                 sleep(1); // 0.5 segundos
             }

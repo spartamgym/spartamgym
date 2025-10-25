@@ -81,17 +81,33 @@ final class PanelController extends AbstractController
     #[Route('/panel/crear/targeta', name: 'app_panel_crear_targeta')]
     public function crearTargeta(Request $request, CardsRepository $cardsRepository): JsonResponse
     {
+        $id =$request->request->get('id');
         $code = $request->request->get('code');
-        //validar si la targeta ya existe
-        $existingCard = $cardsRepository->findOneBy(['code' => $code]);
-        if ($existingCard) {
-            return new JsonResponse(['status' => 'error', 'message' => 'La targeta ya existe.'], 400);
+
+        if ($id > 0) {
+            $card = $cardsRepository->find($id);
+            if (!$card instanceof \App\Entity\Cards) {
+                return new JsonResponse(['status' => 'error', 'message' => 'Tarjeta no encontrada.'], 404);
+            }
+            $existingCard = $cardsRepository->findOneBy(['code' => $code]);
+            if ($existingCard instanceof \App\Entity\Cards && $existingCard->getId() !== $id) {
+                return new JsonResponse(['status' => 'error','message' => 'Ya existe otra tarjeta con este código.'
+                ], 400);
+            }
+        } else {
+
+            $card = $cardsRepository->findOneBy(['code' => $code]);
+            if ($card instanceof \App\Entity\Cards) {
+                return new JsonResponse(['status' => 'error',  'message' => 'Ya existe otra tarjeta con este código.'], 400);
+            }
+            $card = new \App\Entity\Cards();
         }
-        $card = new \App\Entity\Cards();
         $card->setCode($code);
-        $cardsRepository->save($card);
-        return new JsonResponse(['status' => 'success', 'message' => 'Targeta creada exitosamente.']);
+        $cardsRepository->save($card, true);
+
+        return new JsonResponse(['status' => 'success', 'message' => 'Tarjeta actualizada exitosamente.']);
     }
+
 
     #[Route('/panel/listar/targetas', name: 'app_panel_listar_targetas')]
     public function listarTargetas(CardsRepository $cardsRepository): JsonResponse
