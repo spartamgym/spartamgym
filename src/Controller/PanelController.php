@@ -71,4 +71,10 @@ final class PanelController extends AbstractController
   
     }        
 
+    #[Route('/panel/targetas_ingreso', name: 'app_panel_targetas_ingreso')]
+    public function targetasIngreso(): Response
+    {
+        return $this->render('panel/targetas_ingreso.html.twig');
+    }
+
 }

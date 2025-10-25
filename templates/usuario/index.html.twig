@@ -1,129 +1,166 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello UsuarioController!
+{% block title %}Usuarios - SpartaMGym
 {% endblock %}
 
 {% block body %}
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<div class="container mt-4">
-	<h3 class="mb-4">Registro de Usuario</h3>
-	<form id="form-usuario">
-		<div class="row g-3">
+<div class="container py-4">
+  <div class="card shadow-sm rounded-2 border-1">
+    <div class="card-body">
+      <h3 class="h4 mb-4 text-primary">Registro de Usuario</h3>
 
-			<input type="hidden" id="id" name="id" value="0">
-			<!-- Nombre -->
-			<div class="col-md-6">
-				<label for="nombre" class="form-label">Nombre</label>
-				<input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingrese su nombre">
-			</div>
+      <form id="form-usuario">
+        <input type="hidden" id="id" name="id" value="0">
 
-			<!-- Cédula -->
-			<div class="col-md-6">
-				<label for="cedula" class="form-label">Cédula</label>
-				<input type="text" class="form-control" id="cedula" name="cedula" placeholder="Ingrese su cédula">
-			</div>
+        <div class="row g-3">
+          <!-- Nombre -->
+          <div class="col-md-6">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" class="form-control rounded-3" id="nombre" name="nombre" placeholder="Ingrese su nombre">
+          </div>
 
-			<!-- Celular -->
-			<div class="col-md-6">
-				<label for="celular" class="form-label">Celular</label>
-				<input type="tel" class="form-control" id="celular" name="celular" placeholder="Ingrese su celular">
-			</div>
+          <!-- Cédula -->
+          <div class="col-md-6">
+            <label for="cedula" class="form-label">Cédula</label>
+            <input type="text" class="form-control rounded-3" id="cedula" name="cedula" placeholder="Ingrese su cédula">
+          </div>
 
-			<!-- Dirección -->
-			<div class="col-md-6">
-				<label for="direccion" class="form-label">Dirección</label>
-				<input type="text" class="form-control" id="direccion" name="direccion"
-					placeholder="Ingrese su dirección">
-			</div>
+          <!-- Celular -->
+          <div class="col-md-6">
+            <label for="celular" class="form-label">Celular</label>
+            <input type="tel" class="form-control rounded-3" id="celular" name="celular" placeholder="Ingrese su celular">
+          </div>
 
-			<!-- Fecha de nacimiento -->
-			<div class="col-md-6">
-				<label for="fecha_nacimiento" class="form-label">Fecha de nacimiento</label>
-				<input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento">
-			</div>
+          <!-- Dirección -->
+          <div class="col-md-6">
+            <label for="direccion" class="form-label">Dirección</label>
+            <input type="text" class="form-control rounded-3" id="direccion" name="direccion" placeholder="Ingrese su dirección">
+          </div>
 
-			<!-- EPS -->
-			<div class="col-md-6">
-				<label for="eps" class="form-label">EPS</label>
-				<input type="text" class="form-control" id="eps" name="eps" placeholder="Ingrese su EPS">
-			</div>
+          <!-- Fecha de nacimiento -->
+          <div class="col-md-4">
+            <label for="fecha_nacimiento" class="form-label">Fecha de nacimiento</label>
+            <input type="date" class="form-control rounded-3" id="fecha_nacimiento" name="fecha_nacimiento">
+          </div>
 
-			<!-- Correo -->
-			<div class="col-md-6">
-				<label for="correo" class="form-label">Correo</label>
-				<input type="email" class="form-control" id="correo" name="correo" placeholder="ejemplo@correo.com">
-			</div>
+          <!-- EPS -->
+          <div class="col-md-4">
+            <label for="eps" class="form-label">EPS</label>
+            <input type="text" class="form-control rounded-3" id="eps" name="eps" placeholder="Ingrese su EPS">
+          </div>
 
-		</div>
+          <!-- Correo -->
+          <div class="col-md-4">
+            <label for="correo" class="form-label">Correo</label>
+            <input type="email" class="form-control rounded-3" id="correo" name="correo" placeholder="ejemplo@correo.com">
+          </div>
+        </div>
 
-		<!-- Botón -->
-		<div class="mt-4">
-			<button type="submit" class="btn btn-primary">Guardar</button>
-			<button id="reset-form-user" class="btn btn-secondary">Limpiar</button>
-		</div>
-	</form>
+        <!-- Botones -->
+        <div class="mt-4 d-flex gap-2">
+          <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">Guardar</button>
+          <button id="reset-form-user" class="btn btn-outline-secondary btn-sm rounded-pill px-3">Limpiar</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
-<div class="container mt-4">
-	<h3 class="mb-4">Registro de Medidas Corporales</h3>
-	<form id="form-datos-fisicos">
-		<div class="row g-3">
+<div class="container py-4">
+  <div class="card shadow-sm rounded-2 border-1">
+    <div class="card-body">
+      <h3 class="h4 mb-4 text-primary">Registro de Medidas Corporales</h3>
 
-			<div class="col-md-4">
-				<label for="cintura" class="form-label">Cintura (cm)</label>
-				<input type="number" class="form-control" id="cintura" name="cintura" min="0">
-			</div>
+      <form id="form-datos-fisicos">
+        <div class="row g-3">
+          <!-- Cintura -->
+          <div class="col-auto">
+            <label for="cintura" class="form-label">Cintura (cm)</label>
+            <input type="number" class="form-control form-control-sm rounded-3 text-end w-auto"
+                   id="cintura" name="cintura" min="0" maxlength="4">
+          </div>
 
-			<div class="col-md-4">
-				<label for="gluteos" class="form-label">Glúteos (cm)</label>
-				<input type="number" class="form-control" id="gluteos" name="gluteos" min="0">
-			</div>
+          <!-- Glúteos -->
+          <div class="col-auto">
+            <label for="gluteos" class="form-label">Glúteos (cm)</label>
+            <input type="number" class="form-control form-control-sm rounded-3 text-end w-auto"
+                   id="gluteos" name="gluteos" min="0" maxlength="4">
+          </div>
 
-			<div class="col-md-4">
-				<label for="brazo" class="form-label">Brazo (cm)</label>
-				<input type="number" class="form-control" id="brazo" name="brazo" min="0">
-			</div>
+          <!-- Brazo -->
+          <div class="col-auto">
+            <label for="brazo" class="form-label">Brazo (cm)</label>
+            <input type="number" class="form-control form-control-sm rounded-3 text-end w-auto"
+                   id="brazo" name="brazo" min="0" maxlength="4">
+          </div>
 
-			<div class="col-md-4">
-				<label for="pecho" class="form-label">Pecho (cm)</label>
-				<input type="number" class="form-control" id="pecho" name="pecho" min="0">
-			</div>
+          <!-- Pecho -->
+          <div class="col-auto">
+            <label for="pecho" class="form-label">Pecho (cm)</label>
+            <input type="number" class="form-control form-control-sm rounded-3 text-end w-auto"
+                   id="pecho" name="pecho" min="0" maxlength="4">
+          </div>
 
-			<div class="col-md-4">
-				<label for="pierna" class="form-label">Pierna (cm)</label>
-				<input type="number" class="form-control" id="pierna" name="pierna" min="0">
-			</div>
+          <!-- Pierna -->
+          <div class="col-auto">
+            <label for="pierna" class="form-label">Pierna (cm)</label>
+            <input type="number" class="form-control form-control-sm rounded-3 text-end w-auto"
+                   id="pierna" name="pierna" min="0" maxlength="4">
+          </div>
 
-			<div class="col-md-4">
-				<label for="pantorrilla" class="form-label">Pantorrilla (cm)</label>
-				<input type="number" class="form-control" id="pantorrilla" name="pantorrilla" min="0">
-			</div>
+          <!-- Pantorrilla -->
+          <div class="col-auto">
+            <label for="pantorrilla" class="form-label">Pantorrilla (cm)</label>
+            <input type="number" class="form-control form-control-sm rounded-3 text-end w-auto"
+                   id="pantorrilla" name="pantorrilla" min="0" maxlength="4">
+          </div>
 
-			<div class="col-md-4">
-				<label for="peso" class="form-label">Peso (kg)</label>
-				<input type="number" class="form-control" id="peso" name="peso" min="0" step="0.1">	
-			</div>
+          <!-- Peso -->
+          <div class="col-auto">
+            <label for="peso" class="form-label">Peso (kg)</label>
+            <input type="number" class="form-control form-control-sm rounded-3 text-end w-auto"
+                   id="peso" name="peso" min="0" step="0.1" maxlength="4">
+          </div>
 
-			<div class="col-md-4">
-				<label for="altura" class="form-label">Altura (cm)</label>
-				<input type="number" class="form-control" id="altura" name="altura" min="0" step="0.1">		
-			</div>
-			<div class="col-md-4">
-				<label for="imc" class="form-label">IMC</label>
-				<input type="number" class="form-control" id="imc" name="imc" min="0" step="0.1">
-				</div>
-		</div>
+          <!-- Altura -->
+          <div class="col-auto">
+            <label for="altura" class="form-label">Altura (cm)</label>
+            <input type="number" class="form-control form-control-sm rounded-3 text-end w-auto"
+                   id="altura" name="altura" min="0" step="0.1" maxlength="4">
+          </div>
 
-		<!-- Botones -->
-		<div class="mt-4">
-			<button type="submit" class="btn btn-primary">Guardar</button>
-		</div>
-	</form>
+          <!-- IMC -->
+          <div class="col-auto">
+            <label for="imc" class="form-label">IMC</label>
+            <input type="number" class="form-control form-control-sm rounded-3 text-end w-auto"
+                   id="imc" name="imc" min="0" step="0.1" maxlength="4">
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="mt-4 d-flex gap-2">
+          <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">Guardar</button>
+  
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
+
+
+
 <div class="container mt-4">
 	<h3 class="mb-3">Lista de Usuarios</h3>
-	<table id="table_usuarios" class="table table-bordered table-hover table-sm" data-toggle="table" data-search="true"
-		data-pagination="true" data-page-size="5" data-page-list="[5, 10, 20, All]">
+	<table 
+	id="table_usuarios" 
+	class="table table-bordered table-hover table-sm" 
+	data-toggle="table" data-search="true"
+	data-pagination="true" 
+	data-page-size="5" 
+	data-page-list="[5, 10, 20, All]"
+	data-url="{{ path('app_usuario_listar') }}"
+	>
 		<thead class="table-dark">
 			<tr>
 				<th data-field="id" data-sortable="true">ID</th>
@@ -175,9 +212,8 @@
 		}).then(response => response.json()).then(data => {
 			if (data.status === 'success') {
 				Swal.fire({ title: '¡Éxito!', text: 'El usuario fue guardado correctamente', icon: 'success', confirmButtonText: 'Aceptar' });
-
 				// recargar tabla de usuarios
-				loadUsuarios();
+				$('#table_usuarios').bootstrapTable('refresh');
 				// resetear formulario
 				resetForm();
 			} else {
@@ -192,16 +228,7 @@
 	});
 
 
-	// listar usuarios en la tabla
-	function loadUsuarios() {
 
-		fetch('{{ path('app_usuario_listar') }}').then(response => response.json()).then(data => {
-			$('#table_usuarios').bootstrapTable('load', data);
-		}).catch(error => {
-			console.error('Error al cargar los usuarios:', error.message);
-		});
-	}
-	// editar usuario desde la tabla bostratable
 	// Evento para botón editar
 	window.operateEvents = {
 		'click .editar': (e, value, row) => { // Llenar el formulario con los datos del usuario

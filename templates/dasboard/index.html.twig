@@ -1,7 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello DasboardController!
-{% endblock %}
+{% block title %}Dashboard{% endblock %}
 
 {% block body %}
 	<main id="main" class="container-fluid">
@@ -26,7 +25,7 @@
 
 					<div class="card shadow-sm">
 						<div class="card-body text-center">
-							
+
 							<h5 class="card-title" id="titulo"></h5>
 							<h3 class="my-3">
 								<span id="precio"></span>
@@ -65,46 +64,60 @@
 
 
 								<div class="tab-pane fade show active profile-overview" id="profile-overview">
-									<div class="row">
-										<div class="col-lg-3 col-md-4 label">Nombre</div>
-										<div class="col-lg-9 col-md-8" id="nombre"></div>
-									</div>
+									<div class="card shadow-sm rounded-4 border-0">
+										<div class="card-body">
+											<h5 class="card-title text-primary mb-4">Perfil del Usuario</h5>
 
-									<div class="row">
-										<div class="col-lg-3 col-md-4 label">WhatsApp</div>
-										<div class="col-lg-9 col-md-8" id="celular"></div>
-									</div>
+											<!-- Fila -->
+											<div class="row mb-3">
+												<div class="col-lg-3 col-md-4 fw-semibold text-muted">Nombre</div>
+												<div class="col-lg-9 col-md-8 border-bottom pb-2" id="nombre"></div>
+											</div>
 
-									<div class="row">
-										<div class="col-lg-3 col-md-4 label">Cedula</div>
-										<div class="col-lg-9 col-md-8" id="cedula"></div>
-									</div>
+											<div class="row mb-3">
+												<div class="col-lg-3 col-md-4 fw-semibold text-muted">WhatsApp</div>
+												<div class="col-lg-9 col-md-8 border-bottom pb-2" id="celular"></div>
+											</div>
 
-									<div class="row">
-										<div class="col-lg-3 col-md-4 label">Direccion</div>
-										<div class="col-lg-9 col-md-8" id="direccion"></div>
-									</div>
+											<div class="row mb-3">
+												<div class="col-lg-3 col-md-4 fw-semibold text-muted">Cédula</div>
+												<div class="col-lg-9 col-md-8 border-bottom pb-2" id="cedula"></div>
+											</div>
 
-									<div class="row">
-										<div class="col-lg-3 col-md-4 label">Cumpleaños</div>
-										<div class="col-lg-9 col-md-8" id="fecha_nacimiento"></div>
-									</div>
+											<div class="row mb-3">
+												<div class="col-lg-3 col-md-4 fw-semibold text-muted">Dirección</div>
+												<div class="col-lg-9 col-md-8 border-bottom pb-2" id="direccion"></div>
+											</div>
 
-									<div class="row">
-										<div class="col-lg-3 col-md-4 label">EPS</div>
-										<div class="col-lg-9 col-md-8" id="eps"></div>
-									</div>
+											<div class="row mb-3">
+												<div class="col-lg-3 col-md-4 fw-semibold text-muted">Cumpleaños</div>
+												<div class="col-lg-9 col-md-8 border-bottom pb-2" id="fecha_nacimiento"></div>
+											</div>
 
-									<div class="row">
-										<div class="col-lg-3 col-md-4 label">Email</div>
-										<div class="col-lg-9 col-md-8" id="correo"></div>
+											<div class="row mb-3">
+												<div class="col-lg-3 col-md-4 fw-semibold text-muted">EPS</div>
+												<div class="col-lg-9 col-md-8 border-bottom pb-2" id="eps"></div>
+											</div>
+
+											<div class="row mb-3">
+												<div class="col-lg-3 col-md-4 fw-semibold text-muted">Email</div>
+												<div class="col-lg-9 col-md-8" id="correo"></div>
+											</div>
+										</div>
 									</div>
 								</div>
 
-								<div class="tab-pane fade profile-edit pt-3" id="profile-edit">
-								  <div class="chart-container">
-   <canvas id="radarMedidas" ></canvas>
-  </div>
+
+								<div
+									class="tab-pane fade profile-edit pt-3" id="profile-edit">
+									<!-- Radar centrado -->
+									<div class="d-flex justify-content-center mb-4">
+										<div style="max-width:480px; width:100%;">
+											<canvas id="radarMedidas"></canvas>
+										</div>
+									</div>
+
+									<!-- Tabla -->
 									<table class="table table-sm" id="table_menu" data-toggle="table">
 										<thead>
 											<tr>
@@ -115,7 +128,7 @@
 												<th data-field="peso">Peso(Kg)</th>
 												<th data-field="cintura">Cintura(cm)</th>
 												<th data-field="gluteos">Glúteos(cm)</th>
-												<th data-field="brazo">Braz(cm)</th>
+												<th data-field="brazo">Brazo(cm)</th>
 												<th data-field="pecho">Pecho(cm)</th>
 												<th data-field="pierna">Pierna(cm)</th>
 												<th data-field="pantorrilla">Pantorrilla(cm)</th>
@@ -125,7 +138,6 @@
 											</tr>
 										</thead>
 									</table>
-
 								</div>
 
 								<div class="tab-pane fade pt-3" id="profile-settings">
@@ -139,7 +151,7 @@
 												<th data-field="precio">Precio</th>
 												<th data-field="tiempo">Periodo</th>
 												<th data-field="detalle">Beneficios</th>
-											<th data-field="isActive" data-formatter="activoFormatter">Activo</th>
+												<th data-field="isActive" data-formatter="activoFormatter">Activo</th>
 
 											</tr>
 										</thead>
@@ -187,21 +199,21 @@ document.getElementById('correo').textContent = userData.correo;
 $('#table_menu').bootstrapTable('load', userData.datofisicos);
 
 const planes = userData.planes.map(item => ({
-  ...item.plan,
-  isActive: item.isActive,
-  detalle: item.plan.detalle.join(", ")
+...item.plan,
+isActive: item.isActive,
+detalle: item.plan.detalle.join(", ")
 }));
 console.log(userData.planes);
 // Inicializar tabla con Bootstrap Table
 $('#table_planes').bootstrapTable('load', planes);
-const plan = userData.planes.find(p => p.isActive).plan;	
+const plan = userData.planes.find(p => p.isActive).plan;
 
 
 crearGrafica(userData.datofisicos);
 console.log('Datos recibidos:', userData);
 // 🔧 Rellenar plantilla
 document.getElementById("titulo").textContent = plan.nombre;
-document.getElementById("precio").textContent = "$"+plan.precio.toFixed(2) + " COP";
+document.getElementById("precio").textContent = "$" + plan.precio.toFixed(2) + " COP";
 document.getElementById("periodo").textContent = plan.periodo;
 
 const lista = document.getElementById("beneficios");
@@ -223,58 +235,76 @@ console.error('Error SSE:', error.message);
 
 
 function activoFormatter(value, row, index) {
-  if (value) {
-    return '<span class="text-success"><i class="bi bi-check-circle-fill"></i> Sí</span>';
-  } else {
-    return '<span class="text-danger"><i class="bi bi-x-circle-fill"></i> No</span>';
-  }
+if (value) {
+return '<span class="text-success"><i class="bi bi-check-circle-fill"></i> Sí</span>';
+} else {
+return '<span class="text-danger"><i class="bi bi-x-circle-fill"></i> No</span>';
+}
 }
 
 // Gráfico de Araña para Datos Físicos
 
 
-
 function crearGrafica(datos) {
 
-  const labels = [
-    'Peso Kg', 'Cintura cm', 'Glúteos cm', 'Brazo cm', 'Pecho cm', 'Pierna cm', 'Pantorrilla cm', 'Altura cm', 'IMC'
-  ];
+const labels = [
+'Peso Kg',
+'Cintura cm',
+'Glúteos cm',
+'Brazo cm',
+'Pecho cm',
+'Pierna cm',
+'Pantorrilla cm',
+'Altura cm',
+'IMC'
+];
 
 
 const datasets = datos.map(d => ({
-  label: `Mediciones (${new Date(d.createAt).toISOString().split('T')[0]})`,
-  data: [d.peso, d.cintura, d.gluteos, d.brazo, d.pecho, d.pierna, d.pantorrilla, d.altura, d.imc],
-  fill: true,
-  borderColor: d.color,
+label: `Mediciones (${
+new Date(d.createAt).toISOString().split('T')[0]
+})`,
+data: [
+d.peso,
+d.cintura,
+d.gluteos,
+d.brazo,
+d.pecho,
+d.pierna,
+d.pantorrilla,
+d.altura,
+d.imc
+],
+fill: true,
+borderColor: d.color
 }));
 
-  const options = {
-    responsive: true,
-    plugins: {
-      title: {
-        display: true,
-        text: 'Gráfico de Araña - Medidas Corporales'
-      }
-    },
-    scales: {
-      r: {
-        beginAtZero: true
-      }
-    }
-  };
+const options = {
+responsive: true,
+plugins: {
+title: {
+display: true,
+text: 'Gráfico de Araña - Medidas Corporales'
+}
+},
+scales: {
+r: {
+beginAtZero: true
+}
+}
+};
 
-  new Chart(document.getElementById('radarMedidas'), {
-    type: 'radar',
-    data : {
-	  labels: labels,
-	  datasets: datasets
-	},
-    options
-  });
+new Chart(document.getElementById('radarMedidas'), {
+type: 'radar',
+data: {
+labels: labels,
+datasets: datasets
+},
+options
+});
 
 
 }
-
 	</script>
 
 {% endblock %}

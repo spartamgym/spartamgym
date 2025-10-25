@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello PanelController!
+{% block title %}Panel de Administración
 {% endblock %}
 
 {% block body %}
@@ -48,6 +48,7 @@
 				</a>
 			</div>
 
+			<!-- Card Ingreso -->
 			<div class="col-md-4">
 				<a href="{{ path('app_ingreso') }}" class="text-decoration-none">
 					<div class="card text-center shadow-sm h-100">
@@ -60,7 +61,7 @@
 				</a>
 			</div>
 
-			{#<!-- Card Planes -->#}
+			<!-- Card Planes -->
 			<div class="col-md-4">
 				<a href="{{ path('app_panel_planes') }}" class="text-decoration-none">
 					<div class="card text-center shadow-sm h-100">
@@ -68,6 +69,19 @@
 							<i class="bi bi-card-list display-4 text-danger"></i>
 							<h5 class="card-title mt-3">Planes</h5>
 							<p class="card-text">Gestión de planes</p>
+						</div>
+					</div>
+				</a>
+			</div>
+
+			<!-- Card Targetas de ingreso -->
+			<div class="col-md-4">
+				<a href="{{ path('app_panel_targetas_ingreso') }}" class="text-decoration-none">
+					<div class="card text-center shadow-sm h-100">
+						<div class="card-body">
+							<i class="bi bi-credit-card-2-front-fill display-4 text-info"></i>
+							<h5 class="card-title mt-3">Tarjetas de Ingreso</h5>
+							<p class="card-text">Gestión de tarjetas de ingreso</p>
 						</div>
 					</div>
 				</a>
