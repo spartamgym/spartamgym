@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vuncular Tarjeta - SpartaMGym
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid my-4">
+  <!-- Título y botón -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0 text-primary">Unir Usuario con Tarjeta</h3>
+    <button id="btn-unir" class="btn btn-success btn-sm">
+      <i class="bi bi-link-45deg me-1"></i> Unir
+    </button>
+  </div>
+
+  <div class="row">
+    <!-- Tabla de Tarjetas -->
+    <div class="col-md-6">
+      <h5 class="text-center text-muted mb-2">Tarjetas</h5>
+      <table id="table_cards"
+             class="table table-bordered table-hover table-sm"
+             data-url="{{ path('app_panel_listar_targetas_disponibles') }}"
+             data-toggle="table"
+             data-search="true"
+             data-pagination="true"
+             data-page-size="5"
+             data-page-list="[5, 10, 20, All]"
+             data-click-to-select="true"
+             data-single-select="true">
+        <thead class="table-dark">
+          <tr>
+            <th data-field="state" data-checkbox="true"></th>
+            <th data-field="id" data-sortable="true">ID</th>
+            <th data-field="code" data-sortable="true">Código</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+
+    <!-- Tabla de Usuarios -->
+    <div class="col-md-6">
+      <h5 class="text-center text-muted mb-2">Usuarios</h5>
+      <table id="table_usuarios"
+             class="table table-bordered table-hover table-sm"
+             data-url="{{ path('app_panel_listar_usuarios_disponibles') }}"
+             data-toggle="table"
+             data-search="true"
+             data-pagination="true"
+             data-page-size="5"
+             data-page-list="[5, 10, 20, All]"
+             data-click-to-select="true"
+             data-single-select="true">
+        <thead class="table-dark">
+          <tr>
+            <th data-field="state" data-checkbox="true"></th>
+            <th data-field="id" data-sortable="true">ID</th>
+            <th data-field="nombre" data-sortable="true">Nombre</th>
+            <th data-field="cedula" data-sortable="true">Cédula</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

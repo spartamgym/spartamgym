@@ -21,4 +21,14 @@ class UsuarioRepository extends ServiceEntityRepository
         $this->getEntityManager()->persist($entity);
         $flush && $this->getEntityManager()->flush();
     }
+
+    public function findUnlinkedUsuarios(): array
+    {
+        $qb = $this->createQueryBuilder('u')
+            ->leftJoin('u.card', 'c')
+            ->where('c.id IS NULL');
+
+        return $qb->getQuery()->getResult();
+    }
+
 }

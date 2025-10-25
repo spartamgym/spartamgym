@@ -14,6 +14,7 @@ use App\Entity\Cards;
 use App\Repository\CardsRepository;
 use App\Repository\UsuarioRepository;
 use App\Repository\DatoFisicoRepository;
+use App\Entity\Usuario;
 
 
 
@@ -49,13 +50,14 @@ final class HomeController extends AbstractController
         $cards = $this->cardsRepository->findOneBy(['code' => $code]);
 
         if (!$cards instanceof Cards) {
-            return new JsonResponse([ 'message' => 'usted no esta registrado'], 200);
+            return new JsonResponse(["status"=>"error",'message' => 'usuario no registrado'], 200);
+        }
+        $card = $this->cardRepository->findOneBy([], ['id' => 'ASC']);
+
+        if (!$card instanceof Card) {
+            $card = new Card();
         }
 
-        $card = $this->cardRepository->find(1);
-        if (!$card instanceof Card) {
-            return new JsonResponse(['message' => 'Entidad no encontrada'], 404);
-        }
         $card->setCode($cards->getCode());
 
         $this->cardRepository->save($card, true);
@@ -66,6 +68,8 @@ final class HomeController extends AbstractController
     #[Route('/sse', name: 'sse')]
     public function sse(): StreamedResponse
     {
+
+     
         return new StreamedResponse(function () {
             // 🔧 Headers SSE
             header('Content-Type: text/event-stream');
@@ -73,10 +77,15 @@ final class HomeController extends AbstractController
             header('Connection: keep-alive');
             $ultimoId = null;
             while (true) {
-                $card = $this->cardRepository->find(1);
+              
+             // Reintentar cada 1 segundo si la conexión se pierde
+                $card = $this->cardRepository->findOneBy([], ['id' => 'ASC']);
                 if ($card->getId() !== $ultimoId) {
-                    $data = $this->userRepository->findOneBy(['card' => $card]);
-                    echo "data: " . json_encode($data->toArray()) . "\n\n";
+                    //buscar cards por code
+                    $cards = $this->cardsRepository->findOneBy(['code' => $card->getCode()]);
+                    $data = $this->userRepository->findOneBy(['card' => $cards]);
+                    // Enviar datos al cliente si es null enviar array vacio
+                    echo "data: " . json_encode($data instanceof Usuario ? $data->toArray() : []) . "\n\n";
                     flush();
                     $ultimoId = $card->getId();
                 }

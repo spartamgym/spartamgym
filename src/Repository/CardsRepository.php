@@ -21,4 +21,13 @@ class CardsRepository extends ServiceEntityRepository
         $this->getEntityManager()->persist($entity);
         $flush && $this->getEntityManager()->flush();
     }
+
+    public function findUnlinkedCards(): array
+    {
+        return $this->createQueryBuilder('c')
+            ->leftJoin('c.usuario', 'u')
+            ->andWhere('u IS NULL')
+            ->getQuery()
+            ->getResult();
+    }
 }

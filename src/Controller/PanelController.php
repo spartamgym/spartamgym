@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Repository\PlanRepository;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\CardsRepository;
+use App\Repository\UsuarioRepository;
 
 
 final class PanelController extends AbstractController
@@ -81,7 +82,7 @@ final class PanelController extends AbstractController
     #[Route('/panel/crear/targeta', name: 'app_panel_crear_targeta')]
     public function crearTargeta(Request $request, CardsRepository $cardsRepository): JsonResponse
     {
-        $id =$request->request->get('id');
+        $id = $request->request->get('id');
         $code = $request->request->get('code');
 
         if ($id > 0) {
@@ -91,7 +92,9 @@ final class PanelController extends AbstractController
             }
             $existingCard = $cardsRepository->findOneBy(['code' => $code]);
             if ($existingCard instanceof \App\Entity\Cards && $existingCard->getId() !== $id) {
-                return new JsonResponse(['status' => 'error','message' => 'Ya existe otra tarjeta con este código.'
+                return new JsonResponse([
+                    'status' => 'error',
+                    'message' => 'Ya existe otra tarjeta con este código.'
                 ], 400);
             }
         } else {
@@ -118,6 +121,45 @@ final class PanelController extends AbstractController
             $data[] = [
                 'id' => $card->getId(),
                 'code' => $card->getCode(),
+            ];
+        }
+        return new JsonResponse($data);
+    }
+
+    #[Route('/panel/vincular_targeta', name: 'app_panel_vincular_targeta')]
+    public function vincularTargeta(): Response
+    {
+        return $this->render('panel/vincular_targeta.html.twig');
+    }
+
+    #[Route('/panel/listar/targetas/disponibles', name: 'app_panel_listar_targetas_disponibles')]
+    public function listarTargetasDisponibles(CardsRepository $cardsRepository): JsonResponse
+    {
+        //obtener targetas que no esten vinculadas a ningun usuario
+
+        $cards = $cardsRepository->findUnlinkedCards();
+        $data = [];
+        foreach ($cards as $card) {
+            $data[] = [
+                'id' => $card->getId(),
+                'code' => $card->getCode(),
+            ];
+        }
+        return new JsonResponse($data);
+    }
+
+    #[Route('/panel/listar/usuarios/disponibles', name: 'app_panel_listar_usuarios_disponibles')]
+    public function listarUsuariosDisponibles(UsuarioRepository $usuarioRepository): JsonResponse
+    {
+        //obtener targetas que no esten vinculadas a ningun usuario
+
+        $usuarios = $usuarioRepository->findUnlinkedUsuarios();
+        $data = [];
+        foreach ($usuarios as $usuario) {
+            $data[] = [
+                'id' => $usuario->getId(),
+                'nombre' => $usuario->getNombre(),
+                'cedula' => $usuario->getCedula(),
             ];
         }
         return new JsonResponse($data);
