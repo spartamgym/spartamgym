@@ -82,7 +82,7 @@ final class UsuarioController extends AbstractController
                 'eps' => $usuario->getEps(),
                 'correo' => $usuario->getCorreo(),
                 'img' => $usuario->getImg(),
-                'code' => $usuario->getCode(),
+                'code' => $usuario->getCard() ? $usuario->getCard()->getCode() : 'sin asignar',
             ];
         }
 

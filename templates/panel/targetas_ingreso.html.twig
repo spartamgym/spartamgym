@@ -1,8 +1,103 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Targetas de Ingreso - Panel de Administración
-{% endblock %}
+{% block title %}Targeta - SpartaMGym{% endblock %}
 
 {% block body %}
+<div class="container py-4">
+  <div class="card shadow-sm rounded-2">
+    <div class="card-body">
+      <h1 class="h4 mb-4 text-primary">Registrar Targeta</h1>
 
+      <form id="form-targeta">
+        <input type="hidden" id="id" name="id" value="0">
+
+        <!-- Campo Code -->
+        <div class="row mb-3">
+          <div class="col-12">
+            <label for="code" class="form-label">Código</label>
+            <input type="text" class="form-control rounded-3" id="code" name="code" maxlength="255" placeholder="Ej. PLAN001">
+          </div>
+        </div>
+
+        <!-- Botón -->
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-success btn-sm rounded-pill px-3">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="container mt-4">
+  <h3 class="mb-3">Lista de Planes</h3>
+  <table id="table_planes"
+         class="table table-bordered table-hover table-sm"
+         data-url="{{ path('app_panel_listar_targetas') }}"
+         data-toggle="table"
+         data-search="true"
+         data-pagination="true"
+         data-page-size="5"
+         data-page-list="[5, 10, 20, All]">
+    <thead class="table-dark">
+      <tr>
+        <th data-field="id" data-sortable="true">ID</th>
+        <th data-field="code" data-sortable="true">Código</th>
+        <th data-field="operate" data-align="center" data-width="120"
+            data-formatter="accionesFormatter" data-events="operateEvents">Acciones</th>
+      </tr>
+    </thead>
+  </table>
+</div>
+
+<script>
+  function accionesFormatter(value, row, index) {
+    return [
+      '<button class="btn btn-primary btn-sm editar" title="Editar">',
+      '<i class="bi bi-pencil-square"></i>',
+      '</button> ',
+      '<button class="btn btn-danger btn-sm eliminar" title="Eliminar">',
+      '<i class="bi bi-trash"></i>',
+      '</button>'
+    ].join('');
+  }
+
+  window.operateEvents = {
+    'click .editar': function (e, value, row, index) {
+      document.getElementById('id').value = row.id;
+      document.getElementById('code').value = row.code;
+    },
+    'click .eliminar': function (e, value, row, index) {
+      if (confirm('¿Estás seguro de eliminar el plan con ID: ' + row.id + '?')) {
+        alert('Plan eliminado: ' + row.id);
+      }
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('form-targeta');
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const formData = new FormData(form);
+      fetch('{{ path('app_panel_crear_targeta') }}', {
+        method: 'POST',
+        body: formData,
+      })
+      .then(response => response.json())
+      .then(data => {
+        resetForm();
+        $('#table_planes').bootstrapTable('refresh');
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+    });
+  });
+
+  function resetForm() {
+    document.getElementById('form-targeta').reset();
+    document.getElementById('id').value = 0;
+  }
+</script>
 {% endblock %}

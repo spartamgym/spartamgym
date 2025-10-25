@@ -8,6 +8,8 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Repository\PlanRepository;
 use Symfony\Component\HttpFoundation\Request;
+use App\Repository\CardsRepository;
+
 
 final class PanelController extends AbstractController
 {
@@ -20,32 +22,32 @@ final class PanelController extends AbstractController
     #[Route('/panel/planes', name: 'app_panel_planes')]
     public function planes(): Response
     {
-        return $this->render('panel/planes.html.twig'); 
+        return $this->render('panel/planes.html.twig');
     }
 
     #[Route('/panel/planes/crear', name: 'app_panel_planes_crear')]
-    public function crearPlan(Request $request,PlanRepository $planRepository): JsonResponse
-    {   
-          $id = $request->request->get('id');
-            $nombre = $request->request->get('nombre');
-            $precio = $request->request->get('precio');
-            $tiempo = $request->request->get('tiempo');
-            $detalle = $request->request->get('detalle');
+    public function crearPlan(Request $request, PlanRepository $planRepository): JsonResponse
+    {
+        $id = $request->request->get('id');
+        $nombre = $request->request->get('nombre');
+        $precio = $request->request->get('precio');
+        $tiempo = $request->request->get('tiempo');
+        $detalle = $request->request->get('detalle');
 
-            if ($id > 0) {
-                $plan = $planRepository->find($id);
-                if (!$plan instanceof \App\Entity\Plan) {
-                    return new JsonResponse(['status' => 'error', 'message' => 'Plan no encontrado.'], 404);
-                }
-            } else {
-                $plan = new \App\Entity\Plan();
+        if ($id > 0) {
+            $plan = $planRepository->find($id);
+            if (!$plan instanceof \App\Entity\Plan) {
+                return new JsonResponse(['status' => 'error', 'message' => 'Plan no encontrado.'], 404);
             }
-            $plan->setNombre($nombre);
-            $plan->setPrecio((int)$precio);
-            $plan->setTiempo($tiempo);
-            $detalleArray = array_map('trim', explode(',', $detalle));
-            $plan->setDetalle($detalleArray);   
-            $planRepository->save($plan);
+        } else {
+            $plan = new \App\Entity\Plan();
+        }
+        $plan->setNombre($nombre);
+        $plan->setPrecio((int)$precio);
+        $plan->setTiempo($tiempo);
+        $detalleArray = array_map('trim', explode(',', $detalle));
+        $plan->setDetalle($detalleArray);
+        $planRepository->save($plan);
 
         return  new JsonResponse(['status' => 'success', 'message' => 'Plan guardado exitosamente.']);
     }
@@ -60,16 +62,15 @@ final class PanelController extends AbstractController
         foreach ($plans as $plan) {
             $data[] = [
                 'id' => $plan->getId(),
-                'nombre' => $plan->getNombre(),     
+                'nombre' => $plan->getNombre(),
                 'precio' => $plan->getPrecio(),
                 'tiempo' => $plan->getTiempo(),
                 'detalle' => $plan->getDetalleToString(),
-              
+
             ];
         }
         return new JsonResponse($data);
-  
-    }        
+    }
 
     #[Route('/panel/targetas_ingreso', name: 'app_panel_targetas_ingreso')]
     public function targetasIngreso(): Response
@@ -77,4 +78,32 @@ final class PanelController extends AbstractController
         return $this->render('panel/targetas_ingreso.html.twig');
     }
 
+    #[Route('/panel/crear/targeta', name: 'app_panel_crear_targeta')]
+    public function crearTargeta(Request $request, CardsRepository $cardsRepository): JsonResponse
+    {
+        $code = $request->request->get('code');
+        //validar si la targeta ya existe
+        $existingCard = $cardsRepository->findOneBy(['code' => $code]);
+        if ($existingCard) {
+            return new JsonResponse(['status' => 'error', 'message' => 'La targeta ya existe.'], 400);
+        }
+        $card = new \App\Entity\Cards();
+        $card->setCode($code);
+        $cardsRepository->save($card);
+        return new JsonResponse(['status' => 'success', 'message' => 'Targeta creada exitosamente.']);
+    }
+
+    #[Route('/panel/listar/targetas', name: 'app_panel_listar_targetas')]
+    public function listarTargetas(CardsRepository $cardsRepository): JsonResponse
+    {
+        $cards = $cardsRepository->findAll();
+        $data = [];
+        foreach ($cards as $card) {
+            $data[] = [
+                'id' => $card->getId(),
+                'code' => $card->getCode(),
+            ];
+        }
+        return new JsonResponse($data);
+    }
 }

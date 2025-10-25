@@ -39,9 +39,6 @@ class Usuario
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $correo = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $code = null;
-
     #[ORM\Column(length: 255)]
     private ?string $img = null;
 
@@ -56,6 +53,9 @@ class Usuario
      */
     #[ORM\OneToMany(targetEntity: PlanUsuario::class, mappedBy: 'usuario')]
     private Collection $plan;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Cards $card = null;
 
     public function __construct()
     {
@@ -152,17 +152,7 @@ class Usuario
         return $this;
     }
 
-    public function getCode(): ?string
-    {
-        return $this->code;
-    }
 
-    public function setCode(?string $code): static
-    {
-        $this->code = $code;
-
-        return $this;
-    }
 
     public function getImg(): ?string
     {
@@ -208,6 +198,7 @@ class Usuario
 
     public function toArray(): array
     {
+
         return [
             'id'              => $this->getId(),
             'nombre'          => $this->getNombre(),
@@ -217,7 +208,7 @@ class Usuario
             'fecha_nacimiento' => $this->getFechaNacimiento()?->format('Y-m-d'),
             'eps'             => $this->getEps(),
             'correo'          => $this->getCorreo(),
-            'code'            => $this->getCode(),
+            'code'       => $this->getCard() ? $this->getCard()->getCode() : 'sin asignar',
             'img'             => $this->getImg(),
             'datofisicos'     => array_map(fn($df) => $df->toArray(), $this->getDatofisicos()->toArray()),
             'planes'            => array_map(fn($pu) => $pu->toArray(), $this->getPlan()->toArray()),
@@ -256,5 +247,17 @@ class Usuario
     public function hasDatoFisico(): bool
     {
         return !$this->datofisicos->isEmpty();
+    }
+
+    public function getCard(): ?Cards
+    {
+        return $this->card;
+    }
+
+    public function setCard(?Cards $card): static
+    {
+        $this->card = $card;
+
+        return $this;
     }
 }
