@@ -237,16 +237,15 @@ function activoFormatter(value, row, index) {
 function crearGrafica(datos) {
 
   const labels = [
-    'Peso', 'Cintura', 'Glúteos', 'Brazo', 'Pecho', 'Pierna', 'Pantorrilla', 'Altura', 'IMC'
+    'Peso Kg', 'Cintura cm', 'Glúteos cm', 'Brazo cm', 'Pecho cm', 'Pierna cm', 'Pantorrilla cm', 'Altura cm', 'IMC'
   ];
 
 
 const datasets = datos.map(d => ({
-  label: `Mediciones (${d.createAt})`,
+  label: `Mediciones (${new Date(d.createAt).toISOString().split('T')[0]})`,
   data: [d.peso, d.cintura, d.gluteos, d.brazo, d.pecho, d.pierna, d.pantorrilla, d.altura, d.imc],
   fill: true,
-  backgroundColor: 'rgba(54, 162, 235, 0.2)',
-  borderColor: 'rgba(54, 162, 235, 1)'
+  borderColor: d.color,
 }));
 
   const options = {

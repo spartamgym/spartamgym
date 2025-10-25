@@ -1,0 +1,132 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Planes - SpartaMGym{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+  <div class="card shadow-sm rounded-2">
+    <div class="card-body">
+      <h1 class="h4 mb-4 text-primary">Registrar ítem</h1>
+
+      <form id="form-plan">
+        <!-- Fila 1: Nombre -->
+        <input type="hidden" id="id" name="id" value="0">
+        <div class="row mb-3">
+          <div class="col-12">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" class="form-control rounded-3" id="nombre" name="nombre" maxlength="255" placeholder="Ej. Consulta general">
+          </div>
+        </div>
+
+        <!-- Fila 2: Precio y Tiempo -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="precio" class="form-label">Precio</label>
+            <input type="number" class="form-control rounded-3" id="precio" name="precio" min="0" step="1" required placeholder="Ej. 45000">
+          </div>
+          <div class="col-md-6">
+            <label for="tiempo" class="form-label">Tiempo</label>
+            <input type="text" class="form-control rounded-3" id="tiempo" name="tiempo" maxlength="255" placeholder="Ej. 30 min">
+          </div>
+        </div>
+
+        <!-- Fila 3: Detalle -->
+        <div class="row mb-3">
+          <div class="col-12">
+            <label for="detalle" class="form-label">Detalle</label>
+            <textarea class="form-control rounded-3" id="detalle" name="detalle" rows="4" placeholder='ejemplo1,ejemplo2'></textarea>
+          </div>
+        </div>
+
+        <!-- Botón -->
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-success btn-sm rounded-pill-2 px-2">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<div class="container mt-4">
+  <h3 class="mb-3">Lista de Planes</h3>
+  <table id="table_planes"
+         class="table table-bordered table-hover table-sm"
+         data-url="{{ path('app_panel_planes_listar') }}"
+         data-toggle="table"
+         data-search="true"
+         data-pagination="true"
+         data-page-size="5"
+         data-page-list="[5, 10, 20, All]">
+    <thead class="table-dark">
+      <tr>
+        <th data-field="id" data-sortable="true">ID</th>
+        <th data-field="nombre" data-sortable="true">Nombre</th>
+        <th data-field="precio" data-sortable="true">Precio</th>
+        <th data-field="tiempo" data-width="120" >Tiempo</th>
+        <th data-field="detalle">Detalle</th>
+        <th  data-field="operate" data-align="center" data-width="120"data-formatter="accionesFormatter" data-events="operateEvents">Acciones</th>
+      </tr>
+    </thead>
+  </table>
+</div>
+
+
+<script>
+  function accionesFormatter(value, row, index) {
+    return [
+      '<button class="btn btn-primary btn-sm editar" title="Editar">',
+      '<i class="bi bi-pencil-square"></i>',
+      '</button> ',
+      '<button class="btn btn-danger btn-sm eliminar" title="Eliminar">',
+      '<i class="bi bi-trash"></i>',
+      '</button>'
+    ].join('');
+  }
+
+  window.operateEvents = {
+    'click .editar': function (e, value, row, index) {
+          document.getElementById('id').value = row.id;
+          document.getElementById('nombre').value = row.nombre;
+          document.getElementById('precio').value = row.precio;
+          document.getElementById('tiempo').value = row.tiempo;
+          document.getElementById('detalle').value = row.detalle;
+    },
+    'click .eliminar': function (e, value, row, index) {
+      if (confirm('¿Estás seguro de eliminar el plan con ID: ' + row.id + '?')) {
+        alert('Plan eliminado: ' + row.id);
+      }
+    }
+  };
+
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('form-plan');
+
+  form.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const formData = new FormData(form);
+    fetch('{{ path('app_panel_planes_crear') }}', {
+      method: 'POST',
+      body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+      
+     resetForm();
+      $('#table_planes').bootstrapTable('refresh');
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+      alert('Error al crear el plan');
+    });
+  });
+}); 
+
+	function resetForm() {
+		document.getElementById('form-plan').reset();
+		document.getElementById('id').value = 0;
+	}
+</script>
+
+{% endblock %}

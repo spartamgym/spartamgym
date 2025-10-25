@@ -11,8 +11,6 @@ final class DasboardController extends AbstractController
     #[Route('/dasboard', name: 'app_dashboard')]
     public function index(): Response
     {
-        return $this->render('dasboard/index.html.twig', [
-            'controller_name' => 'DasboardController',
-        ]);
+        return $this->render('dasboard/index.html.twig');
     }
 }

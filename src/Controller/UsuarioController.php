@@ -95,7 +95,7 @@ final class UsuarioController extends AbstractController
         UsuarioRepository $usuarioRepository,
         DatoFisicoRepository $datoFisicoRepository
     ): JsonResponse {
-        
+
         $id = $request->request->get('id');
         $usuario = $usuarioRepository->find($id);
         if (!$usuario instanceof \App\Entity\Usuario) {
@@ -113,14 +113,16 @@ final class UsuarioController extends AbstractController
         $pantorrilla = $request->request->get('pantorrilla');
 
         //validar todos los campos
-        if (empty($altura) ||empty($imc) ||empty($peso) || empty($cintura) || empty($gluteos) || empty($brazo) || empty($pecho) || empty($pierna) || empty($pantorrilla)) {
+        if (empty($altura) || empty($imc) || empty($peso) || empty($cintura) || empty($gluteos) || empty($brazo) || empty($pecho) || empty($pierna) || empty($pantorrilla)) {
             return new JsonResponse(['status' => 'error', 'message' => 'Todos los campos son obligatorios.'], 400);
         }
+
         $datoFisico = new \App\Entity\DatoFisico();
+        $datoFisico->setColor($usuario->hasDatoFisico() ? '#0000FF' : '#FF0000');
         $datoFisico->setUsuario($usuario);
         $datoFisico->setPeso($peso);
-         $datoFisico->setAltura($altura);
-         $datoFisico->setImc($imc);
+        $datoFisico->setAltura($altura);
+        $datoFisico->setImc($imc);
         $datoFisico->setCintura($cintura);
         $datoFisico->setGluteos($gluteos);
         $datoFisico->setBrazo($brazo);

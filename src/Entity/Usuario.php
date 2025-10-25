@@ -207,22 +207,22 @@ class Usuario
     }
 
     public function toArray(): array
-{
-    return [
-        'id'              => $this->getId(),
-        'nombre'          => $this->getNombre(),
-        'cedula'          => $this->getCedula(),
-        'celular'         => $this->getCelular(),
-        'direccion'       => $this->getDireccion(),
-        'fecha_nacimiento'=> $this->getFechaNacimiento()?->format('Y-m-d'),
-        'eps'             => $this->getEps(),
-        'correo'          => $this->getCorreo(),
-        'code'            => $this->getCode(),
-        'img'             => $this->getImg(),
-        'datofisicos'     => array_map(fn($df) => $df->toArray(), $this->getDatofisicos()->toArray()),
-        'planes'            => array_map(fn($pu) => $pu->toArray(), $this->getPlan()->toArray()),
-    ];
-}
+    {
+        return [
+            'id'              => $this->getId(),
+            'nombre'          => $this->getNombre(),
+            'cedula'          => $this->getCedula(),
+            'celular'         => $this->getCelular(),
+            'direccion'       => $this->getDireccion(),
+            'fecha_nacimiento' => $this->getFechaNacimiento()?->format('Y-m-d'),
+            'eps'             => $this->getEps(),
+            'correo'          => $this->getCorreo(),
+            'code'            => $this->getCode(),
+            'img'             => $this->getImg(),
+            'datofisicos'     => array_map(fn($df) => $df->toArray(), $this->getDatofisicos()->toArray()),
+            'planes'            => array_map(fn($pu) => $pu->toArray(), $this->getPlan()->toArray()),
+        ];
+    }
 
     /**
      * @return Collection<int, PlanUsuario>
@@ -253,6 +253,8 @@ class Usuario
 
         return $this;
     }
-
-
+    public function hasDatoFisico(): bool
+    {
+        return !$this->datofisicos->isEmpty();
+    }
 }

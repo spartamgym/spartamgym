@@ -92,4 +92,9 @@ class Plan
             'detalle' => $this->getDetalle(),
         ];
     }
+
+    public function getDetalleToString(): string
+    {
+        return implode(',', $this->detalle ?? []);
+    }
 }

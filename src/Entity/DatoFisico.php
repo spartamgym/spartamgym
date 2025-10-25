@@ -46,6 +46,9 @@ class DatoFisico
     #[ORM\ManyToOne(inversedBy: 'datofisicos')]
     private ?Usuario $usuario = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $color = null;
+
 
  
     public function getId(): ?int
@@ -190,8 +193,21 @@ class DatoFisico
             'active' => $this->isActive(),  
             'altura' => $this->getAltura(),
             'imc' => $this->getImc(),
+            'color' => $this->getColor(),
 
         ];
+    }
+
+    public function getColor(): ?string
+    {
+        return $this->color;
+    }
+
+    public function setColor(string $color): static
+    {
+        $this->color = $color;
+
+        return $this;
     }
 
 

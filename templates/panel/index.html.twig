@@ -1,62 +1,77 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello PanelController!{% endblock %}
+{% block title %}Hello PanelController!
+{% endblock %}
 
 {% block body %}
 
-<div class="container mt-5">
-  <div class="row justify-content-center g-4">
-    
-    <!-- Card Dashboard -->
-    <div class="col-md-4">
-      <a href="{{ path('app_dashboard') }}" class="text-decoration-none">
-        <div class="card text-center shadow-sm h-100">
-          <div class="card-body">
-            <i class="bi bi-speedometer2 display-4 text-primary"></i>
-            <h5 class="card-title mt-3">Dashboard</h5>
-            <p class="card-text">Accede al panel principal</p>
-          </div>
-        </div>
-      </a>
-    </div>
+	<div class="container mt-5">
+		<div
+			class="row justify-content-center g-4">
 
-    <!-- Card Usuario -->
-    <div class="col-md-4">
-      <a href="{{ path('app_usuario') }}" class="text-decoration-none">
-        <div class="card text-center shadow-sm h-100">
-          <div class="card-body">
-            <i class="bi bi-people-fill display-4 text-success"></i>
-            <h5 class="card-title mt-3">Usuarios</h5>
-            <p class="card-text">Gestión de usuarios</p>
-          </div>
-        </div>
-      </a>
-    </div>
+			<!-- Card Dashboard -->
+			<div class="col-md-4">
+				<a href="{{ path('app_dashboard') }}" class="text-decoration-none">
+					<div class="card text-center shadow-sm h-100">
+						<div class="card-body">
+							<i class="bi bi-speedometer2 display-4 text-primary"></i>
+							<h5 class="card-title mt-3">Dashboard</h5>
+							<p class="card-text">Accede al panel principal</p>
+						</div>
+					</div>
+				</a>
+			</div>
 
-    <!-- 🔥 Ejemplo de tarjeta futura -->
-    <div class="col-md-4">
-      <a href="#" class="text-decoration-none">
-        <div class="card text-center shadow-sm h-100">
-          <div class="card-body">
-            <i class="bi bi-graph-up-arrow display-4 text-warning"></i>
-            <h5 class="card-title mt-3">Reportes</h5>
-            <p class="card-text">Visualiza estadísticas</p>
-          </div>
-        </div>
-      </a>
-    </div>
+			<!-- Card Usuario -->
+			<div class="col-md-4">
+				<a href="{{ path('app_usuario') }}" class="text-decoration-none">
+					<div class="card text-center shadow-sm h-100">
+						<div class="card-body">
+							<i class="bi bi-people-fill display-4 text-success"></i>
+							<h5 class="card-title mt-3">Usuarios</h5>
+							<p class="card-text">Gestión de usuarios</p>
+						</div>
+					</div>
+				</a>
+			</div>
 
-<div class="col-md-4">
-  <a href="{{ path('app_ingreso') }}" class="text-decoration-none">
-    <div class="card text-center shadow-sm h-100">
-      <div class="card-body">
-        <i class="bi bi-box-arrow-in-right display-4 text-warning"></i>
-        <h5 class="card-title mt-3">Ingreso</h5>
-        <p class="card-text">Registrar entradas al sistema</p>
-      </div>
-    </div>
-  </a>
-</div>
-  </div>
-</div>
+			<!-- 🔥 Ejemplo de tarjeta futura -->
+			<div class="col-md-4">
+				<a href="#" class="text-decoration-none">
+					<div class="card text-center shadow-sm h-100">
+						<div class="card-body">
+							<i class="bi bi-graph-up-arrow display-4 text-warning"></i>
+							<h5 class="card-title mt-3">Reportes</h5>
+							<p class="card-text">Visualiza estadísticas</p>
+						</div>
+					</div>
+				</a>
+			</div>
+
+			<div class="col-md-4">
+				<a href="{{ path('app_ingreso') }}" class="text-decoration-none">
+					<div class="card text-center shadow-sm h-100">
+						<div class="card-body">
+							<i class="bi bi-box-arrow-in-right display-4 text-warning"></i>
+							<h5 class="card-title mt-3">Ingreso</h5>
+							<p class="card-text">Registrar entradas al sistema</p>
+						</div>
+					</div>
+				</a>
+			</div>
+
+			{#<!-- Card Planes -->#}
+			<div class="col-md-4">
+				<a href="{{ path('app_panel_planes') }}" class="text-decoration-none">
+					<div class="card text-center shadow-sm h-100">
+						<div class="card-body">
+							<i class="bi bi-card-list display-4 text-danger"></i>
+							<h5 class="card-title mt-3">Planes</h5>
+							<p class="card-text">Gestión de planes</p>
+						</div>
+					</div>
+				</a>
+			</div>
+		</div>
+	</div>
 {% endblock %}
