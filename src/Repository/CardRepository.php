@@ -23,5 +23,27 @@ class CardRepository extends ServiceEntityRepository
         $flush && $this->getEntityManager()->flush();
     }
 
+    // Obtiene la primera card
+ 
+
+    public function getFirstCard(): ?Card
+    {
+        return $this->findOneBy([], ['id' => 'ASC']);
+    }
+
+    public function getLastCard(): ?Card
+    {
+        return $this->findOneBy(['active' => true],['id' => 'DESC']);
+    }
+
+    public function getAllCardsActive(): ?array
+    {
+        return $this->findBy(['active' => true]);
+    }
+
+    public function clear(): void
+    {
+        $this->getEntityManager()->clear();
+    }
 
 }

@@ -21,6 +21,9 @@ class Card
     #[ORM\Column(length: 255)]
     private ?string $code = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $usuario = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -37,4 +40,27 @@ class Card
 
         return $this;
     }
+
+
+    public function getUsuario(): ?string
+    {
+        return $this->usuario;  
+
+    }
+
+    public function setUsuario(string $usuario): static
+    {
+        $this->usuario = $usuario;
+
+        return $this;
+    }   
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'code' => $this->getCode(), 
+            'usuario' => $this->getUsuario(),
+        ];
+    }   
 }

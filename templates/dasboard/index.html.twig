@@ -6,370 +6,393 @@
 {% block body %}
 
 <section class="container-fluid">
-  <div class="row align-items-center m-0 py-4 bg-light border-bottom mb-1">
-    <!-- Columna izquierda: buscador -->
-    <div class="col-md-4">
-      <div class="input-group input-group-sm">
-        <a href="javascript:void(0)" id="btn-buscar" class="input-group-text bg-white">
-          <i class="bi bi-search"></i>
-        </a>
-        <input id="input-buscar" type="text" class="form-control" placeholder="Buscar...">
-      </div>
-    </div>
+	<div class="row align-items-center m-0 py-4 bg-light border-bottom mb-1">
+		<!-- Columna izquierda: buscador -->
+		<div class="col-md-4">
+			<div class="input-group input-group-sm">
+				<a href="javascript:void(0)" id="btn-buscar" class="input-group-text bg-white">
+					<i class="bi bi-search"></i>
+				</a>
+				<input id="input-buscar" type="text" class="form-control" placeholder="Buscar...">
+				<div class="dropdown">
+					<a class="btn btn-primary btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+						aria-expanded="false">
+						en cola..
+					</a>
 
-    <!-- Columna derecha: título + botón -->
-    <div class="col-md-8 mt-3 mt-md-0">
-      <div class="d-flex justify-content-md-end align-items-center gap-2">
-        <h1 class="h4 text-primary mb-0">Bienvenido apreciado cliente</h1>
-        <a href="{{path('app_panel')}}">
-          <i class="bi bi-card-list display-6 text-success"></i>
-        </a>
-      </div>
-    </div>
-  </div>
+					<ul class="dropdown-menu" id="lista-encola">
+					</ul>
+				</div>
 
+			</div>
+		</div>
 
-  <div class="row">
-    <div class="col-xl-3">
-      <!-- Tarjeta de perfil -->
-      <div class="card shadow-sm border-0 rounded-4 mb-3">
-        <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
-          <div class="position-relative">
-            <img id="img-perfil" src="img/profile-img.jpeg" alt="Profile"
-              class="rounded-circle img-fluid border border-3 border-white shadow"
-              style="width: 150px; aspect-ratio: 1 / 1; object-fit: cover;">
-          </div>
-          <h2 id="nombre-perfil" class="mt-3 h5 fw-bold text-dark"></h2>
-          <span class="text-muted small">Cliente registrado</span>
-        </div>
-      </div>
-
-      <!-- Tarjeta de plan -->
-      <div class="card shadow-sm border-0 rounded-4">
-        <div class="card-body text-center">
-          <h5 class="card-title text-uppercase text-secondary fw-semibold mb-3" id="titulo"></h5>
-          <h3 class="my-3 text-success fw-bold">
-            <span id="precio"></span>
-            <small class="text-muted" id="periodo"></small>
-          </h3>
-          <ul class="list-group list-group-flush text-start small" id="beneficios"></ul>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-xl-9">
-      <div class="card shadow-sm border-0 rounded-4">
-        <div class="card-body pt-3">
-          <!-- Tabs -->
-          <ul class="nav nav-tabs nav-tabs-bordered mb-3">
-            <li class="nav-item">
-              <button class="nav-link active fw-semibold" data-bs-toggle="tab" data-bs-target="#profile-overview">
-                <i class="bi bi-person-lines-fill me-1"></i> Datos Personales
-              </button>
-            </li>
-            <li class="nav-item">
-              <button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#profile-edit">
-                <i class="bi bi-activity me-1"></i> Datos Físicos
-              </button>
-            </li>
-            <li class="nav-item">
-              <button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#profile-settings">
-                <i class="bi bi-card-checklist me-1"></i> Plan
-              </button>
-            </li>
-          </ul>
-
-          <div class="tab-content pt-2">
-            <!-- Datos Personales -->
-            <div class="tab-pane fade show active profile-overview" id="profile-overview">
-              <div class="card shadow-sm rounded-4 border-0">
-                <div class="card-body">
-                  <h5 class="card-title text-primary fw-bold mb-4">
-                    <i class="bi bi-person-circle me-2"></i> Perfil del Usuario
-                  </h5>
-
-                  <!-- Fila -->
-                  <div class="row mb-3">
-                    <div class="col-lg-3 col-md-4 fw-semibold text-muted">Nombre</div>
-                    <div class="col-lg-9 col-md-8 border-bottom pb-2" id="nombre"></div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <div class="col-lg-3 col-md-4 fw-semibold text-muted">WhatsApp</div>
-                    <div class="col-lg-9 col-md-8 border-bottom pb-2" id="celular"></div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <div class="col-lg-3 col-md-4 fw-semibold text-muted">Cédula</div>
-                    <div class="col-lg-9 col-md-8 border-bottom pb-2" id="cedula"></div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <div class="col-lg-3 col-md-4 fw-semibold text-muted">Dirección</div>
-                    <div class="col-lg-9 col-md-8 border-bottom pb-2" id="direccion"></div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <div class="col-lg-3 col-md-4 fw-semibold text-muted">Cumpleaños</div>
-                    <div class="col-lg-9 col-md-8 border-bottom pb-2" id="fecha_nacimiento"></div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <div class="col-lg-3 col-md-4 fw-semibold text-muted">EPS</div>
-                    <div class="col-lg-9 col-md-8 border-bottom pb-2" id="eps"></div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <div class="col-lg-3 col-md-4 fw-semibold text-muted">Email</div>
-                    <div class="col-lg-9 col-md-8" id="correo"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Datos Físicos -->
-            <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
-              <div class="d-flex justify-content-center mb-4">
-                <div class="card shadow-sm border-0 rounded-4 p-3" style="max-width:480px; width:100%;">
-                  <canvas id="radarMedidas"></canvas>
-                </div>
-              </div>
-
-              <div class="card shadow-sm border-0 rounded-4">
-                <div class="card-body">
-                  <table class="table table-sm table-hover align-middle text-center" id="table_menu"
-                    data-toggle="table">
-                    <thead class="table-dark small">
-                      <tr>
-                        <th colspan="11" class="text-center">Datos</th>
-                      </tr>
-                      <tr>
-                        <th data-field="id" data-formatter="smallFormatter">ID</th>
-                        <th data-field="peso" data-formatter="smallFormatter">Peso (Kg)</th>
-                        <th data-field="cintura" data-formatter="smallFormatter">Cintura (cm)</th>
-                        <th data-field="gluteos" data-formatter="smallFormatter">Glúteos (cm)</th>
-                        <th data-field="brazo" data-formatter="smallFormatter">Brazo (cm)</th>
-                        <th data-field="pecho" data-formatter="smallFormatter">Pecho (cm)</th>
-                        <th data-field="pierna" data-formatter="smallFormatter">Pierna (cm)</th>
-                        <th data-field="pantorrilla" data-formatter="smallFormatter">Pantorrilla (cm)</th>
-                        <th data-field="altura" data-formatter="smallFormatter">Altura (cm)</th>
-                        <th data-field="imc" data-formatter="smallFormatter">IMC</th>
-                        <th data-field="createAt" data-formatter="smallFormatter">Creado</th>
-                      </tr>
-                    </thead>
-                  </table>
+		<!-- Columna derecha: título + botón -->
+		<div class="col-md-8 mt-3 mt-md-0">
+			<div class="d-flex justify-content-md-end align-items-center gap-2">
+				<h1 class="h4 text-primary mb-0">Bienvenido apreciado cliente</h1>
+				<a href="{{path('app_panel')}}">
+					<i class="bi bi-card-list display-6 text-success"></i>
+				</a>
+			</div>
+		</div>
+	</div>
 
 
-                </div>
-              </div>
-            </div>
+	<div class="row">
+		<div class="col-xl-4">
+			<!-- Tarjeta de perfil -->
+			<div class="card shadow-sm border-0 rounded-4 mb-3">
+				<div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+					<div class="position-relative">
+						<img id="img-perfil" src="img/profile-img.jpeg" alt="Profile"
+							class="rounded-circle img-fluid border border-3 border-white shadow"
+							style="width: 150px; aspect-ratio: 1 / 1; object-fit: cover;">
+					</div>
+					<h2 id="nombre-perfil" class="mt-3 h5 fw-bold text-dark"></h2>
+					<span class="text-muted small">Cliente registrado</span>
+				</div>
+			</div>
 
-            <!-- Plan -->
-            <div class="tab-pane fade pt-3" id="profile-settings">
-              <div class="card shadow-sm border-0 rounded-4">
-                <div class="card-body">
-                  <table class="table table-sm table-hover align-middle" id="table_planes" data-toggle="table">
-                    <thead class="table-dark">
-                      <tr>
-                        <th colspan="5" class="text-center">Planes</th>
-                      </tr>
-                      <tr>
-                        <th data-field="nombre">Plan</th>
-                        <th data-field="precio">Precio</th>
-                        <th data-field="tiempo">Periodo (Días)</th>
-                        <th data-field="detalle">Beneficios</th>
-                        <th data-field="isActive" data-formatter="activoFormatter">Activo</th>
-                      </tr>
-                    </thead>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- End Tab Content -->
-        </div>
-      </div>
-    </div>
+			<!-- Tarjetas de plan -->
+		<div class="accordion" id="accordionPlanes"></div>
+			
+		</div>
 
-  </div>
+		<div class="col-xl-8">
+			<div class="card shadow-sm border-0 rounded-4">
+				<div class="card-body pt-3">
+					<!-- Tabs -->
+					<ul class="nav nav-tabs nav-tabs-bordered mb-3">
+						<li class="nav-item">
+							<button class="nav-link active fw-semibold" data-bs-toggle="tab"
+								data-bs-target="#profile-overview">
+								<i class="bi bi-person-lines-fill me-1"></i>
+								Datos Personales
+							</button>
+						</li>
+						<li class="nav-item">
+							<button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#profile-edit">
+								<i class="bi bi-activity me-1"></i>
+								Datos Físicos
+							</button>
+						</li>
+						<li class="nav-item">
+							<button class="nav-link fw-semibold" data-bs-toggle="tab"
+								data-bs-target="#profile-settings">
+								<i class="bi bi-card-checklist me-1"></i>
+								Plan
+							</button>
+						</li>
+					</ul>
+
+					<div class="tab-content pt-2">
+						<!-- Datos Personales -->
+						<div class="tab-pane fade show active profile-overview" id="profile-overview">
+							<div class="card shadow-sm rounded-4 border-0">
+								<div class="card-body">
+									<h5 class="card-title text-primary fw-bold mb-4">
+										<i class="bi bi-person-circle me-2"></i>
+										Perfil del Usuario
+									</h5>
+
+									<!-- Fila -->
+									<div class="row mb-3">
+										<div class="col-lg-3 col-md-4 fw-semibold text-muted">Nombre</div>
+										<div class="col-lg-9 col-md-8 border-bottom pb-2" id="nombre"></div>
+									</div>
+
+									<div class="row mb-3">
+										<div class="col-lg-3 col-md-4 fw-semibold text-muted">WhatsApp</div>
+										<div class="col-lg-9 col-md-8 border-bottom pb-2" id="celular"></div>
+									</div>
+
+									<div class="row mb-3">
+										<div class="col-lg-3 col-md-4 fw-semibold text-muted">Cédula</div>
+										<div class="col-lg-9 col-md-8 border-bottom pb-2" id="cedula"></div>
+									</div>
+
+									<div class="row mb-3">
+										<div class="col-lg-3 col-md-4 fw-semibold text-muted">Dirección</div>
+										<div class="col-lg-9 col-md-8 border-bottom pb-2" id="direccion"></div>
+									</div>
+
+									<div class="row mb-3">
+										<div class="col-lg-3 col-md-4 fw-semibold text-muted">Cumpleaños</div>
+										<div class="col-lg-9 col-md-8 border-bottom pb-2" id="fecha_nacimiento"></div>
+									</div>
+
+									<div class="row mb-3">
+										<div class="col-lg-3 col-md-4 fw-semibold text-muted">EPS</div>
+										<div class="col-lg-9 col-md-8 border-bottom pb-2" id="eps"></div>
+									</div>
+
+									<div class="row mb-3">
+										<div class="col-lg-3 col-md-4 fw-semibold text-muted">Email</div>
+										<div class="col-lg-9 col-md-8" id="correo"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Datos Físicos -->
+						<div class="tab-pane fade profile-edit pt-3" id="profile-edit">
+							<div class="d-flex justify-content-center mb-4">
+								<div class="card shadow-sm border-0 rounded-4 p-3" style="max-width:480px; width:100%;">
+									<canvas id="radarMedidas"></canvas>
+								</div>
+							</div>
+
+							<div class="card shadow-sm border-0 rounded-4">
+								<div class="card-body">
+									<table class="table table-sm table-hover align-middle text-center" id="table_menu"
+										data-toggle="table">
+										<thead class="table-dark small">
+											<tr>
+												<th colspan="11" class="text-center">Datos</th>
+											</tr>
+											<tr>
+												<th data-field="id" data-formatter="smallFormatter">ID</th>
+												<th data-field="peso" data-formatter="smallFormatter">Peso (Kg)</th>
+												<th data-field="cintura" data-formatter="smallFormatter">Cintura (cm)
+												</th>
+												<th data-field="gluteos" data-formatter="smallFormatter">Glúteos (cm)
+												</th>
+												<th data-field="brazo" data-formatter="smallFormatter">Brazo (cm)</th>
+												<th data-field="pecho" data-formatter="smallFormatter">Pecho (cm)</th>
+												<th data-field="pierna" data-formatter="smallFormatter">Pierna (cm)</th>
+												<th data-field="pantorrilla" data-formatter="smallFormatter">Pantorrilla
+													(cm)</th>
+												<th data-field="altura" data-formatter="smallFormatter">Altura (cm)</th>
+												<th data-field="imc" data-formatter="smallFormatter">IMC</th>
+												<th data-field="createAt" data-formatter="smallFormatter">Creado</th>
+											</tr>
+										</thead>
+									</table>
+
+
+								</div>
+							</div>
+						</div>
+
+						<!-- Plan -->
+						<div class="tab-pane fade pt-3" id="profile-settings">
+							<div class="card shadow-sm border-0 rounded-4">
+								<div class="card-body">
+									<table class="table table-sm table-hover align-middle" id="table_planes"
+										data-toggle="table">
+										<thead class="table-dark">
+											<tr>
+												<th colspan="5" class="text-center">Planes</th>
+											</tr>
+											<tr>
+												<th data-field="nombre">Plan</th>
+												<th data-field="precio">Precio</th>
+												<th data-field="tiempo">Periodo (Días)</th>
+												<th data-field="detalle">Beneficios</th>
+												<th data-field="isActive" data-formatter="activoFormatter">Activo</th>
+											</tr>
+										</thead>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- End Tab Content -->
+				</div>
+			</div>
+		</div>
+
+	</div>
 </section>
 
+
 <script>
-  const imgPerfil = document.getElementById('img-perfil');
-  const nombrePerfil = document.getElementById('nombre-perfil');
+	const imgPerfil = document.getElementById('img-perfil');
+	const nombrePerfil = document.getElementById('nombre-perfil');
+	// establecer todos los elementos getbyId en variables
 
 
-  // Configura la conexión SSE
-  const eventSource = new EventSource('/sse');
+	// Configura la conexión SSE
+	const eventSource = new EventSource('/sse');
 
-  eventSource.onopen = () => {
-    console.log('Conexión SSE abierta');
-  };
+	eventSource.onopen = () => {
+		console.log('Conexión SSE abierta');
+	};
 
-  eventSource.onmessage = (event) => {
-    try {
-      const userData = JSON.parse(event.data);
-      imgPerfil.src = userData.img;
-      nombrePerfil.textContent = userData.nombre;
-      document.getElementById('nombre').textContent = userData.nombre;
-      document.getElementById('celular').textContent = userData.celular;
-      document.getElementById('cedula').textContent = userData.cedula;
-      document.getElementById('direccion').textContent = userData.direccion;
-      document.getElementById('fecha_nacimiento').textContent = userData.fecha_nacimiento;
-      document.getElementById('eps').textContent = userData.eps;
-      document.getElementById('correo').textContent = userData.correo;
-      $('#table_menu').bootstrapTable('load', userData.datofisicos);
+	eventSource.onmessage = (event) => {
+		try {
+			// Procesa los datos recibidos
+			const userData = JSON.parse(event.data);
+			console.log(userData);
 
-      const planes = userData.planes.map(item => ({
-        ...item.plan,
-        isActive: item.isActive,
-        detalle: item.plan.detalle.join(", ")
-      }));
+			// cargar datos de perfil
+			imgPerfil.src = userData.img;
+			nombrePerfil.textContent = userData.nombre;
+			document.getElementById('nombre').textContent = userData.nombre;
+			document.getElementById('celular').textContent = userData.celular;
+			document.getElementById('cedula').textContent = userData.cedula;
+			document.getElementById('direccion').textContent = userData.direccion;
+			document.getElementById('fecha_nacimiento').textContent = userData.fecha_nacimiento;
+			document.getElementById('eps').textContent = userData.eps;
+			document.getElementById('correo').textContent = userData.correo;
 
-      if (userData.datofisicos.length > 0) {
-        crearGrafica(userData.datofisicos);
-      }
-   // Inicializar tabla con Bootstrap Table
-      $('#table_planes').bootstrapTable('load', planes);
+			// cargar datos de medidas en grafica
+			if (userData.datofisicos.length > 0) {
+				crearOActualizarGrafica(userData.datofisicos);
+			}
 
-// Buscar plan activo (si existe)
-const activePlan = userData.planes?.find(p => p.isActive)?.plan;
+			// cargar datos fisicos en la tabla
+			$('#table_menu').bootstrapTable('removeAll');
+			$('#table_menu').bootstrapTable('append', userData.datofisicos);
 
-// Limpiar lista siempre
-document.getElementById("beneficios").innerHTML = "";
 
-if (!activePlan) {
-  document.getElementById("titulo").textContent  = "Sin plan activo";
-  document.getElementById("precio").textContent  = "$0.00 COP";
-  document.getElementById("periodo").textContent = "";
-  return
-} 
-  document.getElementById("titulo").textContent  = activePlan.nombre;
-  document.getElementById("precio").textContent  = `$${Number(activePlan.precio).toFixed(2)} COP`;
-  document.getElementById("periodo").textContent = activePlan.periodo;
+			// cargar planes
+			const planes = userData.planes.map(item => ({
+				...item.plan,
+				isActive: item.isActive,
+				detalle: item.plan.detalle.join(",")
+			}));
 
-  activePlan.detalle.forEach(b => {
-    const li = document.createElement("li");
-    li.className = "list-group-item";
-    li.innerHTML = `<i class="bi bi-check-circle text-success"></i> ${b}`;
-    document.getElementById("beneficios").appendChild(li);
+
+			// Inicializar tabla con planes
+			$('#table_planes').bootstrapTable('removeAll');
+			$('#table_planes').bootstrapTable('append', planes);
+
+const activePlans = userData.planes?.filter(p => p.isActive).map(p => p.plan) || [];
+const accordion = document.getElementById("accordionPlanes");
+
+// Limpiar siempre
+accordion.innerHTML = "";
+
+if (activePlans.length === 0) {
+  accordion.innerHTML = `
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="heading0">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse0" aria-expanded="true" aria-controls="collapse0">
+          Sin plan activo
+        </button>
+      </h2>
+      <div id="collapse0" class="accordion-collapse collapse show" aria-labelledby="heading0" data-bs-parent="#accordionPlanes">
+        <div class="accordion-body">
+          <p>No tienes planes activos actualmente.</p>
+        </div>
+      </div>
+    </div>`;
+} else {
+  activePlans.forEach((plan, index) => {
+    const beneficios = plan.detalle.map(b => `
+      <li class="list-group-item">
+        <i class="bi bi-check-circle text-success"></i> ${b}
+      </li>`).join("");
+
+    const item = `
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="heading${index}">
+          <button class="accordion-button ${index !== 0 ? "collapsed" : ""}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${index}" aria-expanded="${index === 0}" aria-controls="collapse${index}">
+            ${plan.nombre}
+          </button>
+        </h2>
+        <div id="collapse${index}" class="accordion-collapse collapse ${index === 0 ? "show" : ""}" aria-labelledby="heading${index}" data-bs-parent="#accordionPlanes">
+          <div class="accordion-body">
+            <h3 class="my-3 text-success fw-bold">
+              $${Number(plan.precio).toFixed(2)} COP
+            </h3>
+            <ul class="list-group list-group-flush text-start small">
+              ${beneficios}
+            </ul>
+          </div>
+        </div>
+      </div>`;
+    
+    accordion.insertAdjacentHTML("beforeend", item);
   });
+}
 
 
+		} catch (e) {
+			console.log('Error al parsear datos SSE:', e);
+		}
+	};
 
-    } catch (e) {
-      console.warn('Error al parsear datos SSE:', e);
-    }
-  };
+	eventSource.onerror = (error) => {
+		console.log('Error SSE:', error.message);
+		// El navegador intentará reconectar automáticamente
+	};
 
-  eventSource.onerror = (error) => {
-    console.error('Error SSE:', error.message);
-    // El navegador intentará reconectar automáticamente
-  };
-
-
-  function activoFormatter(value, row, index) {
-    if (value) {
-      return '<span class="text-success"><i class="bi bi-check-circle-fill"></i> Sí</span>';
-    } else {
-      return '<span class="text-danger"><i class="bi bi-x-circle-fill"></i> No</span>';
-    }
-  }
-
-  // Gráfico de Araña para Datos Físicos
+	eventSource.onclose = () => {
+		console.log('Conexión SSE cerrada');
+	};
 
 
-  function crearGrafica(datos) {
+	//// Gráfico de Araña para Datos Físicos Función para crear o actualizar el gráfico
+	let radarChart = null;
+	function crearOActualizarGrafica(datos) {
+		const labels = ['Peso Kg', 'Cintura cm', 'Glúteos cm', 'Brazo cm', 'Pecho cm', 'Pierna cm', 'Pantorrilla cm', 'Altura cm', 'IMC'];
 
-    const labels = [
-      'Peso Kg',
-      'Cintura cm',
-      'Glúteos cm',
-      'Brazo cm',
-      'Pecho cm',
-      'Pierna cm',
-      'Pantorrilla cm',
-      'Altura cm',
-      'IMC'
-    ];
+		const datasets = datos.map(d => ({
+			label: `Mediciones (${new Date(d.createAt).toISOString().split('T')[0]})`,
+			data: [d.peso, d.cintura, d.gluteos, d.brazo, d.pecho, d.pierna, d.pantorrilla, d.altura, d.imc],
+			fill: true,
+			borderColor: d.color
+		}));
 
+		// ✅ Verificar si ya existe un gráfico en este canvas
+		if (radarChart) {
+			// Solo actualizamos los datos
+			radarChart.data.labels = labels;
+			radarChart.data.datasets = datasets;
+			radarChart.update();
+			return
+		}
+		const ctx = document.getElementById('radarMedidas').getContext('2d');
+		// Si no existe, lo creamos
+		radarChart = new Chart(ctx, {
+			type: 'radar',
+			data: {
+				labels: labels,
+				datasets: datasets
+			},
+			options: {
+				responsive: true,
+				plugins: {
+					title: {
+						display: true,
+						text: 'Gráfico de Araña - Medidas Corporales'
+					}
+				},
+				scales: {
+					r: {
+						beginAtZero: true
+					}
+				}
+			}
+		});
+	}
+	// Buscador
+	document.getElementById('btn-buscar').addEventListener('click', async () => {
+		const query = document.getElementById('input-buscar').value.toLowerCase();
+		if (!query) {
+			return;
+		}
+		const formData = new FormData();
+		formData.append('id', query);
+		await enviarDatos("{{ path('app_home_updated') }}", formData);
+	});
 
-    const datasets = datos.map(d => ({
-      label: `Mediciones (${new Date(d.createAt).toISOString().split('T')[0]
-        })`,
-      data: [
-        d.peso,
-        d.cintura,
-        d.gluteos,
-        d.brazo,
-        d.pecho,
-        d.pierna,
-        d.pantorrilla,
-        d.altura,
-        d.imc
-      ],
-      fill: true,
-      borderColor: d.color
-    }));
+	// Funciones para formatear datos en la tabla
+	function smallFormatter(value, row, index) {
+		return '<span class="small">' + (value ?? '') + '</span>';
+	}
 
-    const options = {
-      responsive: true,
-      plugins: {
-        title: {
-          display: true,
-          text: 'Gráfico de Araña - Medidas Corporales'
-        }
-      },
-      scales: {
-        r: {
-          beginAtZero: true
-        }
-      }
-    };
-
-    new Chart(document.getElementById('radarMedidas'), {
-      type: 'radar',
-      data: {
-        labels: labels,
-        datasets: datasets
-      },
-      options
-    });
-
-
-  }
-
-  document.getElementById('btn-buscar').addEventListener('click', async () => {
-    const query = document.getElementById('input-buscar').value.toLowerCase();
-    if (!query) {
-      return;
-    }
-    const formData = new FormData();
-    formData.append('id', query);
-    try {
-      const response = await fetch("{{ path('app_home_updated') }}", {
-        method: 'POST',
-        body: formData
-      });
-      const data = await response.json();
-
-
-      console.log('Respuesta del servidor:', data);
-      document.getElementById('input-buscar').value = '';
-      if (data.status === 'error') {
-        Swal.fire({ title: '¡Server!', text: data.message, icon: data.status, confirmButtonText: 'Aceptar' });
-        return;
-      }
-      location.reload();
-    } catch (error) {
-      console.error('Error al enviar:', error);
-    }
-  });
-
-  function smallFormatter(value, row, index) {
-    return '<span class="small">' + (value ?? '') + '</span>';
-  }
-
+	// Función para formatear el campo isActive
+	function activoFormatter(value, row, index) {
+		if (value) {
+			return '<span class="text-success"><i class="bi bi-check-circle-fill"></i> Sí</span>';
+		} else {
+			return '<span class="text-danger"><i class="bi bi-x-circle-fill"></i> No</span>';
+		}
+	}
 </script>
 
 {% endblock %}
