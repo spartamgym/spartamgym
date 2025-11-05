@@ -136,4 +136,17 @@ final class UsuarioController extends AbstractController
 
         return new JsonResponse(['status' => 'success', 'message' => 'Registro de usuario exitoso.']);
     }
+
+    #[Route('/usuario/desvincular', name: 'app_usuario_desvincular_card')]
+    public function desvincular(Request $request,UsuarioRepository $usuarioRepository): JsonResponse
+    {
+        $id = $request->request->get('id');
+        $usuario = $usuarioRepository->find($id);
+        if (!$usuario instanceof \App\Entity\Usuario) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Usuario no encontrado.'], 404);
+        }
+        $usuario->unlinkCard();
+        $usuarioRepository->save($usuario);
+        return new JsonResponse(['status' => 'success', 'message' => 'usuario desvinculado.']);
+    }   
 }

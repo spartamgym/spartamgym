@@ -85,6 +85,10 @@ final class PanelController extends AbstractController
     {
         $id = $request->request->get('id');
         $code = $request->request->get('code');
+        //validar que venga valor de code
+        if (!$code) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Falta el codigo de la tarjeta.'], 400);
+        }
 
         if ($id > 0) {
             $card = $cardsRepository->find($id);
@@ -123,6 +127,9 @@ final class PanelController extends AbstractController
                 'id' => $card->getId(),
                 'code' => $card->getCode(),
                 'usuario' => $card->getUsuario() ? $card->getUsuario()->getNombre() : 'sin asignar',
+                'status' => $card->isActive()?'activo':'inactivo',
+                'created_at' => $card->getCreateAt()->format('Y-m-d H:i:s'),
+                'updated_at' => $card->getUpdateAt()->format('Y-m-d H:i:s'),
 
             ];
         }
@@ -203,7 +210,7 @@ final class PanelController extends AbstractController
     #[Route('/panel/listar_usuario_sin_plan', name: 'app_panel_usuarios_sin_plan')]
     public function usuariosSinPlan(UsuarioRepository $usuarioRepository): JsonResponse
     {
-        $usuarios = $usuarioRepository->findUsuariosWithoutActivePlan();
+        $usuarios = $usuarioRepository->findAll();
 
         $data = [];
         foreach ($usuarios as $usuario) {
@@ -237,7 +244,7 @@ final class PanelController extends AbstractController
         }
         //validar que no haya un plan activo
         if ($usuario->hasActivePlan()) {
-            return new JsonResponse(['status' => 'error', 'message' => 'El usuario ya tiene un plan activo.'], 400);
+           // return new JsonResponse(['status' => 'error', 'message' => 'El usuario ya tiene un plan activo.'], 400);
         }
         //luego vincular el plan al usuario
         $planUsuario = new \App\Entity\PlanUsuario();
@@ -247,4 +254,6 @@ final class PanelController extends AbstractController
        
         return new JsonResponse(['status' => 'success', 'message' => 'Plan vinculado al usuario exitosamente.']);
     }
+
+
 }

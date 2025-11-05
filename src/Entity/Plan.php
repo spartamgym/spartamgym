@@ -22,8 +22,8 @@ class Plan
     #[ORM\Column]
     private ?int $precio = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $tiempo = null;
+    #[ORM\Column(nullable: true)]
+    private ?int $tiempo = 0;
 
     #[ORM\Column(nullable: true)]
     private ?array $detalle = null;
@@ -58,12 +58,12 @@ class Plan
         return $this;
     }
 
-    public function getTiempo(): ?string
+    public function getTiempo(): ?int
     {
         return $this->tiempo;
     }
 
-    public function setTiempo(?string $tiempo): static
+    public function setTiempo(?int $tiempo): static
     {
         $this->tiempo = $tiempo;
 

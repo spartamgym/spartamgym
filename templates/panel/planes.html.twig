@@ -4,6 +4,17 @@
 
 {% block body %}
 <div class="container py-4">
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <!-- Texto a la izquierda -->
+  <h3 class="mb-0 text-primary">Agregar Planes</h3>
+
+  <!-- Botones a la derecha -->
+  <div class="ms-auto">
+    <a href="{{ path('app_panel') }}" class="btn btn-success btn-sm">
+      <i class="bi bi-house"></i>
+    </a>
+  </div>
+</div>
   <div class="card shadow-sm rounded-2">
     <div class="card-body">
       <h1 class="h4 mb-4 text-primary">Registrar ítem</h1>
@@ -26,7 +37,7 @@
           </div>
           <div class="col-md-6">
             <label for="tiempo" class="form-label">Tiempo</label>
-            <input type="text" class="form-control rounded-3" id="tiempo" name="tiempo" maxlength="255" placeholder="Ej. 30 min">
+            <input type="number" class="form-control rounded-3" id="tiempo" name="tiempo" placeholder="Ej. 30 Dias">
           </div>
         </div>
 

@@ -245,6 +245,8 @@ class Usuario
 
         return $this;
     }
+
+    
     public function hasDatoFisico(): bool
     {
         return !$this->datofisicos->isEmpty();
@@ -270,5 +272,12 @@ class Usuario
             }
         }
         return false;
+    }
+
+    //remover una card
+    public function unlinkCard(): static
+    {
+        $this->card = null;
+        return $this;
     }
 }

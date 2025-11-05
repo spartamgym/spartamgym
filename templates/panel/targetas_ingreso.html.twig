@@ -4,6 +4,17 @@
 
 {% block body %}
 <div class="container py-4">
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <!-- Texto a la izquierda -->
+  <h3 class="mb-0 text-primary">Agregar Targetas</h3>
+
+  <!-- Botones a la derecha -->
+  <div class="ms-auto">
+    <a href="{{ path('app_panel') }}" class="btn btn-success btn-sm">
+      <i class="bi bi-house"></i>
+    </a>
+  </div>
+</div>
   <div class="card shadow-sm rounded-2">
     <div class="card-body">
       <h1 class="h4 mb-4 text-primary">Registrar Targeta</h1>
@@ -44,8 +55,8 @@
         <th data-field="code" data-sortable="true">Código</th>
         <th data-field="usuario" data-sortable="true">Usuario</th>
         <th data-field="status" data-sortable="true">Estado</th>
-        <th data-field="createdAt" data-sortable="true">Fecha de Creación</th>
-        <th data-field="updatedAt" data-sortable="true">Fecha de Actualización</th>
+        <th data-field="created_at" data-sortable="true">Fecha de Creación</th>
+        <th data-field="updated_at" data-sortable="true">Fecha de Actualización</th>
         <th data-field="operate" data-align="center" data-width="120"
             data-formatter="accionesFormatter" data-events="operateEvents">Acciones</th>
       </tr>
