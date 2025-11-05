@@ -54,6 +54,14 @@ class Usuario
     #[ORM\OneToMany(targetEntity: PlanUsuario::class, mappedBy: 'usuario')]
     private Collection $plan;
 
+    /**
+     * @var Collection<int, ColaCards>
+     */
+    #[ORM\OneToMany(targetEntity: ColaCards::class, mappedBy: 'usuario')]
+    private Collection $colaCards;
+
+
+
     #[ORM\OneToOne(inversedBy: 'usuario', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true)]
     private ?Cards $card = null;
@@ -62,6 +70,7 @@ class Usuario
     {
         $this->datofisicos = new ArrayCollection();
         $this->plan = new ArrayCollection();
+        $this->colaCards = new ArrayCollection();
     }
 
 
@@ -246,7 +255,7 @@ class Usuario
         return $this;
     }
 
-    
+
     public function hasDatoFisico(): bool
     {
         return !$this->datofisicos->isEmpty();
@@ -274,10 +283,71 @@ class Usuario
         return false;
     }
 
+    public function hasColaCards(): bool
+    {
+        foreach ($this->colaCards as $colaCard) {
+            if ($colaCard->isActive()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     //remover una card
     public function unlinkCard(): static
     {
         $this->card = null;
         return $this;
     }
+
+    public function isPlanVigente(): bool
+    { 
+        //buscamos el plan vigente
+        foreach ($this->plan as $p) {
+            if ($p->isVigente() && $p->isPredefinido()) {
+                return true;
+            }
+        }
+        return false;
+
+
+    }
+
+     /**
+     * @return Collection<int, ColaCards>
+     */
+    public function getColaCards(): Collection
+    {
+        return $this->colaCards;
+    }
+
+    public function addColaCards(ColaCards $colaCards): static
+    {
+        if (!$this->colaCards->contains($colaCards)) {
+            $this->colaCards->add($colaCards);
+            $colaCards->setUsuario($this);
+        }
+        return $this;
+    }
+
+    public function removeColaCards(ColaCards $colaCards): static
+    {
+        if ($this->plan->removeElement($colaCards)) {
+            // set the owning side to null (unless already changed)
+            if ($colaCards->getUsuario() === $this) {
+                $colaCards->setUsuario(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function resetPlanes(): static
+    {
+        foreach ($this->plan as $plan) {
+            $plan->setPredefinido(false);
+        }
+        return $this;
+    }
+
 }

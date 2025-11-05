@@ -8,172 +8,172 @@
 
 <div class="container py-4">
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <!-- Texto a la izquierda -->
-  <h3 class="mb-0 text-primary">Agregar Usuario</h3>
+	<div class="d-flex justify-content-between align-items-center mb-3">
+		<!-- Texto a la izquierda -->
+		<h3 class="mb-0 text-primary">Agregar Usuario</h3>
 
-  <!-- Botones a la derecha -->
-  <div class="ms-auto">
-    <a href="{{ path('app_panel') }}" class="btn btn-success btn-sm">
-      <i class="bi bi-house"></i>
-    </a>
-  </div>
-</div>
+		<!-- Botones a la derecha -->
+		<div class="ms-auto">
+			<a href="{{ path('app_panel') }}" class="btn btn-success btn-sm">
+				<i class="bi bi-house"></i>
+			</a>
+		</div>
+	</div>
 
-  <div class="card shadow-sm rounded-2 border-1">
-    <div class="card-body">
-      <h3 class="h4 mb-4 text-primary">Registro de Usuario</h3>
+	<div class="card shadow-sm rounded-2 border-1">
+		<div class="card-body">
+			<h3 class="h4 mb-4 text-primary">Registro de Usuario</h3>
 
-      <form id="form-usuario">
-        <input type="hidden" id="id" name="id" value="0">
+			<form id="form-usuario">
+				<input type="hidden" id="id" name="id" value="0">
 
-        <div class="row g-3">
-          <!-- Nombre -->
-          <div class="col-md-6">
-            <label for="nombre" class="form-label">Nombre</label>
-            <input type="text" class="form-control rounded-3" id="nombre" name="nombre" placeholder="Ingrese su nombre">
-          </div>
+				<div class="row g-3">
+					<!-- Nombre -->
+					<div class="col-md-6">
+						<label for="nombre" class="form-label">Nombre</label>
+						<input type="text" class="form-control rounded-3" id="nombre" name="nombre"
+							placeholder="Ingrese su nombre">
+					</div>
 
-          <!-- Cédula -->
-          <div class="col-md-6">
-            <label for="cedula" class="form-label">Cédula</label>
-            <input type="text" class="form-control rounded-3" id="cedula" name="cedula" placeholder="Ingrese su cédula">
-          </div>
+					<!-- Cédula -->
+					<div class="col-md-6">
+						<label for="cedula" class="form-label">Cédula</label>
+						<input type="text" class="form-control rounded-3" id="cedula" name="cedula"
+							placeholder="Ingrese su cédula">
+					</div>
 
-          <!-- Celular -->
-          <div class="col-md-6">
-            <label for="celular" class="form-label">Celular</label>
-            <input type="tel" class="form-control rounded-3" id="celular" name="celular" placeholder="Ingrese su celular">
-          </div>
+					<!-- Celular -->
+					<div class="col-md-6">
+						<label for="celular" class="form-label">Celular</label>
+						<input type="tel" class="form-control rounded-3" id="celular" name="celular"
+							placeholder="Ingrese su celular">
+					</div>
 
-          <!-- Dirección -->
-          <div class="col-md-6">
-            <label for="direccion" class="form-label">Dirección</label>
-            <input type="text" class="form-control rounded-3" id="direccion" name="direccion" placeholder="Ingrese su dirección">
-          </div>
+					<!-- Dirección -->
+					<div class="col-md-6">
+						<label for="direccion" class="form-label">Dirección</label>
+						<input type="text" class="form-control rounded-3" id="direccion" name="direccion"
+							placeholder="Ingrese su dirección">
+					</div>
 
-          <!-- Fecha de nacimiento -->
-          <div class="col-md-4">
-            <label for="fecha_nacimiento" class="form-label">Fecha de nacimiento</label>
-            <input type="date" class="form-control rounded-3" id="fecha_nacimiento" name="fecha_nacimiento">
-          </div>
+					<!-- Fecha de nacimiento -->
+					<div class="col-md-4">
+						<label for="fecha_nacimiento" class="form-label">Fecha de nacimiento</label>
+						<input type="date" class="form-control rounded-3" id="fecha_nacimiento" name="fecha_nacimiento">
+					</div>
 
-          <!-- EPS -->
-          <div class="col-md-4">
-            <label for="eps" class="form-label">EPS</label>
-            <input type="text" class="form-control rounded-3" id="eps" name="eps" placeholder="Ingrese su EPS">
-          </div>
+					<!-- EPS -->
+					<div class="col-md-4">
+						<label for="eps" class="form-label">EPS</label>
+						<input type="text" class="form-control rounded-3" id="eps" name="eps"
+							placeholder="Ingrese su EPS">
+					</div>
 
-          <!-- Correo -->
-          <div class="col-md-4">
-            <label for="correo" class="form-label">Correo</label>
-            <input type="email" class="form-control rounded-3" id="correo" name="correo" placeholder="ejemplo@correo.com">
-          </div>
-        </div>
+					<!-- Correo -->
+					<div class="col-md-4">
+						<label for="correo" class="form-label">Correo</label>
+						<input type="email" class="form-control rounded-3" id="correo" name="correo"
+							placeholder="ejemplo@correo.com">
+					</div>
+				</div>
 
-        <!-- Botones -->
-        <div class="mt-4 d-flex gap-2">
-          <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">Guardar</button>
-          <button id="reset-form-user" class="btn btn-outline-secondary btn-sm rounded-pill px-3">Limpiar</button>
-        </div>
-      </form>
-    </div>
-  </div>
+				<!-- Botones -->
+				<div class="mt-4 d-flex gap-2">
+					<button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">Guardar</button>
+					<button id="reset-form-user"
+						class="btn btn-outline-secondary btn-sm rounded-pill px-3">Limpiar</button>
+				</div>
+			</form>
+		</div>
+	</div>
 </div>
 <div class="container py-4">
-  <div class="card shadow-sm rounded-2 border-1">
-    <div class="card-body">
-      <h3 class="h4 mb-4 text-primary">Registro de Medidas Corporales</h3>
+	<div class="card shadow-sm rounded-2 border-1">
+		<div class="card-body">
+			<h3 class="h4 mb-4 text-primary">Registro de Medidas Corporales</h3>
 
-      <form id="form-datos-fisicos">
-        <div class="row g-3">
-          <!-- Cintura -->
-          <div class="col-auto">
-            <label for="cintura" class="form-label">Cintura (cm)</label>
-            <input type="number" class="form-control form-control-sm rounded-3 text-end w-auto"
-                   id="cintura" name="cintura" min="0" maxlength="4">
-          </div>
+			<form id="form-datos-fisicos">
+				<div class="row g-3">
+					<!-- Cintura -->
+					<div class="col-auto">
+						<label for="cintura" class="form-label">Cintura (cm)</label>
+						<input type="number" class="form-control form-control-sm rounded-3 text-end w-auto" id="cintura"
+							name="cintura" min="0" maxlength="4">
+					</div>
 
-          <!-- Glúteos -->
-          <div class="col-auto">
-            <label for="gluteos" class="form-label">Glúteos (cm)</label>
-            <input type="number" class="form-control form-control-sm rounded-3 text-end w-auto"
-                   id="gluteos" name="gluteos" min="0" maxlength="4">
-          </div>
+					<!-- Glúteos -->
+					<div class="col-auto">
+						<label for="gluteos" class="form-label">Glúteos (cm)</label>
+						<input type="number" class="form-control form-control-sm rounded-3 text-end w-auto" id="gluteos"
+							name="gluteos" min="0" maxlength="4">
+					</div>
 
-          <!-- Brazo -->
-          <div class="col-auto">
-            <label for="brazo" class="form-label">Brazo (cm)</label>
-            <input type="number" class="form-control form-control-sm rounded-3 text-end w-auto"
-                   id="brazo" name="brazo" min="0" maxlength="4">
-          </div>
+					<!-- Brazo -->
+					<div class="col-auto">
+						<label for="brazo" class="form-label">Brazo (cm)</label>
+						<input type="number" class="form-control form-control-sm rounded-3 text-end w-auto" id="brazo"
+							name="brazo" min="0" maxlength="4">
+					</div>
 
-          <!-- Pecho -->
-          <div class="col-auto">
-            <label for="pecho" class="form-label">Pecho (cm)</label>
-            <input type="number" class="form-control form-control-sm rounded-3 text-end w-auto"
-                   id="pecho" name="pecho" min="0" maxlength="4">
-          </div>
+					<!-- Pecho -->
+					<div class="col-auto">
+						<label for="pecho" class="form-label">Pecho (cm)</label>
+						<input type="number" class="form-control form-control-sm rounded-3 text-end w-auto" id="pecho"
+							name="pecho" min="0" maxlength="4">
+					</div>
 
-          <!-- Pierna -->
-          <div class="col-auto">
-            <label for="pierna" class="form-label">Pierna (cm)</label>
-            <input type="number" class="form-control form-control-sm rounded-3 text-end w-auto"
-                   id="pierna" name="pierna" min="0" maxlength="4">
-          </div>
+					<!-- Pierna -->
+					<div class="col-auto">
+						<label for="pierna" class="form-label">Pierna (cm)</label>
+						<input type="number" class="form-control form-control-sm rounded-3 text-end w-auto" id="pierna"
+							name="pierna" min="0" maxlength="4">
+					</div>
 
-          <!-- Pantorrilla -->
-          <div class="col-auto">
-            <label for="pantorrilla" class="form-label">Pantorrilla (cm)</label>
-            <input type="number" class="form-control form-control-sm rounded-3 text-end w-auto"
-                   id="pantorrilla" name="pantorrilla" min="0" maxlength="4">
-          </div>
+					<!-- Pantorrilla -->
+					<div class="col-auto">
+						<label for="pantorrilla" class="form-label">Pantorrilla (cm)</label>
+						<input type="number" class="form-control form-control-sm rounded-3 text-end w-auto"
+							id="pantorrilla" name="pantorrilla" min="0" maxlength="4">
+					</div>
 
-          <!-- Peso -->
-          <div class="col-auto">
-            <label for="peso" class="form-label">Peso (kg)</label>
-            <input type="number" class="form-control form-control-sm rounded-3 text-end w-auto"
-                   id="peso" name="peso" min="0" step="0.1" maxlength="4">
-          </div>
+					<!-- Peso -->
+					<div class="col-auto">
+						<label for="peso" class="form-label">Peso (kg)</label>
+						<input type="number" class="form-control form-control-sm rounded-3 text-end w-auto" id="peso"
+							name="peso" min="0" step="0.1" maxlength="4">
+					</div>
 
-          <!-- Altura -->
-          <div class="col-auto">
-            <label for="altura" class="form-label">Altura (cm)</label>
-            <input type="number" class="form-control form-control-sm rounded-3 text-end w-auto"
-                   id="altura" name="altura" min="0" step="0.1" maxlength="4">
-          </div>
+					<!-- Altura -->
+					<div class="col-auto">
+						<label for="altura" class="form-label">Altura (cm)</label>
+						<input type="number" class="form-control form-control-sm rounded-3 text-end w-auto" id="altura"
+							name="altura" min="0" step="0.1" maxlength="4">
+					</div>
 
-          <!-- IMC -->
-          <div class="col-auto">
-            <label for="imc" class="form-label">IMC</label>
-            <input type="number" class="form-control form-control-sm rounded-3 text-end w-auto"
-                   id="imc" name="imc" min="0" step="0.1" maxlength="4">
-          </div>
-        </div>
+					<!-- IMC -->
+					<div class="col-auto">
+						<label for="imc" class="form-label">IMC</label>
+						<input type="number" class="form-control form-control-sm rounded-3 text-end w-auto" id="imc"
+							name="imc" min="0" step="0.1" maxlength="4">
+					</div>
+				</div>
 
-        <!-- Botones -->
-        <div class="mt-4 d-flex gap-2">
-          <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">Guardar</button>
-  
-        </div>
-      </form>
-    </div>
-  </div>
+				<!-- Botones -->
+				<div class="mt-4 d-flex gap-2">
+					<button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">Guardar</button>
+
+				</div>
+			</form>
+		</div>
+	</div>
 </div>
-
 
 
 <div class="container mt-4">
 	<h3 class="mb-3">Lista de Usuarios</h3>
-	<table 
-	id="table_usuarios" 
-	class="table table-bordered table-hover table-sm" 
-	data-toggle="table" data-search="true"
-	data-pagination="true" 
-	data-page-size="5" 
-	data-page-list="[5, 10, 20, All]"
-	data-url="{{ path('app_usuario_listar') }}"
-	>
+	<table id="table_usuarios" class="table table-bordered table-hover table-sm" data-toggle="table" data-search="true"
+		data-pagination="true" data-page-size="5" data-page-list="[5, 10, 20, All]"
+		data-url="{{ path('app_usuario_listar') }}">
 		<thead class="table-dark">
 			<tr>
 				<th data-field="id" data-sortable="true">ID</th>
@@ -192,8 +192,42 @@
 	</table>
 </div>
 
-<script>
 
+<!-- Modal -->
+<div class="modal modal-xl fade" id="planes-usuario" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+	aria-labelledby="planesUsuarioLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content shadow-lg border-0 rounded-4">
+			<div class="modal-header bg-primary text-white">
+				<h1 class="modal-title fs-5" id="planesUsuarioLabel">Planes de Usuario</h1>
+				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+					aria-label="Cerrar"></button>
+			</div>
+			<div class="modal-body">
+				<table class="table table-sm table-hover align-middle" id="table_planes" data-toggle="table">
+					<thead class="table-dark">
+						<tr>
+							<th colspan="7" class="text-center">Planes</th>
+						</tr>
+						<tr>
+							<th data-field="nombre" class="text-start">Plan</th>
+							<th data-field="precio" class="text-center">Precio</th>
+							<th data-field="tiempo" class="text-center">Duración</th>
+							<th data-field="dias_restantes" class="text-center">Días restantes</th>
+							<th data-field="detalle" class="text-start">Beneficios</th>
+							<th data-field="operate" data-formatter="accionesPlanFormatter" data-events="operateEvents" class="text-center">Predefinido</th>
+							<th data-field="status_plan" data-formatter="planActivoFormatter" class="text-center">Status
+							</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script>
 
 
 	function imgFormatter(value, row, index) {
@@ -204,12 +238,16 @@
 		}
 	}
 
-function accionesFormatter(value, row, index) {
-  return `
-    <i class="bi bi-pencil-square text-primary me-2 editar" data-id="${row.id}" style="cursor:pointer;"></i>
-    <i class="bi bi-link text-danger desvincular" data-id="${row.id}" style="cursor:pointer;"></i>
+	function accionesFormatter(value, row, index) {
+		return `
+    <i class="bi bi-pencil-square text-primary me-2 editar" data-id="${row.id
+			}" style="cursor:pointer;"></i>
+    <i class="bi bi-link text-danger desvincular" data-id="${row.id
+			}" style="cursor:pointer;"></i>
+    <i class="bi bi-card-list text-success planes" data-id="${row.id
+			}" style="cursor:pointer;"></i>
   `;
-}
+	}
 
 
 	// enviar formulario de usuario
@@ -238,7 +276,6 @@ function accionesFormatter(value, row, index) {
 	});
 
 
-
 	// Evento para botón editar
 	window.operateEvents = {
 		'click .editar': (e, value, row) => { // Llenar el formulario con los datos del usuario
@@ -254,14 +291,39 @@ function accionesFormatter(value, row, index) {
 			// Desplazar la vista hacia el formulario
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		},
-    'click .desvincular': async(e, value, row) => { // Llenar el formulario con los datos del usuario
-    const formData = new FormData();
-    formData.append('id', row.id);
-      let data = await enviarDatos("{{ path('app_usuario_desvincular_card') }}", formData);
-      if (data.status === 'success') {
-        $('#table_usuarios').bootstrapTable('refresh');
-      }
-    }
+		'click .desvincular': async (e, value, row) => { // Llenar el formulario con los datos del usuario
+			const formData = new FormData();
+			formData.append('id', row.id);
+			let data = await enviarDatos("{{ path('app_usuario_desvincular_card') }}", formData);
+			if (data.status === 'success') {
+				$('#table_usuarios').bootstrapTable('refresh');
+			}
+		},
+		'click .planes': async (e, value, row) => { // Llenar el formulario con los datos del usuario
+			const formData = new FormData();
+			formData.append('id', row.id);
+			let data = await enviarDatos("{{ path('app_usuario_planes') }}", formData);
+						// Inicializar tabla con planes
+			$('#table_planes').bootstrapTable('removeAll');
+			$('#table_planes').bootstrapTable('append', data);
+			document.getElementById('planesUsuarioLabel').textContent = "Planes de " + row.nombre;
+			const modalPlanes = new bootstrap.Modal(document.getElementById('planes-usuario'));
+			modalPlanes.show();
+
+		}
+		,
+		'click .predefinir': async (e, value, row) => { // Llenar el formulario con los datos del usuario
+			const formData = new FormData();
+			formData.append('id', row.id);
+			console.log(formData);
+			let data = await enviarDatos("{{ path('app_usuario_plane_predefinir') }}", formData);
+						// Inicializar tabla con planes
+			$('#table_planes').bootstrapTable('removeAll');
+			$('#table_planes').bootstrapTable('append', data);
+			//const modalPlanes = new bootstrap.Modal(document.getElementById('planes-usuario'));
+			//modalPlanes.show();
+
+		}
 	}
 
 	function resetForm() {
@@ -285,14 +347,29 @@ function accionesFormatter(value, row, index) {
 			return;
 		}
 
-  let data = await enviarDatos("{{ path('app_datos_fisicos_registro') }}", formData);
+		let data = await enviarDatos("{{ path('app_datos_fisicos_registro') }}", formData);
 
-			if (data.status === 'success') {
-				this.reset();
-				resetForm();
-			} 
+		if (data.status === 'success') {
+			this.reset();
+			resetForm();
+		}
 
 	});
 
+	function planActivoFormatter(value, row, index) {
+		if (value == 'vigente') {
+			return '<span class="text-success"><i class="bi bi-check-circle-fill"></i>Vigente</span>';
+		} else {
+			return '<span class="text-danger"><i class="bi bi-x-circle-fill"></i>Vencido</span>';
+		}
+	}
+
+	function accionesPlanFormatter(value, row, index) {	
+				return `
+    		<i class="bi ${row.is_predefinido ? 
+			'bi-check-circle-fill text-success' 
+			: 'bi-x-circle-fill text-danger'}  me-2 predefinir" data-id="${row.id
+			}" style="cursor:pointer;"></i>`;
+	}
 </script>
 {% endblock %}

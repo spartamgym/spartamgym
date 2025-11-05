@@ -19,18 +19,29 @@ class PlanUsuario
     #[ORM\ManyToOne(inversedBy: 'plan')]
     private ?Usuario $usuario = null;
 
-    #[ORM\ManyToOne(inversedBy: 'planUsuarios')]
+    //#[ORM\ManyToOne(inversedBy: 'planUsuarios')]
     private ?Plan $plan = null;
 
-    #[ORM\Column]
-    private ?\DateTime $fecha_inicio;
+    #[ORM\Column(nullable: true)]
+    private ?\DateTime $fecha_inicio = null;
 
-    #[ORM\Column]
-    private ?\DateTime $fecha_fin;
-
+    #[ORM\Column(nullable: true)]
+    private ?\DateTime $fecha_fin = null;
 
     #[ORM\Column(nullable: true)]
     private ?bool $predefinido = false;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $nombre = null;
+
+    #[ORM\Column]
+    private ?int $precio = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $tiempo = 0;
+
+    #[ORM\Column(nullable: true)]
+    private ?array $detalle = null;
 
     public function getId(): ?int
     {
@@ -75,7 +86,9 @@ class PlanUsuario
 
     public function predefinir(): void
     {
-        $this->predefinido = true;
+        $this->getUsuario()->resetPlanes();
+        $this->setPredefinido(true);
+        
     }
 
 
@@ -142,24 +155,87 @@ class PlanUsuario
     {
         return $this->statusPlanArray()['vigente'];
     }
+
+    public function getNombre(): ?string
+    {
+        return $this->nombre;
+    }
+
+    public function setNombre(?string $nombre): static
+    {
+        $this->nombre = $nombre;
+
+        return $this;
+    }
+
+    public function getPrecio(): ?int
+    {
+        return $this->precio;
+    }
+
+    public function setPrecio(int $precio): static
+    {
+        $this->precio = $precio;
+
+        return $this;
+    }
+
+    public function getTiempo(): ?int
+    {
+        return $this->tiempo;
+    }
+
+    public function setTiempo(?int $tiempo): static
+    {
+        $this->tiempo = $tiempo;
+
+        return $this;
+    }
+
+    public function getDetalle(): ?array
+    {
+        return $this->detalle;
+    }
+
+    public function setDetalle(?array $detalle): static
+    {
+        $this->detalle = $detalle;
+
+        return $this;
+    }
+    #[ORM\PrePersist]
+    public function copiar_plan(): void
+    {
+        //si hay un plan se copia
+        if ($this->getPlan()) {
+            $this->setNombre($this->getPlan()->getNombre());
+            $this->setPrecio($this->getPlan()->getPrecio());
+            $this->setTiempo($this->getPlan()->getTiempo());
+            $this->setDetalle($this->getPlan()->getDetalle());
+            $this->setFechaInicio(new \DateTime());
+            //fecha final la sacamos con los dias que tenga el plan + la fecha de inicio
+            $this->setFechaFin((new \DateTime())->modify('+' . $this->getTiempo() . ' day'));
+        }
+    }
+
+
+
+
     public function toArray(): array
     {
         return [
             'id' => $this->getId(),
             'isActive' => $this->isActive(),
-            'isPredefinido' => $this->isPredefinido(),
             'isVigente' => $this->isVigente(),
-            'plan' => $this->getPlan() ? [
-                'id' => $this->getPlan()->getId(),
-                'nombre' => $this->getPlan()->getNombre(),
-                'precio' => $this->getPlan()->getPrecio(),
-                'tiempo' => $this->getPlan()->getTiempo(),
-                'detalle' => $this->getPlan()->getDetalle(),
-                'predefinido' => $this->isPredefinido() ? 'si' : 'no',
-                'isPredefinido' => $this->isPredefinido(),
-                'status_plan' => $this->statusPlanEstado(),
-                'dias_restantes' => $this->statusPlanDiasRestantes(),
-            ] : null,
+            'nombre' => $this->getNombre(),
+            'precio' => $this->getPrecio(),
+            'tiempo' => $this->getTiempo(),
+            'detalle' => $this->getDetalle(),
+            'predefinido' => $this->isPredefinido() ? 'si' : 'no',
+            'is_predefinido' => $this->isPredefinido(),
+            'status_plan' => $this->statusPlanEstado(),
+            'dias_restantes' => $this->statusPlanDiasRestantes(),
+            
         ];
     }
 }

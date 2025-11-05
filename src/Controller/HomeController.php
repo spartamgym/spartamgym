@@ -46,7 +46,7 @@ final class HomeController extends AbstractController
 
         //validar que venga el id
         if (!$request->request->has('id')) {
-            return new JsonResponse(['message' => 'Falta el id'], 400);
+            return new JsonResponse(['message' => 'Falta el code'], 400);
         }
         $code = $request->request->get('id');
 
@@ -57,9 +57,13 @@ final class HomeController extends AbstractController
             return new JsonResponse(["status" => "error", 'message' => 'usuario no registrado'], 200);
         }
 
+        if (!$cards->getUsuario()->isPlanVigente()) {
+            return new JsonResponse(["status" => "error", 'message' => 'usuario no tiene plan vigente o predefinido'], 200);
+        }
+
         //validar si hay una card por usuario y esta activa
-        $card = $this->cardRepository->getFirstCard();
-        if ($card->getCode() == $code) {
+
+        if ($cards->getUsuario()->hasColaCards()) {
             return new JsonResponse(["status" => "error", 'message' => 'usuario ya ingreso'], 200);
         }
 
@@ -72,21 +76,20 @@ final class HomeController extends AbstractController
             $colaCards->setCode($cards->getCode());
             $colaCards->setUsuario($cards->getUsuario());
             $this->colaCardsRepository->save($colaCards);
-        }else{
+        } else {
             return new JsonResponse(["status" => "error", 'message' => 'usuario ya ingreso'], 200);
         }
-
+        $card = $this->cardRepository->getFirstCard();
         $card->setCode($cards->getCode());
         $card->setUsuario($cards->getUsuario()->getCedula());
         $this->cardRepository->save($card, true);
-        return new JsonResponse(['status' => 'success', 'message' => 'Bienvenido al sistema '.$cards->getUsuario()->getNombre()], 200);
+        return new JsonResponse(['status' => 'success', 'message' => 'Bienvenido al sistema ' . $cards->getUsuario()->getNombre()], 200);
     }
 
 
     #[Route('/update_identificador_dash', name: 'app_home_updated_dash')]
     public function app_home_updated_dash(Request $request): JsonResponse
     {
-
         //validar que venga el id
         if (!$request->request->has('id')) {
             return new JsonResponse(['message' => 'Falta el id'], 400);
@@ -112,7 +115,7 @@ final class HomeController extends AbstractController
         return new JsonResponse(['status' => 'success', 'message' => 'Identificador verificado correctamente'], 200);
     }
 
-        #[Route('/update_identificador_dash_cedula', name: 'app_home_updated_dash_cedula')]
+    #[Route('/update_identificador_dash_cedula', name: 'app_home_updated_dash_cedula')]
     public function app_home_updated_dash_cedula(Request $request): JsonResponse
     {
 
@@ -156,11 +159,11 @@ final class HomeController extends AbstractController
                     // obtener todas las cards activas en array
                     $arrayCards = array_map(fn($c) => $c->toArray(), $this->colaCardsRepository->getAllCardsActive());
 
-               
-                    
+
+
                     $payload = $usuario instanceof Usuario
-                        ?array_merge($usuario->toArray(), ['cards' => $arrayCards])
-                        : ['cards' => $arrayCards, 'no-user'=> true];
+                        ? array_merge($usuario->toArray(), ['cards' => $arrayCards])
+                        : ['cards' => $arrayCards, 'no-user' => true];
 
                     echo "data: " . json_encode($payload) . "\n\n";
                     flush();

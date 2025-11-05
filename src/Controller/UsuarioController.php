@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\UsuarioRepository;
 use App\Repository\DatoFisicoRepository;
+use App\Repository\PlanUsuarioRepository;
 
 final class UsuarioController extends AbstractController
 {
@@ -148,5 +149,39 @@ final class UsuarioController extends AbstractController
         $usuario->unlinkCard();
         $usuarioRepository->save($usuario);
         return new JsonResponse(['status' => 'success', 'message' => 'usuario desvinculado.']);
+    }   
+
+    #[Route('/usuario/planes', name: 'app_usuario_planes')]
+    public function planes(Request $request,UsuarioRepository $usuarioRepository): JsonResponse
+    {
+        $id = $request->request->get('id');
+        $usuario = $usuarioRepository->find($id);
+        if (!$usuario instanceof \App\Entity\Usuario) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Usuario no encontrado.'], 404);
+        }
+        $planes = $usuario->getPlan();
+        $data = [];
+        foreach ($planes as $plan) {
+            $data[] = $plan->toArray();
+        }
+        return new JsonResponse($data);
+    }
+
+    #[Route('/usuario/planes/predefinir', name: 'app_usuario_plane_predefinir')]
+    public function planesId(Request $request,PlanUsuarioRepository $planesRepository): JsonResponse
+    {
+        $id = $request->request->get('id');
+        $plan = $planesRepository->find($id);
+        if (!$plan instanceof \App\Entity\PlanUsuario) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Plan no encontrado.'], 404);
+        }
+        $plan->predefinir();
+        $planesRepository->save($plan);
+        $planes = $plan->getUsuario()->getPlan();
+          $data = [];
+        foreach ($planes as $plan) {
+            $data[] = $plan->toArray();
+        }
+        return new JsonResponse($data);
     }   
 }
