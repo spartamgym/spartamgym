@@ -10,8 +10,6 @@ services:
       - app-network
     ports:
       - 80:80
-      - 8000:8000
-      - 9000:9000
   db:
     image: mariadb:10.4
     restart: unless-stopped
