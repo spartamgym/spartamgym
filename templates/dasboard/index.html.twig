@@ -294,7 +294,7 @@
 			$('#table_planes').bootstrapTable('removeAll');
 			$('#table_planes').bootstrapTable('append', planes);
 
-			const activePlans = userData.planes?.filter(p => p.isPredefinido && p.isVigente) || [];
+			const activePlans = userData.planes?.filter(p => p.is_predefinido && p.isVigente) || [];
 			const container = document.getElementById("accordionPlanes"); // puedes renombrar el id a algo como "cardPlan"
 			container.innerHTML = "";
 
