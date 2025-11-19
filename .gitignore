@@ -9,3 +9,7 @@
 /vendor/
 /docker-compose-dev.yml
 ###< symfony/framework-bundle ###
+### subur solo la imagen por defecto
+/public/img/*
+!/public/img/profile-img.jpeg
+

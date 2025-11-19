@@ -25,6 +25,8 @@ final class UsuarioController extends AbstractController
     public function registro(Request $request, UsuarioRepository $usuarioRepository): JsonResponse
     {
         $id = $request->request->get('id');
+        /** @var UploadedFile|null $imagen */
+        $img = $request->files->get('img');
         $nombre = $request->request->get('nombre');
         $cedula = $request->request->get('cedula');
         $celular = $request->request->get('celular');
@@ -60,7 +62,27 @@ final class UsuarioController extends AbstractController
         $usuario->setFechaNacimiento(new \DateTime($fecha_nacimiento));
         $usuario->setEps($eps);
         $usuario->setCorreo($correo);
-        $usuario->setImg('img/profile-img.jpeg'); // Asignar una imagen por defecto
+        if ($img) {
+            $fileName = md5(uniqid()) . '.' . $img->guessExtension();
+            $img->move(
+                $this->getParameter('kernel.project_dir') . '/public/img',
+                $fileName
+            );
+
+            //eliminar la imagen antigua
+            if ($usuario->getImg() != 'img/profile-img.jpeg' && $usuario->getImg() != null && file_exists($this->getParameter('kernel.project_dir') . '/public/' . $usuario->getImg())) {
+                unlink($this->getParameter('kernel.project_dir') . '/public/' . $usuario->getImg());
+            }
+
+            $usuario->setImg("img/".$fileName);
+        }else {
+            //validar si ya hay una imagen
+            if ($usuario->getImg()==null) {
+                  // Asignar una imagen por defecto
+                  $usuario->setImg('img/profile-img.jpeg');
+            }
+        }
+    
         $usuarioRepository->save($usuario);
 
         return new JsonResponse(['status' => 'success', 'message' => 'Registro de usuario exitoso.']);
@@ -98,11 +120,6 @@ final class UsuarioController extends AbstractController
     ): JsonResponse {
 
         $id = $request->request->get('id');
-        $usuario = $usuarioRepository->find($id);
-        if (!$usuario instanceof \App\Entity\Usuario) {
-            return new JsonResponse(['status' => 'error', 'message' => 'Usuario no encontrado.'], 404);
-        }
-
         $peso        = $request->request->get('peso');
         $altura      = $request->request->get('altura');
         $imc         = $request->request->get('imc');
@@ -118,9 +135,25 @@ final class UsuarioController extends AbstractController
             return new JsonResponse(['status' => 'error', 'message' => 'Todos los campos son obligatorios.'], 400);
         }
 
-        $datoFisico = new \App\Entity\DatoFisico();
-        $datoFisico->setColor($usuario->hasDatoFisico() ? '#0000FF' : '#FF0000');
-        $datoFisico->setUsuario($usuario);
+        if ($id > 0) {
+
+            $datoFisico = $datoFisicoRepository->find($id);
+            if (!$datoFisico instanceof \App\Entity\DatoFisico) {
+                return new JsonResponse(['status' => 'error', 'message' => 'Dato Fisico no encontrado.'], 404);
+            }
+        } else {
+            $usuario = $usuarioRepository->find($id);
+            if (!$usuario instanceof \App\Entity\Usuario) {
+                return new JsonResponse(['status' => 'error', 'message' => 'Usuario no encontrado.'], 404);
+            }
+            $datoFisico = new \App\Entity\DatoFisico();
+            $datoFisico->setColor($usuario->hasDatoFisico() ? '#0000FF' : '#FF0000');
+            $datoFisico->setUsuario($usuario);
+        }
+
+
+
+
         $datoFisico->setPeso($peso);
         $datoFisico->setAltura($altura);
         $datoFisico->setImc($imc);
@@ -139,7 +172,7 @@ final class UsuarioController extends AbstractController
     }
 
     #[Route('/usuario/desvincular', name: 'app_usuario_desvincular_card')]
-    public function desvincular(Request $request,UsuarioRepository $usuarioRepository): JsonResponse
+    public function desvincular(Request $request, UsuarioRepository $usuarioRepository): JsonResponse
     {
         $id = $request->request->get('id');
         $usuario = $usuarioRepository->find($id);
@@ -149,10 +182,10 @@ final class UsuarioController extends AbstractController
         $usuario->unlinkCard();
         $usuarioRepository->save($usuario);
         return new JsonResponse(['status' => 'success', 'message' => 'usuario desvinculado.']);
-    }   
+    }
 
     #[Route('/usuario/planes', name: 'app_usuario_planes')]
-    public function planes(Request $request,UsuarioRepository $usuarioRepository): JsonResponse
+    public function planes(Request $request, UsuarioRepository $usuarioRepository): JsonResponse
     {
         $id = $request->request->get('id');
         $usuario = $usuarioRepository->find($id);
@@ -168,7 +201,7 @@ final class UsuarioController extends AbstractController
     }
 
     #[Route('/usuario/planes/predefinir', name: 'app_usuario_plane_predefinir')]
-    public function planesId(Request $request,PlanUsuarioRepository $planesRepository): JsonResponse
+    public function planesId(Request $request, PlanUsuarioRepository $planesRepository): JsonResponse
     {
         $id = $request->request->get('id');
         $plan = $planesRepository->find($id);
@@ -178,10 +211,26 @@ final class UsuarioController extends AbstractController
         $plan->predefinir();
         $planesRepository->save($plan);
         $planes = $plan->getUsuario()->getPlan();
-          $data = [];
+        $data = [];
         foreach ($planes as $plan) {
             $data[] = $plan->toArray();
         }
         return new JsonResponse($data);
-    }   
+    }
+
+    #[Route('/usuario/medidas', name: 'app_usuario_medidas')]
+    public function medidas(Request $request, UsuarioRepository $usuarioRepository): JsonResponse
+    {
+        $id = $request->request->get('id');
+        $usuario = $usuarioRepository->find($id);
+        if (!$usuario instanceof \App\Entity\Usuario) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Usuario no encontrado.'], 404);
+        }
+        $medidas = $usuario->getDatoFisicos();
+        $data = [];
+        foreach ($medidas as $medida) {
+            $data[] = $medida->toArray();
+        }
+        return new JsonResponse($data);
+    }
 }
