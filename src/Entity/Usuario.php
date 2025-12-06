@@ -286,7 +286,7 @@ class Usuario
     public function hasColaCards(): bool
     {
         foreach ($this->colaCards as $colaCard) {
-            if ($colaCard->isActive()) {
+            if ($colaCard->isIngreso()) {
                 return true;
             }
         }

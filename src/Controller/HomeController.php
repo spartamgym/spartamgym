@@ -13,13 +13,8 @@ use App\Entity\Card;
 use App\Entity\Cards;
 use App\Repository\CardsRepository;
 use App\Repository\UsuarioRepository;
-use App\Repository\DatoFisicoRepository;
 use App\Repository\ColaCardsRepository;
 use App\Entity\Usuario;
-
-
-
-
 
 
 
@@ -30,7 +25,6 @@ final class HomeController extends AbstractController
         private CardRepository $cardRepository,
         private CardsRepository $cardsRepository,
         private UsuarioRepository $userRepository,
-        private DatoFisicoRepository $datofisicoRepository,
         private ColaCardsRepository $colaCardsRepository
     ) {}
 
@@ -38,6 +32,31 @@ final class HomeController extends AbstractController
     public function index(): Response
     {
         return $this->render('home/index.html.twig');
+    }
+    #[Route('/salida', name: 'app_salida')]
+    public function salida(): Response
+    {
+        return $this->render('home/salida.html.twig');
+    }
+
+    #[Route('/update_identificador_salida', name: 'app_update_identificador_salida')]
+    public function update_identificador_salida(Request $request): JsonResponse
+    {
+        //validar que venga el id
+        if (!$request->request->has('id')) {
+            return new JsonResponse(['message' => 'Falta el code'], 400);
+        }
+        $code = $request->request->get('id');
+
+        //buscar una colaCards por code
+        $colaCards = $this->colaCardsRepository->findOneBy(['code' => $code, 'ingreso' => 1]);
+        //si no se encuentra la colaCards se agrega
+        if (!$colaCards instanceof \App\Entity\ColaCards) {
+            return new JsonResponse(["status" => "error", 'message' => 'usuario ya salio'], 200);
+        }
+
+        $this->colaCardsRepository->save($colaCards);
+        return new JsonResponse(['status' => 'success', 'message' => 'regresa pronto' . $colaCards->getUsuario()->getNombre()], 200);
     }
 
     #[Route('/update_identificador_ingreso', name: 'app_home_updated')]
@@ -68,17 +87,17 @@ final class HomeController extends AbstractController
         }
 
         //buscar una colaCards por code
-        $colaCards = $this->colaCardsRepository->findOneBy(['code' => $code, 'active' => 1]);
-
+        $colaCards = $this->colaCardsRepository->findOneBy(['code' => $code, 'ingreso' => 1]);
         //si no se encuentra la colaCards se agrega
-        if (!$colaCards instanceof \App\Entity\ColaCards) {
-            $colaCards = new \App\Entity\ColaCards();
-            $colaCards->setCode($cards->getCode());
-            $colaCards->setUsuario($cards->getUsuario());
-            $this->colaCardsRepository->save($colaCards);
-        } else {
+        if ($colaCards instanceof \App\Entity\ColaCards) {
             return new JsonResponse(["status" => "error", 'message' => 'usuario ya ingreso'], 200);
         }
+
+        $colaCards = new \App\Entity\ColaCards();
+        $colaCards->setCode($cards->getCode());
+        $colaCards->setUsuario($cards->getUsuario());
+        $this->colaCardsRepository->save($colaCards);
+
         $card = $this->cardRepository->getFirstCard();
         $card->setCode($cards->getCode());
         $card->setUsuario($cards->getUsuario()->getCedula());

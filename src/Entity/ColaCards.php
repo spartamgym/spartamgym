@@ -22,6 +22,14 @@ class ColaCards
     #[ORM\Column(length: 255)]
     private ?string $code = null;
 
+
+    #[ORM\Column()]
+    private ?bool $ingreso = false;
+
+    #[ORM\Column()]
+    private ?bool $verificado = false;
+
+
     public function getId(): ?int
     {
         return $this->id;
@@ -48,6 +56,30 @@ class ColaCards
     {
         $this->code = $code;
 
+        return $this;
+    }
+
+    public function isVerificado(): ?bool
+    {
+        return $this->verificado;
+    }
+
+    public function setVerificado(bool $verificado): static
+    {
+        $this->verificado = $verificado;
+
+        return $this;
+    }
+
+    public function isIngreso(): ?bool
+    {
+        return $this->ingreso;
+    }
+
+    #[ORM\PrePersist]
+    public function setIngreso(): static
+    {
+        $this->ingreso = true;
         return $this;
     }
 

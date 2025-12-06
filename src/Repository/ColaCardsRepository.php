@@ -24,6 +24,6 @@ class ColaCardsRepository extends ServiceEntityRepository
 
     public function getAllCardsActive(): array
     {
-        return $this->findBy(['active' => true]);
+        return $this->findBy(['verificado' => false]);
     }
 }

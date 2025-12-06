@@ -120,6 +120,7 @@ final class UsuarioController extends AbstractController
     ): JsonResponse {
 
         $id = $request->request->get('id');
+        $id_usuario = $request->request->get('id_usuario');
         $peso        = $request->request->get('peso');
         $altura      = $request->request->get('altura');
         $imc         = $request->request->get('imc');
@@ -136,13 +137,12 @@ final class UsuarioController extends AbstractController
         }
 
         if ($id > 0) {
-
             $datoFisico = $datoFisicoRepository->find($id);
             if (!$datoFisico instanceof \App\Entity\DatoFisico) {
                 return new JsonResponse(['status' => 'error', 'message' => 'Dato Fisico no encontrado.'], 404);
             }
         } else {
-            $usuario = $usuarioRepository->find($id);
+            $usuario = $usuarioRepository->find($id_usuario);
             if (!$usuario instanceof \App\Entity\Usuario) {
                 return new JsonResponse(['status' => 'error', 'message' => 'Usuario no encontrado.'], 404);
             }
