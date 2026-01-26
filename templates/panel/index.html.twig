@@ -1,131 +1,245 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Panel de Administración
+{% block title %}Panel de Administración - SpartaMGym{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            --secondary-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --accent-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --danger-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        body {
+            background-color: #f8fafc;
+        }
+
+        .dashboard-header {
+            background: #1e293b;
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 3rem;
+            border-radius: 0 0 2rem 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-card {
+            border: none;
+            border-radius: 1.25rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .admin-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .icon-wrapper {
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .bg-gradient-blue { background: var(--primary-gradient); }
+        .bg-gradient-green { background: var(--secondary-gradient); }
+        .bg-gradient-orange { background: var(--accent-gradient); }
+        .bg-gradient-red { background: var(--danger-gradient); }
+        .bg-gradient-dark { background: linear-gradient(135deg, #334155 0%, #1e293b 100%); }
+        .bg-gradient-cyan { background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); }
+        .bg-gradient-indigo { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); }
+
+        .card-title {
+            color: #1e293b;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-text {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .nav-link-custom {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-link-custom:hover {
+            color: white;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
+    <div class="dashboard-header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-5 fw-bold mb-1">SpartaM<span class="text-primary">Gym</span></h1>
+                    <p class="lead mb-0 opacity-75">Sistema Integral de Gestión de Fitness</p>
+                </div>
+                <div class="text-end d-none d-md-block">
+                    <span class="badge bg-primary px-3 py-2 rounded-pill mb-2">Administrador</span>
+                    <div class="text-white-50 small">{{ "now"|date("d M, Y") }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-	<div class="container mt-5">
-		<div
-			class="row justify-content-center g-4">
+    <div class="container mb-5">
+        <div class="row g-4">
+            <!-- Dashboard Principal -->
+            <div class="col-md-6 col-lg-4">
+                <a href="{{ path('app_dashboard') }}" class="text-decoration-none">
+                    <div class="card admin-card p-4 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="icon-wrapper bg-gradient-blue mx-auto">
+                                <i class="bi bi-grid-1x2-fill"></i>
+                            </div>
+                            <h5 class="card-title text-uppercase letter-spacing-1">Dashboard</h5>
+                            <p class="card-text">Resumen general, métricas de rendimiento y estado del sistema.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
 
-			<!-- Card Dashboard -->
-			<div class="col-md-4">
-				<a href="{{ path('app_dashboard') }}" class="text-decoration-none">
-					<div class="card text-center shadow-sm h-100">
-						<div class="card-body">
-							<i class="bi bi-speedometer2 display-4 text-primary"></i>
-							<h5 class="card-title mt-3">Dashboard</h5>
-							<p class="card-text">Accede al panel principal</p>
-						</div>
-					</div>
-				</a>
-			</div>
+            <!-- Usuarios -->
+            <div class="col-md-6 col-lg-4">
+                <a href="{{ path('app_usuario') }}" class="text-decoration-none">
+                    <div class="card admin-card p-4 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="icon-wrapper bg-gradient-green mx-auto">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                            <h5 class="card-title text-uppercase">Clientes</h5>
+                            <p class="card-text">Gestión de base de datos, perfiles y seguimiento de socios.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
 
-			<!-- Card Usuario -->
-			<div class="col-md-4">
-				<a href="{{ path('app_usuario') }}" class="text-decoration-none">
-					<div class="card text-center shadow-sm h-100">
-						<div class="card-body">
-							<i class="bi bi-people-fill display-4 text-success"></i>
-							<h5 class="card-title mt-3">Usuarios</h5>
-							<p class="card-text">Gestión de usuarios</p>
-						</div>
-					</div>
-				</a>
-			</div>
+            <!-- Reportes -->
+            <div class="col-md-6 col-lg-4">
+                <a href="{{ path('app_informe') }}" class="text-decoration-none">
+                    <div class="card admin-card p-4 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="icon-wrapper bg-gradient-orange mx-auto">
+                                <i class="bi bi-bar-chart-line-fill"></i>
+                            </div>
+                            <h5 class="card-title text-uppercase">Analítica</h5>
+                            <p class="card-text">Informes detallados, asistencia y proyecciones financieras.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
 
-			<!-- 🔥 Ejemplo de tarjeta futura -->
-			<div class="col-md-4">
-				<a href="{{ path('app_informe') }}" class="text-decoration-none">
-					<div class="card text-center shadow-sm h-100">
-						<div class="card-body">
-							<i class="bi bi-graph-up-arrow display-4 text-warning"></i>
-							<h5 class="card-title mt-3">Reportes</h5>
-							<p class="card-text">Visualiza estadísticas</p>
-						</div>
-					</div>
-				</a>
-			</div>
+            <!-- Control de Acceso: Ingreso -->
+            <div class="col-md-6 col-lg-4">
+                <a href="{{ path('app_ingreso') }}" class="text-decoration-none">
+                    <div class="card admin-card p-4 shadow-sm border-bottom border-primary border-4">
+                        <div class="card-body text-center">
+                            <div class="icon-wrapper bg-gradient-cyan mx-auto">
+                                <i class="bi bi-box-arrow-in-right"></i>
+                            </div>
+                            <h5 class="card-title text-uppercase">Check-In</h5>
+                            <p class="card-text">Control de entrada y validación de membresías activas.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
 
-			<!-- Card Ingreso -->
-			<div class="col-md-4">
-				<a href="{{ path('app_ingreso') }}" class="text-decoration-none">
-					<div class="card text-center shadow-sm h-100">
-						<div class="card-body">
-							<i class="bi bi-box-arrow-in-right display-4 text-warning"></i>
-							<h5 class="card-title mt-3">Ingreso</h5>
-							<p class="card-text">Registrar entradas al sistema</p>
-						</div>
-					</div>
-				</a>
-			</div>
+            <!-- Control de Acceso: Salida -->
+            <div class="col-md-6 col-lg-4">
+                <a href="{{ path('app_salida') }}" class="text-decoration-none">
+                    <div class="card admin-card p-4 shadow-sm border-bottom border-primary border-4">
+                        <div class="card-body text-center">
+                            <div class="icon-wrapper bg-gradient-cyan mx-auto">
+                                <i class="bi bi-box-arrow-in-left"></i>
+                            </div>
+                            <h5 class="card-title text-uppercase">Check-Out</h5>
+                            <p class="card-text">Registro de salidas y control de aforo en tiempo real.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
 
+            <!-- Planes -->
+            <div class="col-md-6 col-lg-4">
+                <a href="{{ path('app_panel_planes') }}" class="text-decoration-none">
+                    <div class="card admin-card p-4 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="icon-wrapper bg-gradient-red mx-auto">
+                                <i class="bi bi-tags-fill"></i>
+                            </div>
+                            <h5 class="card-title text-uppercase">Membresías</h5>
+                            <p class="card-text">Configuración de paquetes, promociones y tarifas vigentes.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
 
-			<!-- Card salida -->
-			<div class="col-md-4">
-				<a href="{{ path('app_salida') }}" class="text-decoration-none">
-					<div class="card text-center shadow-sm h-100">
-						<div class="card-body">
-							<i class="bi bi-box-arrow-in-left display-4 text-warning"></i>
-							<h5 class="card-title mt-3">Salida</h5>
-							<p class="card-text">Registrar salidas del sistema</p>
-						</div>
-					</div>
-				</a>
-			</div>
+            <!-- Gestión de Hardware -->
+            <div class="col-md-6 col-lg-4">
+                <a href="{{ path('app_panel_targetas_ingreso') }}" class="text-decoration-none">
+                    <div class="card admin-card p-4 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="icon-wrapper bg-gradient-dark mx-auto">
+                                <i class="bi bi-pci-card"></i>
+                            </div>
+                            <h5 class="card-title text-uppercase">Tarjetas RFID</h5>
+                            <p class="card-text">Inventario y estado de dispositivos físicos de acceso.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
 
-			<!-- Card Planes -->
-			<div class="col-md-4">
-				<a href="{{ path('app_panel_planes') }}" class="text-decoration-none">
-					<div class="card text-center shadow-sm h-100">
-						<div class="card-body">
-							<i class="bi bi-card-list display-4 text-danger"></i>
-							<h5 class="card-title mt-3">Planes</h5>
-							<p class="card-text">Gestión de planes</p>
-						</div>
-					</div>
-				</a>
-			</div>
+            <!-- Vinculaciones -->
+            <div class="col-md-6 col-lg-4">
+                <a href="{{ path('app_panel_vincular_targeta') }}" class="text-decoration-none">
+                    <div class="card admin-card p-4 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="icon-wrapper bg-gradient-indigo mx-auto">
+                                <i class="bi bi-link-45deg"></i>
+                            </div>
+                            <h5 class="card-title text-uppercase">Asignar Acceso</h5>
+                            <p class="card-text">Vincular identificadores físicos con perfiles de usuarios.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
 
-			<!-- Card Targetas de ingreso -->
-			<div class="col-md-4">
-				<a href="{{ path('app_panel_targetas_ingreso') }}" class="text-decoration-none">
-					<div class="card text-center shadow-sm h-100">
-						<div class="card-body">
-							<i class="bi bi-credit-card-2-front-fill display-4 text-info"></i>
-							<h5 class="card-title mt-3">Tarjetas de Ingreso</h5>
-							<p class="card-text">Gestión de tarjetas de ingreso</p>
-						</div>
-					</div>
-				</a>
-			</div>
+            <!-- Inscripciones -->
+            <div class="col-md-6 col-lg-4">
+                <a href="{{ path('app_panel_vincular_usuarios_sin_plan') }}" class="text-decoration-none">
+                    <div class="card admin-card p-4 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="icon-wrapper bg-gradient-indigo mx-auto">
+                                <i class="bi bi-journal-plus"></i>
+                            </div>
+                            <h5 class="card-title text-uppercase">Inscripciones</h5>
+                            <p class="card-text">Asignar planes de entrenamiento a usuarios registrados.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
 
-			<!-- vincular targeta a usuario -->
-			<div class="col-md-4">
-				<a href="{{ path('app_panel_vincular_targeta') }}" class="text-decoration-none">
-					<div class="card text-center shadow-sm h-100">
-						<div class="card-body">
-							<i class="bi bi-link-45deg display-4 text-secondary"></i>
-							<h5 class="card-title mt-3">Vincular Tarjeta</h5>
-							<p class="card-text">Vincula tarjetas a usuarios</p>
-						</div>
-					</div>
-				</a>
-			</div>
-
-			<!-- vincular usuario a plan -->
-			<div class="col-md-4">
-				<a href="{{ path('app_panel_vincular_usuarios_sin_plan') }}" class="text-decoration-none">
-					<div class="card text-center shadow-sm h-100">
-						<div class="card-body">
-							<i class="bi bi-person-plus-fill display-4 text-dark"></i>
-							<h5 class="card-title mt-3">Vincular Usuario a Plan</h5>
-							<p class="card-text">Asocia usuarios a planes</p>
-						</div>
-					</div>
-				</a>
-			</div>
-		</div>
-	</div>
+    <footer class="text-center py-4 text-muted border-top bg-white mt-5">
+        <div class="container">
+            <small>&copy; {{ "now"|date("Y") }} SpartaMGym - Professional Fitness Management</small>
+        </div>
+    </footer>
 {% endblock %}

@@ -1,108 +1,187 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Vincular usuario a plan{% endblock %}
+{% block title %}Inscripción a Planes - SpartaMGym{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .page-header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+        }
+        .card-custom {
+            border: none;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            height: 100%;
+        }
+        .table-title {
+            font-weight: 700;
+            color: #1e293b;
+            padding: 1rem 0;
+            border-bottom: 2px solid #f1f5f9;
+            margin-bottom: 1rem;
+        }
+        .btn-action {
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .selection-panel {
+            background: #fff;
+            border-radius: 15px;
+            padding: 1.5rem;
+            position: sticky;
+            top: 100px;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-<div class="container-fluid my-4">
-
-  <div class="d-flex justify-content-between align-items-center mb-3">
-  <!-- Texto a la izquierda -->
-  <h3 class="mb-0 text-primary">Vincular usuario a un plan</h3>
-
-  <!-- Botones a la derecha -->
-  <div class="ms-auto">
-    <button id="btn-unir" class="btn btn-success btn-sm me-2">
-      <i class="bi bi-link-45deg me-1"></i>Asignar Plan
-    </button>
-    <a href="{{ path('app_panel') }}" class="btn btn-success btn-sm">
-      <i class="bi bi-card-list"></i>
-    </a>
-  </div>
-</div>
-
-  <div class="row">
-    <!-- Tabla de planes -->
-<div class="col-md-6">
-  <h5 class="text-center text-muted mb-2">Planes</h5>
-  <table id="table_planes"
-         class="table table-bordered table-hover table-sm"
-         data-url="{{ path('app_panel_planes_listar') }}"
-         data-toggle="table"
-         data-search="true"
-         data-pagination="true"
-         data-page-size="5"
-         data-page-list="[5, 10, 20, All]"
-         data-click-to-select="true"
-         data-single-select="true">
-    <thead class="table-dark">
-      <tr>
-        <th data-field="state" data-checkbox="true"></th>
-        <th data-field="id" data-sortable="true">ID</th>
-        <th data-field="nombre" data-sortable="true">Nombre</th>
-        <th data-field="precio" data-sortable="true">Precio</th>
-        <th data-field="tiempo" data-sortable="true">Tiempo</th>
-        <th data-field="detalle" data-sortable="true">Detalle</th>
-      </tr>
-    </thead>
-  </table>
-</div>
-
-
-    <!-- Tabla de Usuarios -->
-    <div class="col-md-6">
-      <h5 class="text-center text-muted mb-2">Usuarios</h5>
-      <table id="table_usuarios"
-             class="table table-bordered table-hover table-sm"
-             data-url="{{ path('app_panel_usuarios_sin_plan') }}"
-             data-toggle="table"
-             data-search="true"
-             data-pagination="true"
-             data-page-size="5"
-             data-page-list="[5, 10, 20, All]"
-             data-click-to-select="true"
-             data-single-select="true">
-        <thead class="table-dark">
-          <tr>
-            <th data-field="state" data-checkbox="true"></th>
-            <th data-field="id" data-sortable="true">ID</th>
-            <th data-field="nombre" data-sortable="true">Nombre</th>
-            <th data-field="cedula" data-sortable="true">Cédula</th>
-          </tr>
-        </thead>
-      </table>
+    <div class="page-header shadow-sm">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="fw-bold mb-0">Inscripción de Socios</h2>
+                <p class="mb-0 opacity-75">Asigna membresías activas a los usuarios registrados</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button id="btn-unir" class="btn btn-success btn-action shadow-sm">
+                    <i class="bi bi-link-45deg me-2"></i>Confirmar Inscripción
+                </button>
+                <a href="{{ path('app_panel') }}" class="btn btn-light btn-action shadow-sm">
+                    <i class="bi bi-house me-2"></i>Inicio
+                </a>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
+
+    <div class="container pb-5">
+        <div class="row g-4">
+            <!-- Columna Planes -->
+            <div class="col-lg-6">
+                <div class="card-custom p-4">
+                    <h5 class="table-title">
+                        <i class="bi bi-tags-fill me-2 text-primary"></i>1. Seleccione un Plan
+                    </h5>
+                    <table id="table_planes"
+                           class="table"
+                           data-url="{{ path('app_panel_planes_listar') }}"
+                           data-toggle="table"
+                           data-search="true"
+                           data-pagination="true"
+                           data-page-size="5"
+                           data-click-to-select="true"
+                           data-single-select="true"
+                           data-classes="table table-hover"
+                           data-header-style="headerStyle">
+                        <thead>
+                            <tr>
+                                <th data-field="state" data-checkbox="true"></th>
+                                <th data-field="nombre" data-sortable="true">Nombre</th>
+                                <th data-field="precio" data-formatter="priceFormatter">Precio</th>
+                                <th data-field="tiempo" data-align="center">Días</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Columna Usuarios -->
+            <div class="col-lg-6">
+                <div class="card-custom p-4">
+                    <h5 class="table-title">
+                        <i class="bi bi-person-check-fill me-2 text-success"></i>2. Seleccione un Usuario
+                    </h5>
+                    <table id="table_usuarios"
+                           class="table"
+                           data-url="{{ path('app_panel_usuarios_sin_plan') }}"
+                           data-toggle="table"
+                           data-search="true"
+                           data-pagination="true"
+                           data-page-size="5"
+                           data-click-to-select="true"
+                           data-single-select="true"
+                           data-classes="table table-hover"
+                           data-header-style="headerStyle">
+                        <thead>
+                            <tr>
+                                <th data-field="state" data-checkbox="true"></th>
+                                <th data-field="nombre" data-sortable="true">Nombre</th>
+                                <th data-field="cedula" data-sortable="true">Cédula</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <script>
+    function headerStyle() {
+        return { classes: 'bg-light fw-bold text-muted small text-uppercase' };
+    }
+
+    function priceFormatter(value) {
+        return '<span class="fw-bold">$' + parseInt(value).toLocaleString() + '</span>';
+    }
+
     document.getElementById('btn-unir').addEventListener('click', function() {
         const selectedUser = $('#table_usuarios').bootstrapTable('getSelections')[0];
         const selectedPlan = $('#table_planes').bootstrapTable('getSelections')[0];
     
         if (!selectedUser || !selectedPlan) {
-        Swal.fire({ title: '¡Error!', text: 'Debe seleccionar un plan y un usuario.', icon: 'error', confirmButtonText: 'Aceptar' });
-        return;
+            Swal.fire({ 
+                title: 'Selección Incompleta', 
+                text: 'Debe elegir un plan y un usuario de las tablas anteriores.', 
+                icon: 'info', 
+                confirmButtonColor: '#3b82f6' 
+            });
+            return;
         }
 
-        const formData = new FormData();
-        formData.append('id_usuario', selectedUser.id);
-        formData.append('id_plan', selectedPlan.id);
+        Swal.fire({
+            title: '¿Confirmar Inscripción?',
+            text: `Se asignará el plan "${selectedPlan.nombre}" al usuario "${selectedUser.nombre}"`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#198754',
+            confirmButtonText: 'Sí, inscribir ahora'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const formData = new FormData();
+                formData.append('id_usuario', selectedUser.id);
+                formData.append('id_plan', selectedPlan.id);
 
-
-        fetch('{{ path('app_panel_vincular_usuario_plan') }}', {
-        method: 'POST',
-        body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-        if (data.status === "success") {
-           $('#table_usuarios').bootstrapTable('refresh');        
-        } 
-            Swal.fire({ title: '¡Server!', text: data.message, icon: data.status, confirmButtonText: 'Aceptar' });
-     
-        })
-        .catch(error => {
-        console.error('Error:', error);
-     
+                fetch('{{ path('app_panel_vincular_usuario_plan') }}', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Inscrito!',
+                            text: data.message,
+                            timer: 2500
+                        });
+                        $('#table_usuarios').bootstrapTable('refresh');
+                        $('#table_usuarios').bootstrapTable('uncheckAll');
+                        $('#table_planes').bootstrapTable('uncheckAll');
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error', 'No se pudo procesar la solicitud', 'error');
+                });
+            }
         });
     }); 
 </script>

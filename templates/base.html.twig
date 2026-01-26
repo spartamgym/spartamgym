@@ -3,16 +3,49 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>
-			{% block title %}Cliente - SpartaMGym
-			{% endblock %}
+			{% block title %}SpartaMGym - Professional Fitness Management{% endblock %}
 		</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-		<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+		<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>🏋️</text></svg>">
 		{% block stylesheets %}
 			<link rel="stylesheet" href="{{asset('build/css/bootstrap.min.css')}}">
 			<link rel="stylesheet" href="{{asset('build/css/bootstrap-icons/font/bootstrap-icons.css')}}">
 			<link rel="stylesheet" href="{{asset('build/css/bootstrap-table.min.css')}}">
 			<link rel="stylesheet" href="{{asset('build/css/sweetalert2.min.css')}}">
+            <style>
+                :root {
+                    --primary-dark: #1e293b;
+                    --primary-blue: #3b82f6;
+                    --sidebar-width: 250px;
+                }
+                body {
+                    background-color: #f8fafc;
+                    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+                }
+                .navbar-custom {
+                    background-color: var(--primary-dark);
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+                .navbar-brand fw-bold {
+                    letter-spacing: -0.5px;
+                }
+                .nav-link {
+                    font-weight: 500;
+                    color: rgba(255,255,255,0.75) !important;
+                    transition: all 0.2s;
+                }
+                .nav-link:hover, .nav-link.active {
+                    color: white !important;
+                }
+                .btn-rounded {
+                    border-radius: 10px;
+                }
+                .card-custom {
+                    border: none;
+                    border-radius: 15px;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                }
+            </style>
 			<script src="{{asset('build/js/jquery.min.js')}}"></script>
 			<script src="{{asset('build/chart.js/chart.umd.js')}}"></script>
 			<script src="{{asset('build/js/utils.js')}}"></script>
@@ -20,12 +53,54 @@
 
 	</head>
 	<body>
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top py-3">
+            <div class="container">
+                <a class="navbar-brand fw-bold d-flex align-items-center" href="{{ path('app_panel') }}">
+                    <i class="bi bi-lightning-charge-fill text-primary me-2"></i>
+                    <span>SpartaM<span class="text-primary">Gym</span></span>
+                </a>
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto gap-2">
+                        <li class="nav-item">
+                            <a class="nav-link px-3" href="{{ path('app_panel') }}">
+                                <i class="bi bi-house-door me-1"></i> Inicio
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3" href="{{ path('app_dashboard') }}">
+                                <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3" href="{{ path('app_usuario') }}">
+                                <i class="bi bi-people me-1"></i> Usuarios
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle px-3" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-gear me-1"></i> Gestión
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-3" style="border-radius: 12px;">
+                                <li><a class="dropdown-item py-2" href="{{ path('app_panel_planes') }}"><i class="bi bi-tags me-2"></i> Planes</a></li>
+                                <li><a class="dropdown-item py-2" href="{{ path('app_panel_targetas_ingreso') }}"><i class="bi bi-credit-card me-2"></i> Tarjetas</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item py-2" href="{{ path('app_panel_vincular_targeta') }}"><i class="bi bi-link me-2"></i> Asignar Acceso</a></li>
+                                <li><a class="dropdown-item py-2" href="{{ path('app_panel_vincular_usuarios_sin_plan') }}"><i class="bi bi-journal-plus me-2"></i> Inscripciones</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
 		{% block body %}{% endblock %}
+
 		{% block javascripts %}
 			<script src="{{asset('build/js/bootstrap.bundle.min.js')}}"></script>
 			<script src="{{asset('build/js/bootstrap-table.min.js')}}"></script>
-
-			
 			<script src="{{asset('build/js/sweetalert2.all.min.js')}}"></script>
 		{% endblock %}
 	</body>

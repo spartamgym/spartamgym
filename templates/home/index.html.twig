@@ -1,45 +1,127 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Ingreso - SpartaMGym
+{% block title %}Control de Ingreso - SpartaMGym{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .checkin-wrapper {
+            min-height: calc(100vh - 100px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+        .checkin-card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            overflow: hidden;
+        }
+        .checkin-header {
+            background: #1e293b;
+            color: white;
+            padding: 2.5rem 2rem;
+            text-align: center;
+        }
+        .checkin-body {
+            padding: 3rem 2.5rem;
+        }
+        .form-control-lg {
+            border-radius: 12px;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+        .form-control-lg:focus {
+            border-color: #3b82f6;
+            box-shadow: none;
+        }
+        #response {
+            border-radius: 12px;
+            padding: 1rem;
+            font-weight: 600;
+            display: none;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
-	<div class="container d-flex justify-content-center align-items-center vh-100">
-		<div class="card shadow p-4 w-100" style="max-width: 400px;">
-			<h4 class="text-center mb-4">SpartamGYM</h4>
-			<form id="form">
-				<div class="mb-3">
-					<label for="idInput" class="form-label">ID - Usuario</label>
-					<input type="text" class="form-control" id="id" name="id" required>
-				</div>
-				<input type="submit" class="btn btn-primary w-100" value="Enviar">
-			</form>
-			<div id="response" class="mt-3 text-center text-success"></div>
-		</div>
-	</div>
+    <div class="checkin-wrapper">
+        <div class="checkin-card">
+            <div class="checkin-header">
+                <i class="bi bi-shield-check display-1 mb-3 text-primary"></i>
+                <h3 class="fw-bold mb-1">CONTROL DE ACCESO</h3>
+                <p class="mb-0 opacity-50 small text-uppercase fw-bold letter-spacing-1">Por favor, identifíquese</p>
+            </div>
+            
+            <div class="checkin-body">
+                <form id="form">
+                    <div class="mb-4">
+                        <label for="id" class="form-label small fw-bold text-muted text-uppercase mb-2">Código de Socio / Tarjeta</label>
+                        <input type="text" class="form-control form-control-lg shadow-sm" id="id" name="id" required autofocus autocomplete="off">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg w-100 btn-rounded fw-bold py-3 shadow-sm">
+                        REGISTRAR ENTRADA
+                    </button>
+                </form>
 
+                <div id="response" class="mt-4 text-center"></div>
+            </div>
+        </div>
+    </div>
 
 <script>
-  const form = document.getElementById('form');
-form.addEventListener('submit', async function(e) {
-   e.preventDefault();
+    const form = document.getElementById('form');
+    const responseDiv = document.getElementById('response');
 
-  
-    const formData = new FormData(e.target);
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        
+        responseDiv.style.display = 'block';
+        responseDiv.className = 'mt-4 text-center alert alert-light border text-muted animate__animated animate__fadeIn';
+        responseDiv.textContent = 'Procesando...';
 
-    try {
-        const response = await fetch("{{path('app_home_updated')}}", {
-            method: 'POST',
-            body: formData
-        });
+        try {
+            const response = await fetch("{{ path('app_home_updated') }}", {
+                method: 'POST',
+                body: formData
+            });
 
-        const data = await response.json();
-        document.getElementById('response').textContent = data.message;
-		form.reset();
-    } catch (error) {
-        console.error('Error al enviar:', error);
-        document.getElementById('response').textContent = 'Error al enviar';
-    }
-});
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                responseDiv.className = 'mt-4 text-center alert alert-success border-0 shadow-sm fw-bold';
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Bienvenido!',
+                    text: data.message,
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            } else {
+                responseDiv.className = 'mt-4 text-center alert alert-danger border-0 shadow-sm fw-bold';
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Acceso Denegado',
+                    text: data.message
+                });
+            }
+            responseDiv.textContent = data.message;
+            form.reset();
+            document.getElementById('id').focus();
+        } catch (error) {
+            console.error('Error:', error);
+            responseDiv.className = 'mt-4 text-center alert alert-warning border-0';
+            responseDiv.textContent = 'Error de conexión con el servidor';
+        }
+    });
 </script>
 {% endblock %}

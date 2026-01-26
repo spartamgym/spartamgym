@@ -1,441 +1,358 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Dashboard
+{% block title %}Dashboard en Tiempo Real - SpartaMGym{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .dashboard-top-bar {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+        .profile-header-card {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+        }
+        .profile-img-lg {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border: 4px solid rgba(255,255,255,0.2);
+            padding: 4px;
+        }
+        .nav-pills-custom .nav-link {
+            color: #64748b;
+            font-weight: 600;
+            border-radius: 10px;
+            padding: 0.75rem 1.25rem;
+            transition: all 0.2s;
+        }
+        .nav-pills-custom .nav-link.active {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+        }
+        .info-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 0.25rem;
+        }
+        .info-value {
+            color: #1e293b;
+            font-weight: 600;
+        }
+        .card-plan-active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+        }
+        .queue-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            padding: 0.35em 0.65em;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
+    <div class="dashboard-top-bar shadow-sm">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0 rounded-start-pill px-3">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
+                        <input id="input-buscar" type="text" class="form-control bg-light border-start-0 rounded-end-pill" placeholder="Buscar socio por cédula...">
+                        <button class="btn btn-primary rounded-pill ms-2 px-4 fw-bold" id="btn-buscar">BUSCAR</button>
+                        
+                        <div class="dropdown ms-3">
+                            <button class="btn btn-outline-dark rounded-pill dropdown-toggle position-relative" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-people me-1"></i> En Cola
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light" id="cola-count">0</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-2" id="lista-encola" style="width: 300px; border-radius: 15px;">
+                                <li class="dropdown-header">Socios ingresando ahora</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                    <span class="text-muted small me-3"><i class="bi bi-circle-fill text-success small me-1"></i> Sistema en línea</span>
+                    <a href="{{ path('app_panel') }}" class="btn btn-light btn-rounded shadow-sm">
+                        <i class="bi bi-grid-fill"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<section class="container-fluid">
-	<div class="row align-items-center m-0 py-4 bg-light border-bottom mb-1">
-		<!-- Columna izquierda: buscador -->
-		<div class="col-md-6">
-			<div class="input-group input-group-sm">
-				<a href="javascript:void(0)" id="btn-buscar" class="input-group-text bg-white">
-					<i class="bi bi-search"></i>
-				</a>
-				<input id="input-buscar" type="text" class="form-control" placeholder="Buscar por cedula...">
-				<div class="dropdown">
-					<a class="btn btn-primary btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-						aria-expanded="false">
-						en cola..
-					</a>
-					<ul class="dropdown-menu" id="lista-encola"></ul>
-				</div>
-			</div>
-		</div>
+    <div class="container pb-5">
+        <div class="row g-4">
+            <!-- Sidebar: Perfil Resumido -->
+            <div class="col-xl-4">
+                <div class="card profile-header-card shadow-sm mb-4">
+                    <div class="card-body text-center p-5">
+                        <img id="img-perfil" src="{{ asset('img/profile-img.jpeg') }}" alt="Socio" class="profile-img-lg rounded-circle shadow-lg mb-3">
+                        <h4 id="nombre-perfil" class="fw-bold mb-1">Cargando...</h4>
+                        <p id="cedula-badge" class="badge bg-primary-subtle text-primary rounded-pill px-3 mb-4">ID: --</p>
+                        
+                        <div id="accordionPlanes">
+                            <!-- Plan activo se carga aquí -->
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-		<!-- Columna derecha: título + botón -->
-		<div class="col-md-6 mt-3 mt-md-0">
-			<div class="d-flex justify-content-md-end align-items-center gap-2">
-				<h1 class="h5 text-primary mb-0">Bienvenido apreciado cliente</h1>
-				<a href="{{ path('app_panel') }}" class="btn btn-success btn-sm">
-					<i class="bi bi-house"></i>
-				</a>
-			</div>
-		</div>
-	</div>
+            <!-- Contenido Principal: Tabs -->
+            <div class="col-xl-8">
+                <div class="card card-custom border-0 shadow-sm overflow-hidden">
+                    <div class="card-header bg-white border-0 pt-4 px-4">
+                        <ul class="nav nav-pills nav-pills-custom gap-2" id="pills-tab" role="tablist">
+                            <li class="nav-item">
+                                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#profile-overview">
+                                    <i class="bi bi-person-vcard me-2"></i>Información
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#profile-edit">
+                                    <i class="bi bi-graph-up me-2"></i>Evolución Física
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#profile-settings">
+                                    <i class="bi bi-clock-history me-2"></i>Historial de Planes
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <div class="tab-content">
+                            <!-- Tab: Información General -->
+                            <div class="tab-pane fade show active" id="profile-overview">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="p-3 bg-light rounded-4 h-100">
+                                            <div class="info-label">Nombre Completo</div>
+                                            <div class="info-value h5 mb-0" id="nombre">--</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-3 bg-light rounded-4 h-100">
+                                            <div class="info-label">Contacto / WhatsApp</div>
+                                            <div class="info-value h5 mb-0" id="celular">--</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="p-3 bg-light rounded-4 h-100">
+                                            <div class="info-label">Dirección</div>
+                                            <div class="info-value mb-0" id="direccion">--</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="p-3 bg-light rounded-4 h-100">
+                                            <div class="info-label">Fecha Nacimiento</div>
+                                            <div class="info-value mb-0" id="fecha_nacimiento">--</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="p-3 bg-light rounded-4 h-100">
+                                            <div class="info-label">Seguridad Social (EPS)</div>
+                                            <div class="info-value mb-0" id="eps">--</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="p-3 bg-light rounded-4 h-100">
+                                            <div class="info-label">Email</div>
+                                            <div class="info-value mb-0 small" id="correo">--</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
+                            <!-- Tab: Gráfico y Tabla de Medidas -->
+                            <div class="tab-pane fade" id="profile-edit">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-6">
+                                        <div class="p-3">
+                                            <canvas id="radarMedidas"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-hover" id="table_menu" data-toggle="table">
+                                                <thead class="small text-uppercase text-muted bg-light">
+                                                    <tr>
+                                                        <th data-field="createAt" data-formatter="dateFormatter">Fecha</th>
+                                                        <th data-field="peso">Peso</th>
+                                                        <th data-field="imc">IMC</th>
+                                                        <th data-field="cintura">Cint.</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-	<div class="row">
-		<div class="col-xl-4">
-			<!-- Tarjeta de perfil -->
-			<div class="card shadow-sm border-0 rounded-4 mb-3">
-				<div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
-					<div class="position-relative">
-						<img id="img-perfil" src="img/profile-img.jpeg" alt="Profile"
-							class="rounded-circle img-fluid border border-3 border-white shadow"
-							style="width: 150px; aspect-ratio: 1 / 1; object-fit: cover;">
-					</div>
-					<h2 id="nombre-perfil" class="mt-3 h5 fw-bold text-dark"></h2>
-					<span class="text-muted small"></span>
-				</div>
-			</div>
-
-			<!-- Tarjetas de plan -->
-			<div class="accordion" id="accordionPlanes"></div>
-
-		</div>
-
-		<div class="col-xl-8">
-			<div class="card shadow-sm border-0 rounded-4">
-				<div class="card-body pt-3">
-					<!-- Tabs -->
-					<ul class="nav nav-tabs nav-tabs-bordered mb-3">
-						<li class="nav-item">
-							<button class="nav-link active fw-semibold" data-bs-toggle="tab"
-								data-bs-target="#profile-overview">
-								<i class="bi bi-person-lines-fill me-1"></i>
-								Datos Personales
-							</button>
-						</li>
-						<li class="nav-item">
-							<button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#profile-edit">
-								<i class="bi bi-activity me-1"></i>
-								Datos Físicos
-							</button>
-						</li>
-						<li class="nav-item">
-							<button class="nav-link fw-semibold" data-bs-toggle="tab"
-								data-bs-target="#profile-settings">
-								<i class="bi bi-card-checklist me-1"></i>
-								Plan
-							</button>
-						</li>
-					</ul>
-
-					<div class="tab-content pt-2">
-						<!-- Datos Personales -->
-						<div class="tab-pane fade show active profile-overview" id="profile-overview">
-							<div class="card shadow-sm rounded-4 border-0">
-								<div class="card-body">
-									<h5 class="card-title text-primary fw-bold mb-4">
-										<i class="bi bi-person-circle me-2"></i>
-										Perfil del Usuario
-									</h5>
-
-									<!-- Fila -->
-									<div class="row mb-3">
-										<div class="col-lg-3 col-md-4 fw-semibold text-muted">Nombre</div>
-										<div class="col-lg-9 col-md-8 border-bottom pb-2" id="nombre"></div>
-									</div>
-
-									<div class="row mb-3">
-										<div class="col-lg-3 col-md-4 fw-semibold text-muted">WhatsApp</div>
-										<div class="col-lg-9 col-md-8 border-bottom pb-2" id="celular"></div>
-									</div>
-
-									<div class="row mb-3">
-										<div class="col-lg-3 col-md-4 fw-semibold text-muted">Cédula</div>
-										<div class="col-lg-9 col-md-8 border-bottom pb-2" id="cedula"></div>
-									</div>
-
-									<div class="row mb-3">
-										<div class="col-lg-3 col-md-4 fw-semibold text-muted">Dirección</div>
-										<div class="col-lg-9 col-md-8 border-bottom pb-2" id="direccion"></div>
-									</div>
-
-									<div class="row mb-3">
-										<div class="col-lg-3 col-md-4 fw-semibold text-muted">Cumpleaños</div>
-										<div class="col-lg-9 col-md-8 border-bottom pb-2" id="fecha_nacimiento"></div>
-									</div>
-
-									<div class="row mb-3">
-										<div class="col-lg-3 col-md-4 fw-semibold text-muted">EPS</div>
-										<div class="col-lg-9 col-md-8 border-bottom pb-2" id="eps"></div>
-									</div>
-
-									<div class="row mb-3">
-										<div class="col-lg-3 col-md-4 fw-semibold text-muted">Email</div>
-										<div class="col-lg-9 col-md-8" id="correo"></div>
-									</div>
-								</div>
-							</div>
-						</div>
-
-						<!-- Datos Físicos -->
-						<div class="tab-pane fade profile-edit pt-3" id="profile-edit">
-							<div class="d-flex justify-content-center mb-4">
-								<div class="card shadow-sm border-0 rounded-4 p-3" style="max-width:480px; width:100%;">
-									<canvas id="radarMedidas"></canvas>
-								</div>
-							</div>
-
-							<div class="card shadow-sm border-0 rounded-4">
-								<div class="card-body">
-									<table class="table table-sm table-hover align-middle text-center" id="table_menu"
-										data-toggle="table">
-										<thead class="table-dark small">
-											<tr>
-												<th colspan="11" class="text-center">Datos</th>
-											</tr>
-											<tr>
-												<th data-field="id" data-formatter="smallFormatter">ID</th>
-												<th data-field="peso" data-formatter="smallFormatter">Peso (Kg)</th>
-												<th data-field="cintura" data-formatter="smallFormatter">Cintura (cm)
-												</th>
-												<th data-field="gluteos" data-formatter="smallFormatter">Glúteos (cm)
-												</th>
-												<th data-field="brazo" data-formatter="smallFormatter">Brazo (cm)</th>
-												<th data-field="pecho" data-formatter="smallFormatter">Pecho (cm)</th>
-												<th data-field="pierna" data-formatter="smallFormatter">Pierna (cm)</th>
-												<th data-field="pantorrilla" data-formatter="smallFormatter">Pantorrilla
-													(cm)</th>
-												<th data-field="altura" data-formatter="smallFormatter">Altura (cm)</th>
-												<th data-field="imc" data-formatter="smallFormatter">IMC</th>
-												<th data-field="createAt" data-formatter="smallFormatter">Creado</th>
-											</tr>
-										</thead>
-									</table>
-
-
-								</div>
-							</div>
-						</div>
-
-						<!-- Plan -->
-						<div class="tab-pane fade pt-3" id="profile-settings">
-							<div class="card shadow-sm border-0 rounded-4">
-								<div class="card-body">
-									<table class="table table-sm table-hover align-middle" id="table_planes"
-										data-toggle="table">
-										<thead class="table-dark">
-											<tr>
-												<th colspan="7" class="text-center">Planes</th>
-											</tr>
-											<tr>
-												<th data-field="nombre" class="text-start">Plan</th>
-												<th data-field="precio" class="text-center">Precio</th>
-												<th data-field="tiempo" class="text-center">Duración</th>
-
-												<th data-field="dias_restantes" class="text-center">Días restantes</th>
-												<th data-field="detalle" class="text-start">Beneficios</th>
-												<th data-field="predefinido" class="text-center">Predefinido</th>
-												<th data-field="status_plan" data-formatter="activoFormatter"
-													class="text-center">Status</th>
-											</tr>
-										</thead>
-									</table>
-
-								</div>
-							</div>
-						</div>
-					</div>
-					<!-- End Tab Content -->
-				</div>
-			</div>
-		</div>
-
-	</div>
-</section>
-
+                            <!-- Tab: Planes -->
+                            <div class="tab-pane fade" id="profile-settings">
+                                <table class="table" id="table_planes" data-toggle="table" data-classes="table table-hover">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th data-field="nombre">Plan</th>
+                                            <th data-field="precio" data-formatter="priceFormatter">Precio</th>
+                                            <th data-field="dias_restantes">Días</th>
+                                            <th data-field="status_plan" data-formatter="activoFormatter" data-align="center">Estado</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 <script>
 	const imgPerfil = document.getElementById('img-perfil');
 	const nombrePerfil = document.getElementById('nombre-perfil');
-	// establecer todos los elementos getbyId en variables
-
-
-	// Configura la conexión SSE
-	const eventSource = new EventSource('/sse');
-
-	eventSource.onopen = () => {
-		console.log('Conexión SSE abierta');
-	};
+    const eventSource = new EventSource('/sse');
 
 	eventSource.onmessage = (event) => {
-		try { // Procesa los datos recibidos
+		try {
 			const userData = JSON.parse(event.data);
-			console.log(userData);
-			// Recorrer y crear items
+			
 			const listaEncola = document.getElementById("lista-encola");
-			listaEncola.innerHTML = "";			
-			userData.cards.forEach(({ code, usuario }) => {
+            const colaCount = document.getElementById("cola-count");
+			listaEncola.innerHTML = '<li class="dropdown-header text-uppercase fw-bold small">Últimos ingresos</li>';			
+			
+            userData.cards.forEach(({ code, usuario }) => {
 			  	const li = document.createElement("li");
-			  	li.className = "dropdown-item d-flex justify-content-between align-items-center";
-
-			  	const span = document.createElement("span");
-			  	span.className = "mx-2";
-			  	span.innerHTML = `<p class="text-muted small m-0">- Card: ${code} - Nombre: ${usuario.nombre} - Cédula: ${usuario.cedula} - Celular: ${usuario.celular}</p>`;
-
-			  	const icon = document.createElement("i");
-			  	icon.className = "bi bi-eye text-primary";
-			  	icon.style.cursor = "pointer";
-			  	icon.onclick = () => enviarLista(code);
-
-			  	li.append(span, icon);
+			  	li.className = "dropdown-item d-flex justify-content-between align-items-center py-2 border-bottom border-light";
+			  	li.innerHTML = `
+                    <div class="me-3">
+                        <div class="fw-bold small text-dark">${usuario.nombre}</div>
+                        <div class="text-muted" style="font-size: 0.7rem;">Cédula: ${usuario.cedula}</div>
+                    </div>
+                    <button class="btn btn-sm btn-light border" onclick="enviarLista('${code}')">
+                        <i class="bi bi-eye-fill text-primary"></i>
+                    </button>`;
 			  	listaEncola.appendChild(li);
 			});
-			// si solo existe la key cards
+            colaCount.textContent = userData.cards.length;
+
 			if (userData.hasOwnProperty('no-user')) {
-				Swal.fire({ title: 'Atención', text: 'Usiaio no existe', icon: 'warning', confirmButtonText: 'Ver' })
-				return
+				Swal.fire({ icon: 'warning', title: 'Tarjeta no vinculada', text: 'El identificador detectado no tiene un usuario asignado.', timer: 3000 });
+				return;
 			}
 
-
-			// cargar datos de perfil
-			imgPerfil.src = userData.img;
+			// Cargar perfil
+			imgPerfil.src = userData.img || '{{ asset('img/profile-img.jpeg') }}';
 			nombrePerfil.textContent = userData.nombre;
+            document.getElementById('cedula-badge').textContent = 'ID: ' + userData.cedula;
 			document.getElementById('nombre').textContent = userData.nombre;
 			document.getElementById('celular').textContent = userData.celular;
-			document.getElementById('cedula').textContent = userData.cedula;
 			document.getElementById('direccion').textContent = userData.direccion;
 			document.getElementById('fecha_nacimiento').textContent = userData.fecha_nacimiento;
 			document.getElementById('eps').textContent = userData.eps;
 			document.getElementById('correo').textContent = userData.correo;
 
-			// cargar datos de medidas en grafica
-
 			if (userData.datofisicos.length > 0) {
 				crearOActualizarGrafica(userData.datofisicos);
 			}
 
-			// cargar datos fisicos en la tabla
-			$('#table_menu').bootstrapTable('removeAll');
-			$('#table_menu').bootstrapTable('append', userData.datofisicos);
-
+			$('#table_menu').bootstrapTable('load', userData.datofisicos);
 
 			const planes = userData.planes.map(item => ({
 				...item,
 				detalle: item.detalle.join(",")
 			}));
 
-			console.log(planes);
-
-			// Inicializar tabla con planes
-			$('#table_planes').bootstrapTable('removeAll');
-			$('#table_planes').bootstrapTable('append', planes);
+			$('#table_planes').bootstrapTable('load', planes);
 
 			const activePlans = userData.planes?.filter(p => p.is_predefinido && p.isVigente) || [];
-			const container = document.getElementById("accordionPlanes"); // o "cardPlan"
-			container.innerHTML = "";
+			const container = document.getElementById("accordionPlanes");
 			
 			if (activePlans.length === 0) {
 			  container.innerHTML = `
-			    <div class="card shadow-sm border-0 rounded-4">
-			      <div class="card-body text-center">
-			        <h5 class="card-title text-uppercase text-secondary fw-semibold mb-3">
-			          Sin plan vigente o predefinido
-			        </h5>
-			        <h3 class="my-3 text-success fw-bold">$0.00 COP</h3>
-			        <p class="text-muted">No tienes planes vigentes o predefinidos actualmente.</p>
-			      </div>
-			    </div>`;
-			  return;
-			}
-			
-			// Mostrar primer plan activo
-			const { nombre, precio, detalle } = activePlans[0];
-			
-			const beneficios = detalle.map(b => `
-			  <li class="list-group-item">
-			    <i class="bi bi-check-circle text-success"></i> ${b}
-			  </li>`).join("");
-			
-			container.innerHTML = `
-			  <div class="card shadow-sm border-0 rounded-4">
-			    <div class="card-body text-center">
-			      <h5 class="card-title text-uppercase text-secondary fw-semibold mb-3">${nombre}</h5>
-			      <h3 class="my-3 text-success fw-bold">$${Number(precio).toFixed(2)} COP</h3>
-			      <ul class="list-group list-group-flush text-start small">
-			        ${beneficios}
-			      </ul>
-			    </div>
-			  </div>`;
-			
+                <div class="card card-plan-active bg-danger shadow-sm mt-3">
+                    <div class="card-body p-3">
+                        <h6 class="text-uppercase fw-bold small opacity-75 mb-1">Estado de Membresía</h6>
+                        <div class="h5 mb-0">INACTIVO / SIN PLAN</div>
+                    </div>
+                </div>`;
+			} else {
+                const { nombre, precio } = activePlans[0];
+                container.innerHTML = `
+                    <div class="card card-plan-active shadow-sm mt-3">
+                        <div class="card-body p-3 text-start">
+                            <h6 class="text-uppercase fw-bold small opacity-75 mb-1">Membresía Vigente</h6>
+                            <div class="h5 mb-0">${nombre}</div>
+                            <div class="small opacity-75 mt-1">$${Number(precio).toLocaleString()} COP</div>
+                        </div>
+                    </div>`;
+            }
 
-		} catch (e) {
-			console.log('Error al parsear datos SSE:', e);
-		}
+		} catch (e) { console.error('Error SSE:', e); }
 	};
 
-	eventSource.onerror = (error) => {
-		console.log('Error SSE:', error.message);
-		// El navegador intentará reconectar automáticamente
-	};
-
-	eventSource.onclose = () => {
-		console.log('Conexión SSE cerrada');
-	};
-
-
-	// // Gráfico de Araña para Datos Físicos Función para crear o actualizar el gráfico
 	let radarChart = null;
 	function crearOActualizarGrafica(datos) {
-		const labels = [
-			'Peso Kg',
-			'Cintura cm',
-			'Glúteos cm',
-			'Brazo cm',
-			'Pecho cm',
-			'Pierna cm',
-			'Pantorrilla cm',
-			'Altura cm',
-			'IMC'
-		];
-
-		const datasets = datos.map(d => ({
-			label: `Mediciones (${new Date(d.createAt).toISOString().split('T')[0]
-				})`,
-			data: [
-				d.peso,
-				d.cintura,
-				d.gluteos,
-				d.brazo,
-				d.pecho,
-				d.pierna,
-				d.pantorrilla,
-				d.altura,
-				d.imc
-			],
+		const labels = ['Peso', 'Cintura', 'Glúteos', 'Brazo', 'Pecho', 'Pierna', 'Pantorrilla', 'Altura', 'IMC'];
+		const datasets = datos.slice(-3).map(d => ({ // Mostrar solo las últimas 3 mediciones
+			label: new Date(d.createAt).toLocaleDateString(),
+			data: [d.peso, d.cintura, d.gluteos, d.brazo, d.pecho, d.pierna, d.pantorrilla, d.altura, d.imc],
 			fill: true,
-			borderColor: d.color
+            backgroundColor: d.color ? d.color + '33' : 'rgba(59, 130, 246, 0.2)',
+			borderColor: d.color || '#3b82f6'
 		}));
 
-		// ✅ Verificar si ya existe un gráfico en este canvas
-		if (radarChart) { // Solo actualizamos los datos
-			radarChart.data.labels = labels;
+		if (radarChart) {
 			radarChart.data.datasets = datasets;
 			radarChart.update();
-			return
-		}
-		const ctx = document.getElementById('radarMedidas').getContext('2d');
-		// Si no existe, lo creamos
-		radarChart = new Chart(ctx, {
-			type: 'radar',
-			data: {
-				labels: labels,
-				datasets: datasets
-			},
-			options: {
-				responsive: true,
-				plugins: {
-					title: {
-						display: true,
-						text: 'Gráfico de Araña - Medidas Corporales'
-					}
-				},
-				scales: {
-					r: {
-						beginAtZero: true
-					}
-				}
-			}
-		});
-	}
-	// Buscador
-	document.getElementById('btn-buscar').addEventListener('click', async () => {
-		const query = document.getElementById('input-buscar').value.toLowerCase();
-		if (!query) {
 			return;
 		}
+		const ctx = document.getElementById('radarMedidas').getContext('2d');
+		radarChart = new Chart(ctx, {
+			type: 'radar',
+			data: { labels, datasets },
+			options: { 
+                responsive: true,
+                scales: { r: { beginAtZero: true, grid: { color: '#e2e8f0' } } },
+                plugins: { legend: { position: 'bottom' } }
+            }
+		});
+	}
+
+	document.getElementById('btn-buscar').addEventListener('click', async () => {
+		const query = document.getElementById('input-buscar').value;
+		if (!query) return;
 		const formData = new FormData();
 		formData.append('id', query);
 		await enviarDatos("{{ path('app_home_updated_dash_cedula') }}", formData);
 	});
 
-	// Funciones para formatear datos en la tabla
-	function smallFormatter(value, row, index) {
-		return '<span class="small">' + (
-			value ?? ''
-		) + '</span>';
+    function priceFormatter(value) { return '$' + Number(value).toLocaleString(); }
+    function dateFormatter(value) { return new Date(value).toLocaleDateString(); }
+	function activoFormatter(value) {
+		return value === 'vigente' ? '<span class="text-success fw-bold">Vigente</span>' : '<span class="text-danger fw-bold">Vencido</span>';
 	}
 
-	// Función para formatear el campo isActive
-	function activoFormatter(value, row, index) {
-		if (value == 'vigente') {
-			return '<span class="text-success"><i class="bi bi-check-circle-fill"></i>Vigente</span>';
-		} else {
-			return '<span class="text-danger"><i class="bi bi-x-circle-fill"></i>Vencido</span>';
-		}
-	}
-
-
-	// ⚡ renombrar la función para evitar conflicto con la variable
 	async function enviarLista(code) {
 		const formData = new FormData();
 		formData.append('id', code);
 		await enviarDatos("{{ path('app_home_updated_dash') }}", formData);
 	}
 </script>
-
 {% endblock %}

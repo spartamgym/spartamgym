@@ -162,35 +162,47 @@ final class HomeController extends AbstractController
     #[Route('/sse', name: 'sse')]
     public function sse(): StreamedResponse
     {
-        return new StreamedResponse(function () {
-            // 🔧 Headers SSE
-            header('Content-Type: text/event-stream');
-            header('Cache-Control: no-cache');
-            header('Connection: keep-alive');
+        $response = new StreamedResponse(function () {
             $ultimoId = null;
-            while (true) {
-                // limpiar el EM para evitar cacheo
+            
+            // Bucle limitado para evitar bloqueos perpetuos si algo falla
+            for ($i = 0; $i < 600; $i++) { // Max 10 minutos por conexión
+                // Limpiar el EM para obtener datos frescos de la DB
                 $this->cardRepository->clear();
                 $card = $this->cardRepository->getLastCard();
+
                 if ($card instanceof Card && $card->getCode() !== $ultimoId) {
-                    // buscar usuario por cédula
                     $usuario = $this->userRepository->findOneBy(['cedula' => $card->getUsuario()]);
-                    // obtener todas las cards activas en array
                     $arrayCards = array_map(fn($c) => $c->toArray(), $this->colaCardsRepository->getAllCardsActive());
-
-
 
                     $payload = $usuario instanceof Usuario
                         ? array_merge($usuario->toArray(), ['cards' => $arrayCards])
                         : ['cards' => $arrayCards, 'no-user' => true];
 
                     echo "data: " . json_encode($payload) . "\n\n";
+                    ob_flush();
                     flush();
                     $ultimoId = $card->getCode();
+                } else {
+                    // Si no hay tarjeta o es la misma, enviamos un keep-alive opcional o simplemente esperamos
+                    echo ": keep-alive\n\n";
+                    ob_flush();
+                    flush();
                 }
 
-                sleep(1);
+                if (connection_aborted()) {
+                    break;
+                }
+
+                sleep(2); // Aumentamos un poco el delay para reducir carga
             }
         });
+
+        $response->headers->set('Content-Type', 'text/event-stream');
+        $response->headers->set('Cache-Control', 'no-cache');
+        $response->headers->set('Connection', 'keep-alive');
+        $response->headers->set('X-Accel-Buffering', 'no'); // Desactivar buffering en proxies
+
+        return $response;
     }
 }
