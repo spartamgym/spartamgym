@@ -169,7 +169,7 @@ final class HomeController extends AbstractController
             for ($i = 0; $i < 600; $i++) { // Max 10 minutos por conexión
                 // Limpiar el EM para obtener datos frescos de la DB
                 $this->cardRepository->clear();
-                $card = $this->cardRepository->getLastCard();
+                $card = $this->cardRepository->getFirstCard();
 
                 if ($card instanceof Card && $card->getCode() !== $ultimoId) {
                     $usuario = $this->userRepository->findOneBy(['cedula' => $card->getUsuario()]);

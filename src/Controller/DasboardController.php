@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class DasboardController extends AbstractController
@@ -13,6 +14,4 @@ final class DasboardController extends AbstractController
     {
         return $this->render('dasboard/index.html.twig');
     }
-
-    
 }
