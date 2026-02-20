@@ -15,6 +15,7 @@ final class DashboardRealtimePublisher
     public function __construct(
         private HubInterface $hub,
         private ColaCardsRepository $colaCardsRepository,
+        private ReferenciaCorporalAutomaticaService $referenciaCorporalAutomaticaService,
         private LoggerInterface $logger
     ) {}
 
@@ -39,6 +40,10 @@ final class DashboardRealtimePublisher
 
     public function publishUserSelected(?Usuario $usuario, string $origin = 'system'): void
     {
+        if ($usuario instanceof Usuario) {
+            $this->referenciaCorporalAutomaticaService->ensureActiveFromUsuario($usuario);
+        }
+
         $payload = [
             'type' => 'user.selected',
             'origin' => $origin,

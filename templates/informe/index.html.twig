@@ -6,37 +6,48 @@
     {{ parent() }}
     <style>
         .page-header {
-            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
             color: white;
-            padding: 2rem 0;
+            padding: 2.2rem 0;
             margin-bottom: 2rem;
-            border-radius: 0 0 20px 20px;
+            border-radius: 0 0 26px 26px;
+            box-shadow: 0 28px 48px -36px rgba(15, 23, 42, 0.9);
         }
         .stats-card {
-            border: none;
-            border-radius: 15px;
-            transition: transform 0.3s;
+            border-radius: 18px;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         .stats-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-6px);
+            box-shadow: 0 22px 30px -26px rgba(15, 23, 42, 0.9);
+        }
+        .card {
+            border: 1px solid #dbe6f4;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.92);
+        }
+        .table {
+            font-size: 0.84rem;
+        }
+        .table > :not(caption) > * > * {
+            padding: 0.44rem 0.5rem;
+            white-space: nowrap;
         }
     </style>
 {% endblock %}
 
 {% block body %}
     <div class="page-header shadow-sm">
-        <div class="container d-flex justify-content-between align-items-center">
+        <div class="container-fluid px-3 px-lg-4 d-flex justify-content-between align-items-center">
             <div>
                 <h2 class="fw-bold mb-0">Reportes y Estadísticas</h2>
                 <p class="mb-0 opacity-75">Visualiza el rendimiento y métricas de tu gimnasio</p>
             </div>
-            <a href="{{ path('app_panel') }}" class="btn btn-light btn-rounded shadow-sm">
-                <i class="bi bi-house me-2"></i>Inicio
-            </a>
         </div>
     </div>
 
-    <div class="container pb-5">
+    <div class="container-fluid px-3 px-lg-4 pb-5">
         <div class="row g-4">
             <!-- Gráficos Principales -->
             <div class="col-lg-8">
@@ -48,14 +59,14 @@
                     </div>
                 </div>
 
-                <!-- Top Usuarios -->
+                <!-- Top socios -->
                 <div class="card card-custom p-4 shadow-sm">
-                    <h5 class="fw-bold mb-4 text-dark"><i class="bi bi-trophy me-2 text-warning"></i>Mejores Clientes</h5>
+                    <h5 class="fw-bold mb-4 text-dark"><i class="bi bi-trophy me-2 text-warning"></i>Socios destacados</h5>
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle">
+                        <table class="table table-sm table-hover align-middle">
                             <thead class="bg-light">
                                 <tr>
-                                    <th class="border-0">Usuario</th>
+                                    <th class="border-0">Socio</th>
                                     <th class="border-0 text-center">Planes</th>
                                     <th class="border-0 text-end">Total Invertido</th>
                                 </tr>
@@ -72,6 +83,30 @@
                                 {% endfor %}
                             </tbody>
                         </table>
+                    </div>
+                </div>
+
+                <div class="card card-custom p-4 shadow-sm mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-clock-history me-2 text-info"></i>Flujo horario de acceso</h5>
+                        <small class="text-muted">Histórico de ingresos y salidas</small>
+                    </div>
+                    <div style="height: 300px;">
+                        <canvas id="flujoHorarioChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card card-custom p-4 shadow-sm mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                        <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-gender-ambiguous me-2 text-primary"></i>Ingresos por hora según sexo</h5>
+                        <small class="text-muted">
+                            Pico mujeres: {{ access_gender_peaks.femenino ?? '--' }}
+                            |
+                            Pico hombres: {{ access_gender_peaks.masculino ?? '--' }}
+                        </small>
+                    </div>
+                    <div style="height: 320px;">
+                        <canvas id="ingresosSexoHoraChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -134,6 +169,8 @@
             // Datos desde el controlador
             const ingresosData = {{ ingresos_chart|json_encode|raw }};
             const planesStats = {{ planes_stats|json_encode|raw }};
+            const accessHourlyData = {{ access_hourly_chart|json_encode|raw }};
+            const accessGenderHourlyData = {{ access_gender_hourly_chart|json_encode|raw }};
 
             // Gráfico de Ingresos (Línea)
             const ctxIngresos = document.getElementById('ingresosChart').getContext('2d');
@@ -177,6 +214,93 @@
                         },
                         x: {
                             grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de flujo horario (Ingresos vs Salidas)
+            const ctxFlujoHorario = document.getElementById('flujoHorarioChart').getContext('2d');
+            new Chart(ctxFlujoHorario, {
+                type: 'line',
+                data: {
+                    labels: accessHourlyData.labels,
+                    datasets: [
+                        {
+                            label: 'Ingresos',
+                            data: accessHourlyData.ingresos,
+                            borderColor: '#0ea5e9',
+                            backgroundColor: 'rgba(14, 165, 233, 0.12)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Salidas',
+                            data: accessHourlyData.salidas,
+                            borderColor: '#f97316',
+                            backgroundColor: 'rgba(249, 115, 22, 0.12)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de ingresos por hora segmentado por sexo
+            const ctxSexoHora = document.getElementById('ingresosSexoHoraChart').getContext('2d');
+            new Chart(ctxSexoHora, {
+                type: 'bar',
+                data: {
+                    labels: accessGenderHourlyData.labels,
+                    datasets: [
+                        {
+                            label: 'Mujeres',
+                            data: accessGenderHourlyData.femenino,
+                            backgroundColor: 'rgba(236, 72, 153, 0.75)',
+                            borderColor: '#db2777',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Hombres',
+                            data: accessGenderHourlyData.masculino,
+                            backgroundColor: 'rgba(59, 130, 246, 0.75)',
+                            borderColor: '#2563eb',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Otro / Sin dato',
+                            data: accessGenderHourlyData.otro,
+                            backgroundColor: 'rgba(148, 163, 184, 0.75)',
+                            borderColor: '#64748b',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
                         }
                     }
                 }

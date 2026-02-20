@@ -80,6 +80,24 @@ final class PanelController extends AbstractController
         return new JsonResponse($data);
     }
 
+    #[Route('/panel/planes/eliminar', name: 'app_panel_planes_eliminar', methods: ['POST'])]
+    public function eliminarPlan(Request $request, PlanRepository $planRepository): JsonResponse
+    {
+        $id = (int) $request->request->get('id', 0);
+        if ($id <= 0) {
+            return new JsonResponse(['status' => 'error', 'message' => 'ID de plan inválido.'], 400);
+        }
+
+        $plan = $planRepository->find($id);
+        if (!$plan instanceof \App\Entity\Plan) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Plan no encontrado.'], 404);
+        }
+
+        $planRepository->remove($plan);
+
+        return new JsonResponse(['status' => 'success', 'message' => 'Plan eliminado correctamente.']);
+    }
+
     #[Route('/panel/targetas_ingreso', name: 'app_panel_targetas_ingreso')]
     public function targetasIngreso(): Response
     {
@@ -140,6 +158,31 @@ final class PanelController extends AbstractController
             ];
         }
         return new JsonResponse($data);
+    }
+
+    #[Route('/panel/targeta/eliminar', name: 'app_panel_eliminar_targeta', methods: ['POST'])]
+    public function eliminarTargeta(Request $request, CardsRepository $cardsRepository): JsonResponse
+    {
+        $id = (int) $request->request->get('id', 0);
+        if ($id <= 0) {
+            return new JsonResponse(['status' => 'error', 'message' => 'ID de tarjeta inválido.'], 400);
+        }
+
+        $card = $cardsRepository->find($id);
+        if (!$card instanceof \App\Entity\Cards) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Tarjeta no encontrada.'], 404);
+        }
+
+        if ($card->getUsuario() !== null) {
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => 'No se puede eliminar una tarjeta vinculada. Primero desvincúlala del usuario.'
+            ], 409);
+        }
+
+        $cardsRepository->remove($card);
+
+        return new JsonResponse(['status' => 'success', 'message' => 'Tarjeta eliminada correctamente.']);
     }
 
     #[Route('/panel/vincular_targeta', name: 'app_panel_vincular_targeta')]
@@ -216,24 +259,49 @@ final class PanelController extends AbstractController
     #[Route('/panel/listar_usuario_sin_plan', name: 'app_panel_usuarios_sin_plan')]
     public function usuariosSinPlan(UsuarioRepository $usuarioRepository): JsonResponse
     {
-        $usuarios = array_filter(
-            $usuarioRepository->findAll(),
-            static function ($usuario): bool {
-                foreach ($usuario->getPlan() as $planUsuario) {
-                    if (in_array($planUsuario->statusPlanEstado(), ['vigente', 'programado'], true)) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        );
+        $usuarios = $usuarioRepository->findAll();
 
         $data = [];
         foreach ($usuarios as $usuario) {
+            $estadoPlan = 'sin_plan';
+            $estadoPlanLabel = 'Sin plan';
+            $planBloqueado = false;
+            $hasVencido = false;
+            $hasProgramado = false;
+
+            foreach ($usuario->getPlan() as $planUsuario) {
+                $estado = $planUsuario->statusPlanEstado();
+                if ($estado === 'vigente') {
+                    $estadoPlan = 'vigente';
+                    $estadoPlanLabel = 'Vigente';
+                    $planBloqueado = true;
+                    break;
+                }
+                if ($estado === 'programado') {
+                    $hasProgramado = true;
+                } elseif ($estado === 'vencido') {
+                    $hasVencido = true;
+                }
+            }
+
+            if ($estadoPlan !== 'vigente') {
+                if ($hasProgramado) {
+                    $estadoPlan = 'programado';
+                    $estadoPlanLabel = 'Programado';
+                    $planBloqueado = true;
+                } elseif ($hasVencido) {
+                    $estadoPlan = 'vencido';
+                    $estadoPlanLabel = 'Vencido';
+                }
+            }
+
             $data[] = [
                 'id' => $usuario->getId(),
                 'nombre' => $usuario->getNombre(),
                 'cedula' => $usuario->getCedula(),
+                'plan_status' => $estadoPlan,
+                'plan_status_label' => $estadoPlanLabel,
+                'plan_blocked' => $planBloqueado,
             ];
         }
         return new JsonResponse($data);

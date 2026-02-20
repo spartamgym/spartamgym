@@ -22,6 +22,12 @@ class CardsRepository extends ServiceEntityRepository
         $flush && $this->getEntityManager()->flush();
     }
 
+    public function remove(Cards $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->remove($entity);
+        $flush && $this->getEntityManager()->flush();
+    }
+
     public function findUnlinkedCards(): array
     {
         return $this->createQueryBuilder('c')

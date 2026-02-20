@@ -21,4 +21,10 @@ class PlanRepository extends ServiceEntityRepository
         $this->getEntityManager()->persist($entity);
         $flush && $this->getEntityManager()->flush();
     }
+
+    public function remove(Plan $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->remove($entity);
+        $flush && $this->getEntityManager()->flush();
+    }
 }

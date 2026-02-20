@@ -20,4 +20,10 @@ class DatoFisicoRepository extends ServiceEntityRepository
         $this->getEntityManager()->persist($entity);
         $flush && $this->getEntityManager()->flush();
     }
+
+    public function remove(DatoFisico $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->remove($entity);
+        $flush && $this->getEntityManager()->flush();
+    }
 }

@@ -20,10 +20,6 @@ class UsuarioMedidaEstandar
     #[ORM\JoinColumn(nullable: false)]
     private ?Usuario $usuario = null;
 
-    #[ORM\ManyToOne(inversedBy: 'usuarioMedidas')]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    private ?MedidaEstandar $medidaEstandar = null;
-
     #[ORM\Column(length: 255)]
     private ?string $nombreReferencia = null;
 
@@ -67,18 +63,6 @@ class UsuarioMedidaEstandar
     public function setUsuario(?Usuario $usuario): static
     {
         $this->usuario = $usuario;
-
-        return $this;
-    }
-
-    public function getMedidaEstandar(): ?MedidaEstandar
-    {
-        return $this->medidaEstandar;
-    }
-
-    public function setMedidaEstandar(?MedidaEstandar $medidaEstandar): static
-    {
-        $this->medidaEstandar = $medidaEstandar;
 
         return $this;
     }
@@ -208,7 +192,6 @@ class UsuarioMedidaEstandar
         return [
             'id' => $this->getId(),
             'usuario_id' => $this->getUsuario()?->getId(),
-            'medida_estandar_id' => $this->getMedidaEstandar()?->getId(),
             'nombre' => $this->getNombreReferencia(),
             'peso' => $this->getPeso(),
             'cintura' => $this->getCintura(),

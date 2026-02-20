@@ -33,6 +33,9 @@ class Usuario
     #[ORM\Column(nullable: true)]
     private \DateTime $fecha_nacimiento;
 
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $sexo = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $eps = null;
 
@@ -145,6 +148,18 @@ class Usuario
         return $this;
     }
 
+    public function getSexo(): ?string
+    {
+        return $this->sexo;
+    }
+
+    public function setSexo(?string $sexo): static
+    {
+        $this->sexo = $sexo;
+
+        return $this;
+    }
+
     public function getEps(): ?string
     {
         return $this->eps;
@@ -223,6 +238,7 @@ class Usuario
             'celular'         => $this->getCelular(),
             'direccion'       => $this->getDireccion(),
             'fecha_nacimiento' => $this->getFechaNacimiento()?->format('Y-m-d'),
+            'sexo'            => $this->getSexo(),
             'eps'             => $this->getEps(),
             'correo'          => $this->getCorreo(),
             'code'       => $this->getCard() ? $this->getCard()->getCode() : 'sin asignar',

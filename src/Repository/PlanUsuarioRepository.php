@@ -21,6 +21,12 @@ class PlanUsuarioRepository extends ServiceEntityRepository
         $flush && $this->getEntityManager()->flush();
     }
 
+    public function remove(PlanUsuario $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->remove($entity);
+        $flush && $this->getEntityManager()->flush();
+    }
+
     public function getIngresosPorMes(): array
     {
         $conn = $this->getEntityManager()->getConnection();

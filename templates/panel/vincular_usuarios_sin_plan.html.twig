@@ -6,17 +6,18 @@
     {{ parent() }}
     <style>
         .page-header {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
             color: white;
-            padding: 2rem 0;
+            padding: 2.2rem 0;
             margin-bottom: 2rem;
-            border-radius: 0 0 20px 20px;
+            border-radius: 0 0 26px 26px;
+            box-shadow: 0 28px 48px -36px rgba(15, 23, 42, 0.9);
         }
         .card-custom {
-            border: none;
-            border-radius: 15px;
-            background: white;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid #dbe6f4;
+            box-shadow: 0 20px 34px -30px rgba(15, 23, 42, 0.65);
             height: 100%;
         }
         .table-title {
@@ -27,27 +28,35 @@
             margin-bottom: 1rem;
         }
         .btn-action {
-            border-radius: 12px;
+            border-radius: 999px;
             padding: 0.75rem 1.5rem;
             font-weight: 600;
             transition: all 0.3s;
         }
         .selection-panel {
-            background: #fff;
-            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 18px;
             padding: 1.5rem;
             position: sticky;
             top: 100px;
+            border: 1px solid #dbe6f4;
+        }
+        .card-custom .table {
+            font-size: 0.83rem;
+        }
+        .card-custom .table > :not(caption) > * > * {
+            padding: 0.42rem 0.46rem;
+            white-space: nowrap;
         }
     </style>
 {% endblock %}
 
 {% block body %}
     <div class="page-header shadow-sm">
-        <div class="container d-flex justify-content-between align-items-center">
+        <div class="container-fluid px-3 px-lg-4 d-flex justify-content-between align-items-center">
             <div>
                 <h2 class="fw-bold mb-0">Inscripción de Socios</h2>
-                <p class="mb-0 opacity-75">Asigna membresías activas a los usuarios registrados</p>
+                <p class="mb-0 opacity-75">Asigna membresías activas a los socios registrados</p>
             </div>
             <div class="d-flex gap-2 align-items-center">
                 <div class="d-flex align-items-center bg-white rounded px-2 py-1 shadow-sm">
@@ -57,14 +66,11 @@
                 <button id="btn-unir" class="btn btn-success btn-action shadow-sm">
                     <i class="bi bi-link-45deg me-2"></i>Confirmar Inscripción
                 </button>
-                <a href="{{ path('app_panel') }}" class="btn btn-light btn-action shadow-sm">
-                    <i class="bi bi-house me-2"></i>Inicio
-                </a>
             </div>
         </div>
     </div>
 
-    <div class="container pb-5">
+    <div class="container-fluid px-3 px-lg-4 pb-5">
         <div class="row g-4">
             <!-- Columna Planes -->
             <div class="col-lg-6">
@@ -81,7 +87,7 @@
                            data-page-size="5"
                            data-click-to-select="true"
                            data-single-select="true"
-                           data-classes="table table-hover"
+                           data-classes="table table-sm table-hover align-middle"
                            data-header-style="headerStyle">
                         <thead>
                             <tr>
@@ -100,8 +106,15 @@
             <div class="col-lg-6">
                 <div class="card-custom p-4">
                     <h5 class="table-title">
-                        <i class="bi bi-person-check-fill me-2 text-success"></i>2. Seleccione Uno o Más Usuarios
+                        <i class="bi bi-person-check-fill me-2 text-success"></i>2. Seleccione uno o más socios
                     </h5>
+                    <div class="small text-muted mb-2">
+                        <i class="bi bi-check-circle-fill text-success me-1"></i>Vigente
+                        <span class="mx-2"></span>
+                        <i class="bi bi-x-circle-fill text-danger me-1"></i>Vencido
+                        <span class="mx-2"></span>
+                        <i class="bi bi-exclamation-circle-fill text-warning me-1"></i>Sin plan
+                    </div>
                     <div id="shared-plan-info" class="alert alert-light border small py-2 px-3 mb-3">
                         Seleccione un plan para ver el máximo de beneficiarios permitidos.
                     </div>
@@ -114,13 +127,14 @@
                            data-page-size="5"
                            data-click-to-select="true"
                            data-single-select="false"
-                           data-classes="table table-hover"
+                           data-classes="table table-sm table-hover align-middle"
                            data-header-style="headerStyle">
                         <thead>
                             <tr>
-                                <th data-field="state" data-checkbox="true"></th>
+                                <th data-field="state" data-checkbox="true" data-formatter="userStateCheckboxFormatter"></th>
                                 <th data-field="nombre" data-sortable="true">Nombre</th>
                                 <th data-field="cedula" data-sortable="true">Cédula</th>
+                                <th data-field="plan_status" data-formatter="planStatusFormatter" data-align="center">Estado</th>
                             </tr>
                         </thead>
                     </table>
@@ -136,6 +150,25 @@
 
     function priceFormatter(value) {
         return '<span class="fw-bold">$' + parseInt(value).toLocaleString() + '</span>';
+    }
+
+    function planStatusFormatter(value, row) {
+        if (value === 'vigente') {
+            return '<span class="text-success fw-semibold"><i class="bi bi-check-circle-fill me-1"></i>Vigente</span>';
+        }
+        if (value === 'vencido') {
+            return '<span class="text-danger fw-semibold"><i class="bi bi-x-circle-fill me-1"></i>Vencido</span>';
+        }
+        if (value === 'programado') {
+            return '<span class="text-warning fw-semibold"><i class="bi bi-clock-history me-1"></i>Programado</span>';
+        }
+        return '<span class="text-warning fw-semibold"><i class="bi bi-exclamation-circle-fill me-1"></i>Sin plan</span>';
+    }
+
+    function userStateCheckboxFormatter(value, row) {
+        return {
+            disabled: !!row.plan_blocked
+        };
     }
 
     function getSelectedUsers() {
@@ -174,7 +207,7 @@
         if (!selectedPlan || selectedUsers.length === 0) {
             Swal.fire({ 
                 title: 'Selección Incompleta', 
-                text: 'Debe elegir un plan y al menos un usuario de las tablas anteriores.', 
+                text: 'Debe elegir un plan y al menos un socio de las tablas anteriores.', 
                 icon: 'info', 
                 confirmButtonColor: '#3b82f6' 
             });
@@ -196,7 +229,7 @@
 
         Swal.fire({
             title: '¿Confirmar Inscripción?',
-            text: `Se asignará el plan "${selectedPlan.nombre}" a ${selectedUsers.length} usuario(s): ${nombres}`,
+            text: `Se asignará el plan "${selectedPlan.nombre}" a ${selectedUsers.length} socio(s): ${nombres}`,
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#198754',

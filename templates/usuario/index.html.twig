@@ -1,233 +1,228 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Gestión de Usuarios - SpartaMGym{% endblock %}
+{% block title %}Gestión de Socios - SpartaMGym{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
     <style>
         .page-header {
-            background: linear-gradient(135deg, #198754 0%, #146c43 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #0891b2 100%);
             color: white;
-            padding: 2rem 0;
+            padding: 2.2rem 0;
             margin-bottom: 2rem;
-            border-radius: 0 0 20px 20px;
+            border-radius: 0 0 26px 26px;
+            box-shadow: 0 28px 48px -36px rgba(15, 23, 42, 0.9);
         }
-        .card {
-            border: none;
-            border-radius: 15px;
-            overflow: hidden;
+        .table-container {
+            background: rgba(255, 255, 255, 0.92);
+            padding: 1.15rem;
+            border-radius: 18px;
+            border: 1px solid #dbe6f4;
+            box-shadow: 0 20px 34px -30px rgba(15, 23, 42, 0.65);
         }
-        .profile-img-container {
-            position: relative;
-            width: 100%;
-            padding-top: 100%;
-            background: #f1f5f9;
+        .table-container .table {
+            font-size: 0.82rem;
         }
-        .profile-img-container img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .table-container .table > :not(caption) > * > * {
+            padding: 0.42rem 0.46rem;
+            white-space: nowrap;
         }
-        .form-control:focus {
-            box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.15);
-            border-color: #198754;
+        .table-container .table td:nth-child(2),
+        .table-container .table th:nth-child(2) {
+            min-width: 170px;
         }
         .btn-rounded {
             border-radius: 10px;
         }
-        .table-container {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        .profile-img-preview {
+            width: 96px;
+            height: 96px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #e2e8f0;
         }
     </style>
 {% endblock %}
 
 {% block body %}
     <div class="page-header shadow-sm">
-        <div class="container d-flex justify-content-between align-items-center">
+        <div class="container-fluid px-3 px-lg-4 d-flex justify-content-between align-items-center gap-2 flex-wrap">
             <div>
-                <h2 class="fw-bold mb-0">Gestión de Usuarios</h2>
+                <h2 class="fw-bold mb-0">Gestión de Socios</h2>
                 <p class="mb-0 opacity-75">Registro y administración de socios del gimnasio</p>
             </div>
-            <a href="{{ path('app_panel') }}" class="btn btn-light btn-rounded shadow-sm">
-                <i class="bi bi-house-door me-2"></i>Volver al Inicio
-            </a>
-        </div>
-    </div>
-
-    <div class="container pb-5">
-        <div class="row g-4">
-            <!-- Sidebar: Foto y Datos Físicos -->
-            <div class="col-lg-4">
-                <!-- Card Foto -->
-                <div class="card shadow-sm mb-4">
-                    <div class="profile-img-container">
-                        <img id="imagenPerfilPreview" src="{{ asset('img/profile-img.jpeg') }}" alt="Foto de perfil">
-                    </div>
-                    <div class="card-body">
-                        <label for="imagenPerfil" class="form-label fw-bold small text-muted text-uppercase">Foto de Perfil</label>
-                        <input class="form-control form-control-sm" type="file" id="imagenPerfil" name="imagenPerfil" accept="image/*">
-                    </div>
-                </div>
-
-                <!-- Card Medidas -->
-                <div class="card shadow-sm">
-                    <div class="card-body p-4">
-                        <h5 class="card-title fw-bold mb-4">
-                            <i class="bi bi-rulers me-2 text-primary"></i>Medidas Corporales
-                        </h5>
-                        <form id="form-datos-fisicos">
-                            <input type="hidden" id="id_medida" name="id" value="0">
-                            <input type="hidden" id="id_usuario_medida" name="id_usuario" value="0">
-                            <div class="row g-2">
-                                <div class="col-6 mb-2">
-                                    <label class="form-label small mb-1">Cintura (cm)</label>
-                                    <input type="number" class="form-control form-control-sm" name="cintura" id="cintura">
-                                </div>
-                                <div class="col-6 mb-2">
-                                    <label class="form-label small mb-1">Glúteos (cm)</label>
-                                    <input type="number" class="form-control form-control-sm" name="gluteos" id="gluteos">
-                                </div>
-                                <div class="col-6 mb-2">
-                                    <label class="form-label small mb-1">Brazo (cm)</label>
-                                    <input type="number" class="form-control form-control-sm" name="brazo" id="brazo">
-                                </div>
-                                <div class="col-6 mb-2">
-                                    <label class="form-label small mb-1">Pecho (cm)</label>
-                                    <input type="number" class="form-control form-control-sm" name="pecho" id="pecho">
-                                </div>
-                                <div class="col-6 mb-2">
-                                    <label class="form-label small mb-1">Pierna (cm)</label>
-                                    <input type="number" class="form-control form-control-sm" name="pierna" id="pierna">
-                                </div>
-                                <div class="col-6 mb-2">
-                                    <label class="form-label small mb-1">Pantorrilla</label>
-                                    <input type="number" class="form-control form-control-sm" name="pantorrilla" id="pantorrilla">
-                                </div>
-                                <div class="col-4 mb-2">
-                                    <label class="form-label small mb-1">Peso (kg)</label>
-                                    <input type="number" step="0.1" class="form-control form-control-sm" name="peso" id="peso">
-                                </div>
-                                <div class="col-4 mb-2">
-                                    <label class="form-label small mb-1">Altura</label>
-                                    <input type="number" step="0.1" class="form-control form-control-sm" name="altura" id="altura">
-                                </div>
-                                <div class="col-4 mb-2">
-                                    <label class="form-label small mb-1">IMC</label>
-                                    <input type="number" step="0.1" class="form-control form-control-sm" name="imc" id="imc">
-                                </div>
-                            </div>
-                            <div class="d-grid mt-3">
-                                <button type="submit" class="btn btn-outline-primary btn-sm btn-rounded fw-bold">
-                                    Actualizar Medidas
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Formulario Principal -->
-            <div class="col-lg-8">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body p-4">
-                        <h5 class="card-title fw-bold mb-4">
-                            <i class="bi bi-person-plus-fill me-2 text-success"></i>Registro de Usuario
-                        </h5>
-
-                        <form id="form-usuario">
-                            <input type="hidden" id="id" name="id" value="0">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label small fw-bold">Nombre Completo</label>
-                                    <input type="text" class="form-control" id="nombre" name="nombre" required placeholder="Nombre del socio">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label small fw-bold">Número de Cédula</label>
-                                    <input type="text" class="form-control" id="cedula" name="cedula" required placeholder="ID Identificación">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label small fw-bold">Celular / WhatsApp</label>
-                                    <input type="tel" class="form-control" id="celular" name="celular" placeholder="+57 ...">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label small fw-bold">Correo Electrónico</label>
-                                    <input type="email" class="form-control" id="correo" name="correo" placeholder="correo@ejemplo.com">
-                                </div>
-                                <div class="col-md-12">
-                                    <label class="form-label small fw-bold">Dirección de Residencia</label>
-                                    <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Calle, Carrera, Barrio...">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label small fw-bold">Fecha de Nacimiento</label>
-                                    <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label small fw-bold">EPS / Salud</label>
-                                    <input type="text" class="form-control" id="eps" name="eps" placeholder="Entidad de salud">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label small fw-bold">Referencia Estándar</label>
-                                    <select class="form-select" id="id_medida_estandar" name="id_medida_estandar">
-                                        <option value="">Cargando...</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="mt-4 d-flex gap-2">
-                                <button type="submit" class="btn btn-success px-4 btn-rounded fw-bold">
-                                    <i class="bi bi-save me-2"></i>Guardar Usuario
-                                </button>
-                                <button id="reset-form-user" type="button" class="btn btn-light px-4 btn-rounded text-muted">
-                                    Limpiar
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Listado de Usuarios -->
-        <div class="row mt-5">
-            <div class="col-12">
-                <div class="table-container shadow-sm">
-                    <h5 class="fw-bold mb-4"><i class="bi bi-list-ul me-2"></i>Base de Datos de Socios</h5>
-                    <table 
-                        id="table_usuarios" 
-                        class="table table-hover" 
-                        data-toggle="table" 
-                        data-search="true" 
-                        data-pagination="true" 
-                        data-page-size="10" 
-                        data-url="{{ path('app_usuario_listar') }}"
-                        data-classes="table"
-                        data-header-style="headerStyle"
-                    >
-                        <thead>
-                            <tr>
-                                <th data-field="id" data-sortable="true" data-width="50">ID</th>
-                                <th data-field="nombre" data-sortable="true">Nombre</th>
-                                <th data-field="cedula" data-sortable="true">Cédula</th>
-                                <th data-field="celular">Celular</th>
-                                <th data-field="code" data-formatter="cardFormatter">Acceso</th>
-                                <th data-field="medida_estandar_nombre" data-formatter="medidaEstandarFormatter">Ref. Estándar</th>
-                                <th data-field="img" data-formatter="imgFormatter" data-align="center">Perfil</th>
-                                <th data-field="operate" data-formatter="accionesFormatter" data-events="operateEvents" data-align="center">Acciones</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
+            <div class="d-flex gap-2">
+                <button type="button" id="btn-nuevo-usuario" class="btn btn-light btn-rounded shadow-sm fw-bold">
+                    <i class="bi bi-person-plus-fill me-1"></i>Nuevo socio
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Modal de Planes y Medidas -->
+    <div class="container-fluid px-3 px-lg-4 pb-5">
+        <div class="table-container shadow-sm">
+            <h5 class="fw-bold mb-3"><i class="bi bi-list-ul me-2"></i>Base de Datos de Socios</h5>
+            <table
+                id="table_usuarios"
+                class="table"
+                data-toggle="table"
+                data-search="true"
+                data-pagination="true"
+                data-page-size="12"
+                data-url="{{ path('app_usuario_listar') }}"
+                data-classes="table table-sm table-hover align-middle"
+                data-header-style="headerStyle"
+            >
+                <thead>
+                    <tr>
+                        <th data-field="id" data-sortable="true" data-width="55">ID</th>
+                        <th data-field="nombre" data-sortable="true">Nombre</th>
+                        <th data-field="cedula" data-sortable="true">Cédula</th>
+                        <th data-field="sexo" data-formatter="sexoFormatter" data-align="center">Sexo</th>
+                        <th data-field="celular">Celular</th>
+                        <th data-field="code" data-formatter="cardFormatter" data-events="operateEvents">Acceso</th>
+                        <th data-field="medida_estandar_nombre" data-formatter="medidaEstandarFormatter">Ref. Objetivo</th>
+                        <th data-field="img" data-formatter="imgFormatter" data-align="center">Perfil</th>
+                        <th data-field="operate" data-formatter="accionesFormatter" data-events="operateEvents" data-align="center" data-width="125">Acciones</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="modal-usuario" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header bg-dark text-white p-4">
+                    <h5 class="modal-title fw-bold" id="usuarioModalLabel">
+                        <i class="bi bi-person-plus-fill me-2"></i>Registro de socio
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="form-usuario" class="modal-body p-4">
+                    <input type="hidden" id="id" name="id" value="0">
+
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <img id="imagenPerfilPreview" src="{{ asset('img/profile-img.jpeg') }}" class="profile-img-preview" alt="Foto de perfil">
+                        <div class="w-100">
+                            <label for="imagenPerfil" class="form-label fw-bold small text-muted text-uppercase">Foto de Perfil</label>
+                            <input class="form-control" type="file" id="imagenPerfil" name="imagenPerfil" accept="image/*">
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Nombre Completo</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" required placeholder="Nombre del socio">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Número de Cédula</label>
+                            <input type="text" class="form-control" id="cedula" name="cedula" required placeholder="ID Identificación">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Celular / WhatsApp</label>
+                            <input type="tel" class="form-control" id="celular" name="celular" placeholder="+57 ...">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="correo" name="correo" placeholder="correo@ejemplo.com">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label small fw-bold">Dirección de Residencia</label>
+                            <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Calle, Carrera, Barrio...">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Fecha de Nacimiento</label>
+                            <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">EPS / Salud</label>
+                            <input type="text" class="form-control" id="eps" name="eps" placeholder="Entidad de salud">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Sexo</label>
+                            <select class="form-select" id="sexo" name="sexo" required>
+                                <option value="">Selecciona una opción</option>
+                                <option value="F">Femenino</option>
+                                <option value="M">Masculino</option>
+                                <option value="O">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button id="reset-form-user" type="button" class="btn btn-light btn-rounded px-4">Limpiar</button>
+                        <button type="submit" class="btn btn-success btn-rounded px-4 fw-bold">
+                            <i class="bi bi-save me-1"></i>Guardar socio
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-datos-fisicos" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header bg-dark text-white p-4">
+                    <h5 class="modal-title fw-bold" id="datosFisicosModalLabel">
+                        <i class="bi bi-rulers me-2"></i>Medidas Corporales
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="form-datos-fisicos" class="modal-body p-4">
+                    <input type="hidden" id="id_medida" name="id" value="0">
+                    <input type="hidden" id="id_usuario_medida" name="id_usuario" value="0">
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label small mb-1">Peso (kg)</label>
+                            <input type="number" step="0.1" class="form-control" name="peso" id="peso">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small mb-1">Altura</label>
+                            <input type="number" step="0.1" class="form-control" name="altura" id="altura">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small mb-1">IMC</label>
+                            <input type="number" step="0.1" class="form-control" name="imc" id="imc">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small mb-1">Cintura (cm)</label>
+                            <input type="number" class="form-control" name="cintura" id="cintura">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small mb-1">Glúteos (cm)</label>
+                            <input type="number" class="form-control" name="gluteos" id="gluteos">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small mb-1">Brazo (cm)</label>
+                            <input type="number" class="form-control" name="brazo" id="brazo">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small mb-1">Pecho (cm)</label>
+                            <input type="number" class="form-control" name="pecho" id="pecho">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small mb-1">Pierna (cm)</label>
+                            <input type="number" class="form-control" name="pierna" id="pierna">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small mb-1">Pantorrilla</label>
+                            <input type="number" class="form-control" name="pantorrilla" id="pantorrilla">
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="button" class="btn btn-light btn-rounded px-4" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary btn-rounded px-4 fw-bold">Guardar Medidas</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="planes-usuario" tabindex="-1">
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
             <div class="modal-content border-0 shadow-lg rounded-4">
@@ -238,7 +233,7 @@
                 <div class="modal-body p-4">
                     <div class="mb-5">
                         <h6 class="text-muted text-uppercase fw-bold small mb-3">Historial de Membresías</h6>
-                        <table class="table" id="table_planes" data-toggle="table">
+                        <table class="table table-sm" id="table_planes" data-toggle="table" data-classes="table table-sm table-hover align-middle">
                             <thead>
                                 <tr class="bg-light">
                                     <th data-field="nombre">Plan</th>
@@ -253,8 +248,13 @@
                     </div>
 
                     <div>
-                        <h6 class="text-muted text-uppercase fw-bold small mb-3">Histórico de Seguimiento Físico</h6>
-                        <table class="table table-sm" id="table_medidas" data-toggle="table">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="text-muted text-uppercase fw-bold small mb-0">Histórico de Seguimiento Físico</h6>
+                            <button type="button" id="btn-nueva-medida-fisica" class="btn btn-outline-primary btn-sm btn-rounded">
+                                <i class="bi bi-plus-circle me-1"></i>Nueva Medida
+                            </button>
+                        </div>
+                        <table class="table table-sm" id="table_medidas" data-toggle="table" data-classes="table table-sm table-hover align-middle">
                             <thead class="small bg-light">
                                 <tr>
                                     <th data-field="createAt">Fecha</th>
@@ -282,13 +282,26 @@
     }
 
     function imgFormatter(value) {
-        let src = value ? value : '{{ asset('img/profile-img.jpeg') }}';
-        return `<img src="${src}" class="rounded-circle shadow-sm" style="width: 40px; height: 40px; object-fit: cover; border: 2px solid white;">`;
+        const src = value ? value : '{{ asset('img/profile-img.jpeg') }}';
+        return `<img src="${src}" class="rounded-circle shadow-sm" style="width: 36px; height: 36px; object-fit: cover; border: 2px solid white;">`;
     }
 
-    function cardFormatter(value) {
-        if (!value || value === 'sin asignar') return '<span class="badge bg-light text-muted border">Sin Tarjeta</span>';
-        return `<span class="badge bg-info text-dark shadow-sm"><i class="bi bi-credit-card-2-front me-1"></i>${value}</span>`;
+    function cardFormatter(value, row) {
+        if (!value || value === 'sin asignar') {
+            return '<span class="badge bg-light text-muted border">Sin asignar</span>';
+        }
+
+        const status = row?.plan_status || 'sin_plan';
+        const canMove = status === 'vigente';
+        const buttonClass = canMove ? 'btn-success' : (status === 'vencido' ? 'btn-danger' : 'btn-warning');
+        const buttonTitle = canMove
+            ? 'Registrar ingreso/salida'
+            : (status === 'vencido' ? 'Plan vencido: movimiento bloqueado' : 'Sin plan: movimiento bloqueado');
+
+        return `
+            <button class="btn btn-sm ${buttonClass} toggle_ingreso fw-semibold px-1 py-0 rounded-0" ${canMove ? '' : 'disabled'} title="${buttonTitle}">
+                <i class="bi bi-credit-card-2-front me-1"></i>${value}
+            </button>`;
     }
 
     function medidaEstandarFormatter(value) {
@@ -298,12 +311,19 @@
         return `<span class="badge bg-secondary-subtle text-secondary border border-secondary">${value}</span>`;
     }
 
+    function sexoFormatter(value) {
+        if (value === 'F') return '<span class="badge bg-info-subtle text-info border border-info">F</span>';
+        if (value === 'M') return '<span class="badge bg-primary-subtle text-primary border border-primary">M</span>';
+        if (value === 'O') return '<span class="badge bg-warning-subtle text-warning border border-warning">O</span>';
+        return '<span class="badge bg-light text-muted border">--</span>';
+    }
+
     function priceFormatter(value) {
-        return '<span class="fw-bold">$' + parseInt(value).toLocaleString() + '</span>';
+        return '<span class="fw-bold">$' + parseInt(value || 0).toLocaleString() + '</span>';
     }
 
     function daysFormatter(value) {
-        let cls = value > 5 ? 'text-success' : 'text-danger fw-bold';
+        const cls = value > 5 ? 'text-success' : 'text-danger fw-bold';
         return `<span class="${cls}">${value} días</span>`;
     }
 
@@ -315,10 +335,10 @@
 
     function accionesFormatter() {
         return `
-            <div class="btn-group shadow-sm">
-                <button class="btn btn-white btn-sm editar border" title="Editar"><i class="bi bi-pencil-fill text-primary"></i></button>
-                <button class="btn btn-white btn-sm desvincular border" title="Quitar Tarjeta"><i class="bi bi-link-45deg text-danger"></i></button>
-                <button class="btn btn-white btn-sm planes border" title="Detalles"><i class="bi bi-eye-fill text-success"></i></button>
+            <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-primary editar" title="Editar"><i class="bi bi-pencil-fill"></i></button>
+                <button class="btn btn-outline-danger desvincular" title="Quitar Tarjeta"><i class="bi bi-link-45deg"></i></button>
+                <button class="btn btn-outline-success planes" title="Expediente"><i class="bi bi-eye-fill"></i></button>
             </div>`;
     }
 
@@ -327,57 +347,142 @@
     }
 
     function accionesFormatterMedidas() {
-        return `<button class="btn btn-link btn-sm p-0 editar_medida"><i class="bi bi-pencil-square"></i></button>`;
+        return `
+            <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-primary editar_medida" title="Editar medida">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+                <button class="btn btn-outline-danger eliminar_medida" title="Eliminar medida">
+                    <i class="bi bi-trash-fill"></i>
+                </button>
+            </div>`;
     }
 
-    async function cargarMedidasEstandar(selectedId = null) {
-        const select = document.getElementById('id_medida_estandar');
-        try {
-            const response = await fetch("{{ path('app_usuario_medida_estandar_listar') }}");
-            const medidas = await response.json();
-            select.innerHTML = '<option value="">Selecciona una referencia</option>';
-            medidas.forEach((medida) => {
-                const option = document.createElement('option');
-                option.value = medida.id;
-                option.textContent = medida.nombre;
-                select.appendChild(option);
-            });
-            if (selectedId) {
-                select.value = String(selectedId);
-            }
-        } catch (error) {
-            console.error('No se pudieron cargar medidas estándar:', error);
-            select.innerHTML = '<option value="">No disponible</option>';
+    const modalUsuarioEl = document.getElementById('modal-usuario');
+    const modalDatosEl = document.getElementById('modal-datos-fisicos');
+    const modalPlanesEl = document.getElementById('planes-usuario');
+    let modalUsuario = null;
+    let modalDatos = null;
+    let modalPlanes = null;
+    let shouldRestorePlanesModal = false;
+    function getModalUsuario() {
+        if (!modalUsuario) {
+            modalUsuario = bootstrap.Modal.getOrCreateInstance(modalUsuarioEl);
         }
+        return modalUsuario;
+    }
+    function getModalDatos() {
+        if (!modalDatos) {
+            modalDatos = bootstrap.Modal.getOrCreateInstance(modalDatosEl);
+        }
+        return modalDatos;
+    }
+    function getModalPlanes() {
+        if (!modalPlanes) {
+            modalPlanes = bootstrap.Modal.getOrCreateInstance(modalPlanesEl);
+        }
+        return modalPlanes;
     }
 
-    // Lógica de formulario y eventos
-    document.getElementById('form-usuario').addEventListener('submit', function(event) {
+    function resetForm() {
+        document.getElementById('form-usuario').reset();
+        document.getElementById('id').value = 0;
+        document.getElementById('imagenPerfilPreview').src = '{{ asset('img/profile-img.jpeg') }}';
+        document.getElementById('sexo').value = '';
+        document.getElementById('usuarioModalLabel').innerHTML = '<i class="bi bi-person-plus-fill me-2"></i>Registro de socio';
+    }
+
+    function resetDatosFisicosForm() {
+        document.getElementById('form-datos-fisicos').reset();
+        document.getElementById('id_medida').value = 0;
+        document.getElementById('datosFisicosModalLabel').innerHTML = '<i class="bi bi-rulers me-2"></i>Medidas Corporales';
+    }
+
+    function setUsuarioMedidaSeleccionado(userId) {
+        document.getElementById('id_usuario_medida').value = String(userId || 0);
+    }
+
+    function openDatosFisicosModal(userId, row = null) {
+        resetDatosFisicosForm();
+        setUsuarioMedidaSeleccionado(userId);
+
+        if (row) {
+            document.getElementById('id_medida').value = row.id || 0;
+            document.getElementById('altura').value = row.altura ?? '';
+            document.getElementById('peso').value = row.peso ?? '';
+            document.getElementById('cintura').value = row.cintura ?? '';
+            document.getElementById('gluteos').value = row.gluteos ?? '';
+            document.getElementById('brazo').value = row.brazo ?? '';
+            document.getElementById('pecho').value = row.pecho ?? '';
+            document.getElementById('pierna').value = row.pierna ?? '';
+            document.getElementById('pantorrilla').value = row.pantorrilla ?? '';
+            document.getElementById('imc').value = row.imc ?? '';
+            document.getElementById('datosFisicosModalLabel').innerHTML = '<i class="bi bi-pencil-square me-2"></i>Editar Medidas';
+        }
+
+        const planesAbierto = modalPlanesEl.classList.contains('show');
+        if (planesAbierto) {
+            shouldRestorePlanesModal = true;
+            modalPlanesEl.addEventListener('hidden.bs.modal', () => {
+                getModalDatos().show();
+            }, { once: true });
+            getModalPlanes().hide();
+            return;
+        }
+
+        shouldRestorePlanesModal = false;
+        getModalDatos().show();
+    }
+
+    document.getElementById('btn-nuevo-usuario').addEventListener('click', () => {
+        resetForm();
+        setUsuarioMedidaSeleccionado(0);
+        getModalUsuario().show();
+    });
+
+    document.getElementById('btn-nueva-medida-fisica').addEventListener('click', () => {
+        const userId = parseInt(document.getElementById('id_usuario_medida').value || '0', 10);
+        if (!userId) {
+            Swal.fire('Atención', 'Primero selecciona un socio desde el expediente.', 'warning');
+            return;
+        }
+        openDatosFisicosModal(userId);
+    });
+
+    modalDatosEl.addEventListener('hidden.bs.modal', () => {
+        if (!shouldRestorePlanesModal) return;
+        shouldRestorePlanesModal = false;
+        getModalPlanes().show();
+    });
+
+    document.getElementById('form-usuario').addEventListener('submit', async function(event) {
         event.preventDefault();
         const formData = new FormData(this);
-        let img = document.getElementById('imagenPerfil').files[0];
-        if(img) formData.append('img', img);
+        const img = document.getElementById('imagenPerfil').files[0];
+        if (img) formData.append('img', img);
 
-        fetch('{{ path('app_usuario_registro') }}', { method: 'POST', body: formData })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                Swal.fire({ icon: 'success', title: '¡Guardado!', text: 'Socio registrado/actualizado correctamente', timer: 2000 });
-                $('#table_usuarios').bootstrapTable('refresh');
-                resetForm();
-            } else {
-                Swal.fire('Error', data.message, 'error');
-            }
-        });
+        const response = await fetch('{{ path('app_usuario_registro') }}', { method: 'POST', body: formData });
+        const data = await response.json();
+
+        if (!response.ok || data.status !== 'success') {
+            Swal.fire('Error', data.message || 'No se pudo guardar el socio.', 'error');
+            return;
+        }
+
+        const instance = bootstrap.Modal.getInstance(modalUsuarioEl);
+        if (instance) instance.hide();
+        $('#table_usuarios').bootstrapTable('refresh');
+        resetForm();
+        Swal.fire({ icon: 'success', title: 'Guardado', text: 'Socio registrado/actualizado correctamente', timer: 1800, showConfirmButton: false });
     });
 
     document.getElementById('form-datos-fisicos').addEventListener('submit', async function(event) {
         event.preventDefault();
         const formData = new FormData(this);
-        const selectedUserId = document.getElementById('id_usuario_medida').value || document.getElementById('id').value;
+        const selectedUserId = document.getElementById('id_usuario_medida').value;
 
         if (!selectedUserId || selectedUserId === '0') {
-            Swal.fire('Atención', 'Primero debes seleccionar un usuario para guardar sus medidas.', 'warning');
+            Swal.fire('Atención', 'Primero debes seleccionar un socio para guardar sus medidas.', 'warning');
             return;
         }
 
@@ -385,37 +490,40 @@
 
         const data = await enviarDatos("{{ path('app_datos_fisicos_registro') }}", formData);
         if (data && data.status === 'success') {
-            Swal.fire({ icon: 'success', title: 'Medidas guardadas', timer: 1800, showConfirmButton: false });
-            document.getElementById('id_medida').value = 0;
-
             const refreshData = new FormData();
             refreshData.append('id', selectedUserId);
             const medidas = await enviarDatos("{{ path('app_usuario_medidas') }}", refreshData);
             if (medidas) {
                 $('#table_medidas').bootstrapTable('load', medidas);
             }
+            const instance = bootstrap.Modal.getInstance(modalDatosEl);
+            if (instance) instance.hide();
+            resetDatosFisicosForm();
+            Swal.fire({ icon: 'success', title: 'Medidas guardadas', timer: 1500, showConfirmButton: false });
         }
     });
 
     window.operateEvents = {
         'click .editar': (e, value, row) => {
+            resetForm();
+            setUsuarioMedidaSeleccionado(row.id);
             document.getElementById('id').value = row.id;
-            document.getElementById('id_usuario_medida').value = row.id;
             document.getElementById('imagenPerfilPreview').src = row.img ? row.img : '{{ asset('img/profile-img.jpeg') }}';
-            document.getElementById('nombre').value = row.nombre;
-            document.getElementById('cedula').value = row.cedula;
-            document.getElementById('celular').value = row.celular;
-            document.getElementById('direccion').value = row.direccion;
-            document.getElementById('fecha_nacimiento').value = row.fecha_nacimiento;
-            document.getElementById('eps').value = row.eps;
-            document.getElementById('correo').value = row.correo;
-            cargarMedidasEstandar(row.medida_estandar_id || null);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('nombre').value = row.nombre || '';
+            document.getElementById('cedula').value = row.cedula || '';
+            document.getElementById('celular').value = row.celular || '';
+            document.getElementById('direccion').value = row.direccion || '';
+            document.getElementById('fecha_nacimiento').value = row.fecha_nacimiento || '';
+            document.getElementById('sexo').value = row.sexo || '';
+            document.getElementById('eps').value = row.eps || '';
+            document.getElementById('correo').value = row.correo || '';
+            document.getElementById('usuarioModalLabel').innerHTML = `<i class="bi bi-pencil-square me-2"></i>Editando: ${row.nombre || ''}`;
+            getModalUsuario().show();
         },
         'click .desvincular': async (e, value, row) => {
             const result = await Swal.fire({
                 title: '¿Desvincular tarjeta?',
-                text: "El usuario perderá el acceso físico",
+                text: 'El socio perderá el acceso físico',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Sí, desvincular'
@@ -423,56 +531,108 @@
             if (result.isConfirmed) {
                 const formData = new FormData();
                 formData.append('id', row.id);
-                let data = await enviarDatos("{{ path('app_usuario_desvincular_card') }}", formData);
-                if (data.status === 'success') $('#table_usuarios').bootstrapTable('refresh');
+                const data = await enviarDatos("{{ path('app_usuario_desvincular_card') }}", formData);
+                if (data && data.status === 'success') {
+                    $('#table_usuarios').bootstrapTable('refresh');
+                }
             }
         },
         'click .planes': async (e, value, row) => {
-            document.getElementById('id_usuario_medida').value = row.id;
+            setUsuarioMedidaSeleccionado(row.id);
             const formData = new FormData();
             formData.append('id', row.id);
-            let planes = await enviarDatos("{{ path('app_usuario_planes') }}", formData);
-            let medidas = await enviarDatos("{{ path('app_usuario_medidas') }}", formData);
-            $('#table_planes').bootstrapTable('load', planes);
-            $('#table_medidas').bootstrapTable('load', medidas);
+            const planes = await enviarDatos("{{ path('app_usuario_planes') }}", formData);
+            const medidas = await enviarDatos("{{ path('app_usuario_medidas') }}", formData);
+            if (planes) $('#table_planes').bootstrapTable('load', planes);
+            if (medidas) $('#table_medidas').bootstrapTable('load', medidas);
             document.getElementById('planesUsuarioLabel').innerHTML = `<i class="bi bi-person-vcard me-2"></i>Expediente: ${row.nombre}`;
-            new bootstrap.Modal(document.getElementById('planes-usuario')).show();
+            getModalPlanes().show();
         },
         'click .predefinir': async (e, value, row) => {
             const formData = new FormData();
             formData.append('id', row.id);
-            let data = await enviarDatos("{{ path('app_usuario_plane_predefinir') }}", formData);
-            $('#table_planes').bootstrapTable('load', data);
+            const data = await enviarDatos("{{ path('app_usuario_plane_predefinir') }}", formData);
+            if (data) {
+                $('#table_planes').bootstrapTable('load', data);
+            }
         },
-        'click .editar_medida': async (e, value, row) => {
-            document.getElementById('id_medida').value = row.id;
-            document.getElementById('altura').value = row.altura;
-            document.getElementById('peso').value = row.peso;
-            document.getElementById('cintura').value = row.cintura;
-            document.getElementById('gluteos').value = row.gluteos;
-            document.getElementById('brazo').value = row.brazo;
-            document.getElementById('pecho').value = row.pecho;
-            document.getElementById('pierna').value = row.pierna;
-            document.getElementById('pantorrilla').value = row.pantorrilla;
-            document.getElementById('imc').value = row.imc;
-            
-            const modalEl = document.getElementById('planes-usuario');
-            bootstrap.Modal.getInstance(modalEl).hide();
-            
-            document.getElementById('form-datos-fisicos')?.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start',
+        'click .toggle_ingreso': async (e, value, row) => {
+            if (row.plan_status !== 'vigente') {
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('id', row.code);
+            const data = await enviarDatos("{{ path('app_update_identificador_movimiento') }}", formData);
+            if (!data) return;
+
+            if (data.status !== 'success') {
+                Swal.fire('Sin acción', data.message || 'No se pudo registrar movimiento.', 'warning');
+                return;
+            }
+
+            Swal.fire({
+                icon: 'success',
+                title: data.action === 'salida' ? 'Salida registrada' : 'Ingreso registrado',
+                text: data.message || 'Movimiento registrado correctamente.',
+                timer: 1600,
+                showConfirmButton: false
             });
+        },
+        'click .editar_medida': (e, value, row) => {
+            const userId = parseInt(document.getElementById('id_usuario_medida').value || '0', 10);
+            if (!userId) {
+                Swal.fire('Atención', 'No se detectó el socio para esta medida.', 'warning');
+                return;
+            }
+            openDatosFisicosModal(userId, row);
+        },
+        'click .eliminar_medida': async (e, value, row) => {
+            const userId = parseInt(document.getElementById('id_usuario_medida').value || '0', 10);
+            if (!userId || !row.id) {
+                Swal.fire('Atención', 'No se pudo identificar la medida a eliminar.', 'warning');
+                return;
+            }
+
+            const result = await Swal.fire({
+                title: '¿Eliminar medida?',
+                text: 'Esta acción no se puede deshacer.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#dc3545'
+            });
+            if (!result.isConfirmed) return;
+
+            const formData = new FormData();
+            formData.append('id', row.id);
+
+            try {
+                const response = await fetch('{{ path('app_usuario_medidas_eliminar') }}', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (!response.ok || data.status !== 'success') {
+                    Swal.fire('Error', data.message || 'No se pudo eliminar la medida.', 'error');
+                    return;
+                }
+
+                const refreshData = new FormData();
+                refreshData.append('id', userId);
+                const medidas = await enviarDatos("{{ path('app_usuario_medidas') }}", refreshData);
+                if (medidas) {
+                    $('#table_medidas').bootstrapTable('load', medidas);
+                }
+                Swal.fire({ icon: 'success', title: 'Medida eliminada', timer: 1500, showConfirmButton: false });
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
+            }
         }
     };
-
-    function resetForm() {
-        document.getElementById('form-usuario').reset();
-        document.getElementById('id').value = 0;
-        document.getElementById('id_usuario_medida').value = 0;
-        document.getElementById('imagenPerfilPreview').src = '{{ asset('img/profile-img.jpeg') }}';
-        document.getElementById('id_medida_estandar').value = '';
-    }
 
     document.getElementById('reset-form-user').addEventListener('click', resetForm);
 
@@ -485,6 +645,5 @@
         }
     });
 
-    cargarMedidasEstandar();
 </script>
 {% endblock %}

@@ -22,10 +22,20 @@ trait EntityExtends
         return $this->createAt;
     }
 
+    private function appDateTimeZone(): \DateTimeZone
+    {
+        $timezone = getenv('APP_TIMEZONE') ?: 'America/Bogota';
+        try {
+            return new \DateTimeZone($timezone);
+        } catch (\Exception) {
+            return new \DateTimeZone('America/Bogota');
+        }
+    }
+
     #[ORM\PrePersist]
     public function setCreateAt(): void
     {
-        $this->createAt = new \DateTime();
+        $this->createAt = new \DateTime('now', $this->appDateTimeZone());
     }
 
     public function getUpdateAt(): ?\DateTime
@@ -37,7 +47,7 @@ trait EntityExtends
     #[ORM\PreUpdate]
     public function setUpdateAt(): void
     {
-        $this->UpdateAt = new \DateTime();
+        $this->UpdateAt = new \DateTime('now', $this->appDateTimeZone());
     }
 
     public function isActive(): ?bool

@@ -1,21 +1,25 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Dashboard en Tiempo Real - SpartaMGym{% endblock %}
+{% block title %}Panel en Tiempo Real - SpartaMGym{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
     <style>
         .dashboard-top-bar {
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
-            padding: 1rem 0;
-            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #dbe6f4;
+            border-radius: 18px;
+            padding: 1rem 1.15rem;
+            margin: 1.2rem auto 2rem;
+            box-shadow: 0 20px 34px -30px rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(8px);
         }
         .profile-header-card {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            background: linear-gradient(140deg, #0f172a 0%, #1d4ed8 100%);
             color: white;
             border: none;
             border-radius: 20px;
+            box-shadow: 0 26px 44px -34px rgba(15, 23, 42, 0.9);
         }
         .profile-img-lg {
             width: 120px;
@@ -27,8 +31,8 @@
         .nav-pills-custom .nav-link {
             color: #64748b !important;
             font-weight: 600;
-            border-radius: 10px;
-            padding: 0.75rem 1.25rem;
+            border-radius: 11px;
+            padding: 0.72rem 1.15rem;
             transition: all 0.2s;
             background-color: #f8fafc;
             border: 1px solid #e2e8f0;
@@ -38,7 +42,7 @@
             background-color: #eef2ff;
         }
         .nav-pills-custom .nav-link.active {
-            background-color: #3b82f6;
+            background: linear-gradient(120deg, #1d4ed8 0%, #2563eb 100%);
             color: white !important;
             border-color: transparent;
             box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
@@ -67,17 +71,18 @@
             padding: 0.35em 0.65em;
         }
         .btn-ai {
-            background: linear-gradient(45deg, #6366f1, #a855f7);
+            background: linear-gradient(120deg, #1d4ed8 0%, #0891b2 100%);
             color: white;
             border: none;
             padding: 0.8rem;
             transition: all 0.3s;
+            box-shadow: 0 14px 30px -24px rgba(29, 78, 216, 0.78);
         }
         .btn-ai:hover {
-            background: linear-gradient(45deg, #4f46e5, #9333ea);
+            background: linear-gradient(120deg, #1e40af 0%, #0e7490 100%);
             color: white;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 18px 28px -22px rgba(29, 78, 216, 0.85);
         }
         .ai-content-wrapper {
             line-height: 1.6;
@@ -97,6 +102,8 @@
         }
         .queue-side-card {
             border-radius: 18px;
+            border: 1px solid #dbe6f4;
+            background: rgba(255, 255, 255, 0.9);
         }
         .queue-scroll-container {
             max-height: 340px;
@@ -115,11 +122,24 @@
             border-radius: 12px;
             padding: 0.6rem 0.7rem;
             margin-bottom: 0.55rem;
-            background: #f8fafc;
+            background: #f8fbff;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .queue-item:hover {
+            border-color: #93c5fd;
+            box-shadow: 0 12px 24px -22px rgba(30, 64, 175, 0.65);
         }
         .radar-wrapper {
             position: relative;
             height: 340px;
+        }
+        .card.card-custom {
+            background: rgba(255, 255, 255, 0.92);
+        }
+        @media (max-width: 992px) {
+            .dashboard-top-bar {
+                margin-inline: 0.5rem;
+            }
         }
     </style>
 {% endblock %}
@@ -134,7 +154,7 @@
                             <i class="bi bi-search text-muted"></i>
                         </span>
                         <input id="input-buscar" type="text" class="form-control bg-light border-start-0 rounded-end-pill" placeholder="Buscar socio por cédula...">
-                        <button class="btn btn-primary rounded-pill ms-2 px-4 fw-bold" id="btn-buscar">BUSCAR</button>
+                        <button class="btn btn-primary rounded-pill ms-2 px-4 fw-bold" id="btn-buscar">Buscar</button>
                     </div>
                 </div>
                 <div class="col-md-6 text-md-end mt-3 mt-md-0">
@@ -162,7 +182,7 @@
                         </div>
 
                         <button type="button" class="btn btn-ai w-100 mt-4 rounded-pill fw-bold shadow-sm" onclick="checkUserBeforeModal()">
-                            <i class="bi bi-magic me-2"></i>GENERAR RUTINA IA
+                            <i class="bi bi-magic me-2"></i>Generar rutina IA
                         </button>
                     </div>
                 </div>
@@ -187,7 +207,7 @@
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content border-0 shadow-lg rounded-4">
                         <div class="modal-header bg-dark text-white border-0 py-3">
-                            <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2"></i>Datos para tu Rutina IA</h5>
+                            <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2"></i>Datos para rutina IA</h5>
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body p-4">
@@ -236,7 +256,7 @@
                         </div>
                         <div class="modal-footer border-0 p-4 pt-0">
                             <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="button" id="btn-confirm-ia" class="btn btn-ai rounded-pill px-4 fw-bold">GENERAR PLAN</button>
+                            <button type="button" id="btn-confirm-ia" class="btn btn-ai rounded-pill px-4 fw-bold">Generar rutina</button>
                         </div>
                     </div>
                 </div>
@@ -259,7 +279,7 @@
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link" data-bs-toggle="pill" data-bs-target="#profile-settings">
-                                    <i class="bi bi-clock-history me-2"></i>Historial de Planes
+                                    <i class="bi bi-clock-history me-2"></i>Historial de planes
                                 </button>
                             </li>
                         </ul>
@@ -358,13 +378,13 @@
             <div class="col-12">
                 <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
                     <div class="card-header bg-dark text-white p-4 d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 fw-bold"><i class="bi bi-robot me-2 text-info"></i>Plan de Entrenamiento Personalizado (IA)</h5>
+                        <h5 class="mb-0 fw-bold"><i class="bi bi-robot me-2 text-info"></i>Rutina personalizada (IA)</h5>
                         <div class="d-flex align-items-center">
                             <button id="btn-pdf-download" class="btn btn-sm btn-primary rounded-pill px-3 me-2 fw-bold">
-                                <i class="bi bi-file-earmark-pdf me-1"></i> DESCARGAR PDF
+                                <i class="bi bi-file-earmark-pdf me-1"></i>Descargar PDF
                             </button>
                             <button id="btn-whatsapp-share" class="btn btn-sm btn-success rounded-pill px-3 me-3 fw-bold">
-                                <i class="bi bi-whatsapp me-1"></i> ENVIAR POR WHATSAPP
+                                <i class="bi bi-whatsapp me-1"></i>Enviar por WhatsApp
                             </button>
                             <button class="btn btn-sm btn-outline-light rounded-circle" onclick="document.getElementById('section-ai-plan').style.display='none'">
                                 <i class="bi bi-x"></i>
@@ -388,7 +408,7 @@
                         </div>
                     </div>
                     <div class="card-body" id="ai-rutinas-list">
-                        <p class="text-muted small mb-0">Sin rutinas generadas para este usuario.</p>
+                        <p class="text-muted small mb-0">Sin rutinas generadas para este socio.</p>
                     </div>
                 </div>
             </div>
@@ -399,32 +419,6 @@
     let currentRutinaId = null;
     let currentRutinaPdfUrl = null;
     let currentUsuarioCedula = null;
-    let medidaBaseCatalogo = null;
-    let medidaBaseCatalogoPromise = null;
-
-    async function obtenerMedidaBaseCatalogo() {
-        if (medidaBaseCatalogo) {
-            return medidaBaseCatalogo;
-        }
-        if (medidaBaseCatalogoPromise) {
-            return medidaBaseCatalogoPromise;
-        }
-
-        medidaBaseCatalogoPromise = fetch("{{ path('app_usuario_medida_estandar_listar') }}")
-            .then((response) => response.ok ? response.json() : [])
-            .then((listado) => {
-                if (Array.isArray(listado) && listado.length > 0) {
-                    medidaBaseCatalogo = listado.find((item) => item.active === true) || listado[0];
-                }
-                return medidaBaseCatalogo;
-            })
-            .catch(() => null)
-            .finally(() => {
-                medidaBaseCatalogoPromise = null;
-            });
-
-        return medidaBaseCatalogoPromise;
-    }
 
     function escapeHtml(value) {
         return String(value || '')
@@ -459,7 +453,7 @@
 
             const items = Array.isArray(data.items) ? data.items : [];
             if (items.length === 0) {
-                list.innerHTML = '<p class="text-muted small mb-0">Sin rutinas generadas para este usuario.</p>';
+                list.innerHTML = '<p class="text-muted small mb-0">Sin rutinas generadas para este socio.</p>';
             } else {
                 list.innerHTML = items.map((item) => {
                     const fecha = item.created_at ? new Date(item.created_at).toLocaleString() : '--';
@@ -494,7 +488,7 @@
             Swal.fire({ 
                 icon: 'warning', 
                 title: 'Acción bloqueada', 
-                text: 'Primero debes cargar el perfil de un socio (mediante búsqueda o ingreso) para generar su rutina personalizada.' 
+                text: 'Primero debes cargar el perfil de un socio (mediante búsqueda o ingreso) para generar su rutina personalizada.'
             });
             return;
         }
@@ -514,8 +508,8 @@
         if (!fullName || fullName === "Cargando...") {
             Swal.fire({ 
                 icon: 'warning', 
-                title: 'Usuario no detectado', 
-                text: 'Por favor, busca un socio o espera a que se cargue uno mediante el ingreso para generar un plan.' 
+                title: 'Socio no detectado', 
+                text: 'Por favor, busca un socio o espera a que se cargue uno mediante el ingreso para generar una rutina.' 
             });
             return;
         }
@@ -596,7 +590,7 @@
         
         if (!content && !currentRutinaPdfUrl) return;
 
-        const header = `*RUTINA IA SPARTANGYM - ${name}*\n\n`;
+        const header = `*RUTINA IA SPARTAMGYM - ${name}*\n\n`;
         const pdfLine = currentRutinaPdfUrl ? `\n\nPDF: ${currentRutinaPdfUrl}` : '';
         const text = encodeURIComponent(header + content + pdfLine);
         const url = `https://api.whatsapp.com/send?phone=${phone}&text=${text}`;
@@ -657,7 +651,7 @@
         const colaCount = document.getElementById("cola-count");
         const colaCountLeft = document.getElementById("cola-count-left");
         if (listaEncola) {
-            listaEncola.innerHTML = '<li class="dropdown-header text-uppercase fw-bold small">Socios dentro del gym</li>';
+            listaEncola.innerHTML = '<li class="dropdown-header text-uppercase fw-bold small">Socios dentro del gimnasio</li>';
         }
         listaEncolaLeft.innerHTML = '';
 
@@ -738,10 +732,9 @@
             cargarRutinasPorCedula(currentUsuarioCedula);
         }
 
-        const medidaBaseUsuario = userData.medida_estandar && typeof userData.medida_estandar === 'object'
+        const medidaComparacion = userData.medida_estandar && typeof userData.medida_estandar === 'object'
             ? userData.medida_estandar
             : null;
-        const medidaComparacion = medidaBaseUsuario || medidaBaseCatalogo || null;
 
         document.getElementById('ai-fullName').value = userData.nombre;
         if (datofisicos.length > 0) {
@@ -750,19 +743,6 @@
             document.getElementById('ai-weight').value = medidaComparacion.peso;
         }
         crearOActualizarGrafica(datofisicos, medidaComparacion);
-
-        if (!medidaBaseUsuario && !medidaBaseCatalogo) {
-            const cedulaSnapshot = userData.cedula || null;
-            obtenerMedidaBaseCatalogo().then((fallback) => {
-                if (!fallback || currentUsuarioCedula !== cedulaSnapshot) {
-                    return;
-                }
-                if (datofisicos.length === 0 && fallback.peso) {
-                    document.getElementById('ai-weight').value = fallback.peso;
-                }
-                crearOActualizarGrafica(datofisicos, fallback);
-            });
-        }
 
         $('#table_menu').bootstrapTable('load', datofisicos);
 
@@ -1038,7 +1018,7 @@
         const confirm = await Swal.fire({
             icon: 'question',
             title: 'Registrar salida',
-            text: '¿Deseas registrar la salida de este usuario?',
+            text: '¿Deseas registrar la salida de este socio?',
             showCancelButton: true,
             confirmButtonText: 'Sí, registrar',
             cancelButtonText: 'Cancelar'

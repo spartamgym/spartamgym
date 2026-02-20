@@ -5,40 +5,39 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        :root {
-            --primary-gradient: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-            --secondary-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            --accent-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            --danger-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-        }
-
-        body {
-            background-color: #f8fafc;
-        }
-
         .dashboard-header {
-            background: #1e293b;
+            background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
             color: white;
-            padding: 2rem 0;
+            padding: 2.4rem 0;
             margin-bottom: 3rem;
-            border-radius: 0 0 2rem 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 2.2rem 2.2rem;
+            box-shadow: 0 30px 48px -36px rgba(15, 23, 42, 0.9);
+            position: relative;
+            overflow: hidden;
         }
-
+        .dashboard-header::after {
+            content: "";
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(125, 211, 252, 0.42) 0%, rgba(125, 211, 252, 0) 70%);
+            right: -70px;
+            top: -70px;
+            pointer-events: none;
+        }
         .admin-card {
-            border: none;
-            border-radius: 1.25rem;
+            border-radius: 1.35rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background: white;
+            background: rgba(255, 255, 255, 0.94);
             overflow: hidden;
             height: 100%;
+            border: 1px solid rgba(226, 232, 240, 0.92);
         }
-
         .admin-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 26px 48px -34px rgba(15, 23, 42, 0.66);
         }
-
         .icon-wrapper {
             width: 70px;
             height: 70px;
@@ -49,35 +48,28 @@
             margin-bottom: 1.5rem;
             font-size: 2rem;
             color: white;
+            box-shadow: 0 16px 26px -18px rgba(30, 41, 59, 0.7);
         }
-
-        .bg-gradient-blue { background: var(--primary-gradient); }
-        .bg-gradient-green { background: var(--secondary-gradient); }
-        .bg-gradient-orange { background: var(--accent-gradient); }
-        .bg-gradient-red { background: var(--danger-gradient); }
+        .bg-gradient-blue { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
+        .bg-gradient-green { background: linear-gradient(135deg, #059669 0%, #10b981 100%); }
+        .bg-gradient-orange { background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%); }
+        .bg-gradient-red { background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); }
         .bg-gradient-dark { background: linear-gradient(135deg, #334155 0%, #1e293b 100%); }
-        .bg-gradient-cyan { background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); }
-        .bg-gradient-indigo { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); }
-
+        .bg-gradient-cyan { background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%); }
+        .bg-gradient-indigo { background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%); }
         .card-title {
             color: #1e293b;
             font-weight: 700;
             margin-bottom: 0.5rem;
         }
-
         .card-text {
             color: #64748b;
             font-size: 0.9rem;
         }
-
-        .nav-link-custom {
-            color: rgba(255,255,255,0.8);
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .nav-link-custom:hover {
-            color: white;
+        .admin-card .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
     </style>
 {% endblock %}
@@ -88,7 +80,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h1 class="display-5 fw-bold mb-1">SpartaM<span class="text-primary">Gym</span></h1>
-                    <p class="lead mb-0 opacity-75">Sistema Integral de Gestión de Fitness</p>
+                    <p class="lead mb-0 opacity-75">Sistema integral de gestión del gimnasio</p>
                 </div>
                 <div class="text-end d-none d-md-block">
                     <span class="badge bg-primary px-3 py-2 rounded-pill mb-2">Administrador</span>
@@ -100,7 +92,7 @@
 
     <div class="container mb-5">
         <div class="row g-4">
-            <!-- Dashboard Principal -->
+            <!-- Panel en tiempo real -->
             <div class="col-md-6 col-lg-4">
                 <a href="{{ path('app_dashboard') }}" class="text-decoration-none">
                     <div class="card admin-card p-4 shadow-sm">
@@ -108,14 +100,14 @@
                             <div class="icon-wrapper bg-gradient-blue mx-auto">
                                 <i class="bi bi-grid-1x2-fill"></i>
                             </div>
-                            <h5 class="card-title text-uppercase letter-spacing-1">Dashboard</h5>
+                            <h5 class="card-title text-uppercase letter-spacing-1">Panel en tiempo real</h5>
                             <p class="card-text">Resumen general, métricas de rendimiento y estado del sistema.</p>
                         </div>
                     </div>
                 </a>
             </div>
 
-            <!-- Usuarios -->
+            <!-- Socios -->
             <div class="col-md-6 col-lg-4">
                 <a href="{{ path('app_usuario') }}" class="text-decoration-none">
                     <div class="card admin-card p-4 shadow-sm">
@@ -123,7 +115,7 @@
                             <div class="icon-wrapper bg-gradient-green mx-auto">
                                 <i class="bi bi-people-fill"></i>
                             </div>
-                            <h5 class="card-title text-uppercase">Clientes</h5>
+                            <h5 class="card-title text-uppercase">Socios</h5>
                             <p class="card-text">Gestión de base de datos, perfiles y seguimiento de socios.</p>
                         </div>
                     </div>
@@ -198,8 +190,8 @@
                             <div class="icon-wrapper bg-gradient-indigo mx-auto">
                                 <i class="bi bi-link-45deg"></i>
                             </div>
-                            <h5 class="card-title text-uppercase">Asignar Acceso</h5>
-                            <p class="card-text">Vincular identificadores físicos con perfiles de usuarios.</p>
+                            <h5 class="card-title text-uppercase">Asignar tarjeta</h5>
+                            <p class="card-text">Vincular identificadores físicos con perfiles de socios.</p>
                         </div>
                     </div>
                 </a>
@@ -214,7 +206,7 @@
                                 <i class="bi bi-journal-plus"></i>
                             </div>
                             <h5 class="card-title text-uppercase">Inscripciones</h5>
-                            <p class="card-text">Asignar planes de entrenamiento a usuarios registrados.</p>
+                            <p class="card-text">Asignar planes de entrenamiento a socios registrados.</p>
                         </div>
                     </div>
                 </a>
@@ -224,7 +216,7 @@
 
     <footer class="text-center py-4 text-muted border-top bg-white mt-5">
         <div class="container">
-            <small>&copy; {{ "now"|date("Y") }} SpartaMGym - Professional Fitness Management</small>
+            <small>&copy; {{ "now"|date("Y") }} SpartaMGym - Gestión profesional de gimnasio</small>
         </div>
     </footer>
 {% endblock %}

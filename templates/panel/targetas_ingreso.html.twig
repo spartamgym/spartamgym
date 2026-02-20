@@ -6,104 +6,104 @@
     {{ parent() }}
     <style>
         .page-header {
-            background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
             color: white;
-            padding: 2rem 0;
+            padding: 2.2rem 0;
             margin-bottom: 2rem;
-            border-radius: 0 0 20px 20px;
+            border-radius: 0 0 26px 26px;
+            box-shadow: 0 28px 48px -36px rgba(15, 23, 42, 0.9);
         }
-        .card-custom {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        .table-container {
+            background: rgba(255, 255, 255, 0.92);
+            padding: 1.15rem;
+            border-radius: 18px;
+            border: 1px solid #dbe6f4;
+            box-shadow: 0 20px 34px -30px rgba(15, 23, 42, 0.65);
+        }
+        .table-container .table {
+            font-size: 0.84rem;
+        }
+        .table-container .table > :not(caption) > * > * {
+            padding: 0.44rem 0.48rem;
+            white-space: nowrap;
         }
         .btn-rounded {
             border-radius: 10px;
-        }
-        .table-container {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
     </style>
 {% endblock %}
 
 {% block body %}
     <div class="page-header shadow-sm">
-        <div class="container d-flex justify-content-between align-items-center">
+        <div class="container-fluid px-3 px-lg-4 d-flex justify-content-between align-items-center gap-2 flex-wrap">
             <div>
                 <h2 class="fw-bold mb-0">Tarjetas de Acceso</h2>
                 <p class="mb-0 opacity-75">Control de inventario y estado de dispositivos RFID/NFC</p>
             </div>
-            <a href="{{ path('app_panel') }}" class="btn btn-light btn-rounded shadow-sm">
-                <i class="bi bi-house-door me-2"></i>Inicio
-            </a>
+            <div class="d-flex gap-2">
+                <button type="button" id="btn-nueva-targeta" class="btn btn-light btn-rounded shadow-sm fw-bold">
+                    <i class="bi bi-plus-circle me-1"></i>Nueva Tarjeta
+                </button>
+            </div>
         </div>
     </div>
 
-    <div class="container pb-5">
-        <div class="row g-4">
-            <!-- Registro de Tarjetas -->
-            <div class="col-lg-4">
-                <div class="card card-custom shadow-sm">
-                    <div class="card-body p-4">
-                        <h5 class="card-title fw-bold mb-4" id="form-title">
-                            <i class="bi bi-plus-circle me-2 text-primary"></i>Registrar Tarjeta
-                        </h5>
+    <div class="container-fluid px-3 px-lg-4 pb-5">
+        <div class="table-container shadow-sm">
+            <h5 class="fw-bold mb-3">
+                <i class="bi bi-inventory me-2 text-dark"></i>Inventario de Dispositivos
+            </h5>
 
-                        <form id="form-targeta">
-                            <input type="hidden" id="id" name="id" value="0">
-                            
-                            <div class="mb-4">
-                                <label for="code" class="form-label fw-semibold small">Código de Identificación</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-upc-scan"></i></span>
-                                    <input type="text" class="form-control border-start-0" id="code" name="code" required maxlength="255" placeholder="Escanear o ingresar código">
-                                </div>
-                                <div class="form-text mt-2 small">Este código debe ser único para cada dispositivo físico.</div>
-                            </div>
+            <table id="table_targetas"
+                   class="table"
+                   data-url="{{ path('app_panel_listar_targetas') }}"
+                   data-toggle="table"
+                   data-search="true"
+                   data-pagination="true"
+                   data-page-size="12"
+                   data-classes="table table-sm table-hover align-middle"
+                   data-header-style="headerStyle">
+                <thead>
+                    <tr>
+                        <th data-field="id" data-sortable="true" data-width="60">ID</th>
+                        <th data-field="code" data-sortable="true">Código</th>
+                        <th data-field="usuario" data-sortable="true" data-formatter="userFormatter">Asignado a</th>
+                        <th data-field="status" data-align="center" data-formatter="statusFormatter">Estado</th>
+                        <th data-field="operate" data-align="center" data-width="110" data-formatter="accionesFormatter" data-events="operateEvents">Acciones</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
 
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-primary fw-bold p-2 btn-rounded" id="btn-submit">
-                                    <i class="bi bi-save me-2"></i>Guardar Tarjeta
-                                </button>
-                                <button type="button" class="btn btn-link btn-sm mt-2 text-muted text-decoration-none" onclick="resetForm()">
-                                    Cancelar / Limpiar
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Listado de Tarjetas -->
-            <div class="col-lg-8">
-                <div class="table-container shadow-sm">
-                    <h5 class="fw-bold mb-4">
-                        <i class="bi bi-inventory me-2 text-dark"></i>Inventario de Dispositivos
+    <div class="modal fade" id="modal-targeta" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header bg-dark text-white p-4">
+                    <h5 class="modal-title fw-bold" id="form-title">
+                        <i class="bi bi-plus-circle me-2"></i>Registrar Tarjeta
                     </h5>
-                    
-                    <table id="table_targetas"
-                           class="table"
-                           data-url="{{ path('app_panel_listar_targetas') }}"
-                           data-toggle="table"
-                           data-search="true"
-                           data-pagination="true"
-                           data-page-size="10"
-                           data-classes="table table-hover"
-                           data-header-style="headerStyle">
-                        <thead>
-                            <tr>
-                                <th data-field="id" data-sortable="true" data-width="50">ID</th>
-                                <th data-field="code" data-sortable="true">Código</th>
-                                <th data-field="usuario" data-sortable="true" data-formatter="userFormatter">Asignado a</th>
-                                <th data-field="status" data-align="center" data-formatter="statusFormatter">Estado</th>
-                                <th data-field="operate" data-align="center" data-width="120" data-formatter="accionesFormatter" data-events="operateEvents">Acciones</th>
-                            </tr>
-                        </thead>
-                    </table>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
+                <form id="form-targeta" class="modal-body p-4">
+                    <input type="hidden" id="id" name="id" value="0">
+
+                    <div class="mb-3">
+                        <label for="code" class="form-label fw-semibold small">Código de Identificación</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-upc-scan"></i></span>
+                            <input type="text" class="form-control border-start-0" id="code" name="code" required maxlength="255" placeholder="Escanear o ingresar código">
+                        </div>
+                        <div class="form-text mt-2 small">Este código debe ser único para cada dispositivo físico.</div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="button" class="btn btn-light btn-rounded px-4" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary btn-rounded px-4 fw-bold" id="btn-submit">
+                            <i class="bi bi-save me-1"></i>Guardar Tarjeta
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -120,64 +120,103 @@
 
     function statusFormatter(value) {
         const cls = value === 'activo' ? 'bg-success' : 'bg-secondary';
-        return `<span class="badge ${cls} rounded-pill px-3">${value.toUpperCase()}</span>`;
+        return `<span class="badge ${cls} rounded-pill px-3">${String(value || '').toUpperCase()}</span>`;
     }
 
     function accionesFormatter() {
         return `
-            <div class="btn-group shadow-sm">
-                <button class="btn btn-white btn-sm editar border" title="Editar"><i class="bi bi-pencil-fill text-primary"></i></button>
-                <button class="btn btn-white btn-sm eliminar border" title="Eliminar"><i class="bi bi-trash-fill text-danger"></i></button>
+            <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-primary editar" title="Editar"><i class="bi bi-pencil-fill"></i></button>
+                <button class="btn btn-outline-danger eliminar" title="Eliminar"><i class="bi bi-trash-fill"></i></button>
             </div>`;
     }
 
-    window.operateEvents = {
-        'click .editar': function (e, value, row) {
-            document.getElementById('id').value = row.id;
-            document.getElementById('code').value = row.code;
-            document.getElementById('form-title').innerHTML = '<i class="bi bi-pencil-square me-2 text-primary"></i>Editando Tarjeta #' + row.id;
-            document.getElementById('btn-submit').className = 'btn btn-primary fw-bold p-2 btn-rounded';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        },
-        'click .eliminar': function (e, value, row) {
-            Swal.fire({
-                title: '¿Eliminar tarjeta?',
-                text: "Esta acción no se puede deshacer.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc3545',
-                confirmButtonText: 'Sí, eliminar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire('Información', 'Funcionalidad de eliminación pendiente de implementar en backend.', 'info');
-                }
-            })
+    const modalTargetaEl = document.getElementById('modal-targeta');
+    let modalTargeta = null;
+    function getModalTargeta() {
+        if (!modalTargeta) {
+            modalTargeta = bootstrap.Modal.getOrCreateInstance(modalTargetaEl);
         }
-    };
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('form-targeta');
-        form.addEventListener('submit', function(event) {
-            event.preventDefault();
-            const formData = new FormData(form);
-            fetch('{{ path('app_panel_crear_targeta') }}', { method: 'POST', body: formData })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    Swal.fire({ icon: 'success', title: '¡Éxito!', text: data.message, timer: 2000 });
-                    resetForm();
-                    $('#table_targetas').bootstrapTable('refresh');
-                } else {
-                    Swal.fire('Error', data.message, 'error');
-                }
-            });
-        });
-    });
+        return modalTargeta;
+    }
 
     function resetForm() {
         document.getElementById('form-targeta').reset();
         document.getElementById('id').value = 0;
-        document.getElementById('form-title').innerHTML = '<i class="bi bi-plus-circle me-2 text-primary"></i>Registrar Tarjeta';
+        document.getElementById('form-title').innerHTML = '<i class="bi bi-plus-circle me-2"></i>Registrar Tarjeta';
+        document.getElementById('btn-submit').className = 'btn btn-primary btn-rounded px-4 fw-bold';
+        document.getElementById('btn-submit').innerHTML = '<i class="bi bi-save me-1"></i>Guardar Tarjeta';
     }
+
+    document.getElementById('btn-nueva-targeta').addEventListener('click', function () {
+        resetForm();
+        getModalTargeta().show();
+    });
+
+    window.operateEvents = {
+        'click .editar': function (e, value, row) {
+            resetForm();
+            document.getElementById('id').value = row.id;
+            document.getElementById('code').value = row.code || '';
+            document.getElementById('form-title').innerHTML = '<i class="bi bi-pencil-square me-2"></i>Editando Tarjeta #' + row.id;
+            document.getElementById('btn-submit').innerHTML = '<i class="bi bi-save me-1"></i>Actualizar';
+            getModalTargeta().show();
+        },
+        'click .eliminar': async function (e, value, row) {
+            const result = await Swal.fire({
+                title: '¿Eliminar tarjeta?',
+                text: `Se eliminará la tarjeta "${row.code}".`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (!result.isConfirmed) return;
+
+            const formData = new FormData();
+            formData.append('id', row.id);
+
+            const response = await fetch('{{ path('app_panel_eliminar_targeta') }}', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+
+            if (!response.ok || data.status !== 'success') {
+                Swal.fire('Error', data.message || 'No se pudo eliminar la tarjeta.', 'error');
+                return;
+            }
+
+            $('#table_targetas').bootstrapTable('refresh');
+            Swal.fire({ icon: 'success', title: 'Eliminada', text: data.message, timer: 1800, showConfirmButton: false });
+        }
+    };
+
+    document.getElementById('form-targeta').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        try {
+            const response = await fetch('{{ path('app_panel_crear_targeta') }}', { method: 'POST', body: formData });
+            const data = await response.json();
+
+            if (!response.ok || data.status !== 'success') {
+                Swal.fire('Error', data.message || 'No se pudo guardar la tarjeta.', 'error');
+                return;
+            }
+
+            const instance = bootstrap.Modal.getInstance(modalTargetaEl);
+            if (instance) instance.hide();
+            resetForm();
+            $('#table_targetas').bootstrapTable('refresh');
+            Swal.fire({ icon: 'success', title: 'Guardada', text: data.message, timer: 1800, showConfirmButton: false });
+        } catch (error) {
+            console.error('Error:', error);
+            Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
+        }
+    });
+
+    modalTargetaEl.addEventListener('hidden.bs.modal', resetForm);
 </script>
 {% endblock %}

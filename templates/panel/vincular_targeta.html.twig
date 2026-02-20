@@ -6,17 +6,18 @@
     {{ parent() }}
     <style>
         .page-header {
-            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
             color: white;
-            padding: 2rem 0;
+            padding: 2.2rem 0;
             margin-bottom: 2rem;
-            border-radius: 0 0 20px 20px;
+            border-radius: 0 0 26px 26px;
+            box-shadow: 0 28px 48px -36px rgba(15, 23, 42, 0.9);
         }
         .card-custom {
-            border: none;
-            border-radius: 15px;
-            background: white;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid #dbe6f4;
+            box-shadow: 0 20px 34px -30px rgba(15, 23, 42, 0.65);
             height: 100%;
         }
         .table-title {
@@ -27,17 +28,24 @@
             margin-bottom: 1rem;
         }
         .btn-action {
-            border-radius: 12px;
+            border-radius: 999px;
             padding: 0.75rem 1.5rem;
             font-weight: 600;
             transition: all 0.3s;
+        }
+        .card-custom .table {
+            font-size: 0.83rem;
+        }
+        .card-custom .table > :not(caption) > * > * {
+            padding: 0.42rem 0.46rem;
+            white-space: nowrap;
         }
     </style>
 {% endblock %}
 
 {% block body %}
     <div class="page-header shadow-sm">
-        <div class="container d-flex justify-content-between align-items-center">
+        <div class="container-fluid px-3 px-lg-4 d-flex justify-content-between align-items-center">
             <div>
                 <h2 class="fw-bold mb-0">Asignación de Tarjetas</h2>
                 <p class="mb-0 opacity-75">Vincula identificadores físicos a los perfiles de los socios</p>
@@ -46,14 +54,11 @@
                 <button id="btn-unir" class="btn btn-success btn-action shadow-sm">
                     <i class="bi bi-link me-2"></i>Vincular Ahora
                 </button>
-                <a href="{{ path('app_panel') }}" class="btn btn-light btn-action shadow-sm">
-                    <i class="bi bi-house me-2"></i>Inicio
-                </a>
             </div>
         </div>
     </div>
 
-    <div class="container pb-5">
+    <div class="container-fluid px-3 px-lg-4 pb-5">
         <div class="row g-4">
             <!-- Columna Tarjetas -->
             <div class="col-lg-6">
@@ -70,7 +75,7 @@
                            data-page-size="5"
                            data-click-to-select="true"
                            data-single-select="true"
-                           data-classes="table table-hover"
+                           data-classes="table table-sm table-hover align-middle"
                            data-header-style="headerStyle">
                         <thead>
                             <tr>
@@ -87,7 +92,7 @@
             <div class="col-lg-6">
                 <div class="card-custom p-4">
                     <h5 class="table-title">
-                        <i class="bi bi-person-bounding-box me-2 text-success"></i>2. Seleccione Socio
+                        <i class="bi bi-person-bounding-box me-2 text-success"></i>2. Seleccione un socio
                     </h5>
                     <table id="table_usuarios"
                            class="table"
@@ -98,7 +103,7 @@
                            data-page-size="5"
                            data-click-to-select="true"
                            data-single-select="true"
-                           data-classes="table table-hover"
+                           data-classes="table table-sm table-hover align-middle"
                            data-header-style="headerStyle">
                         <thead>
                             <tr>
@@ -125,7 +130,7 @@
         if (!selectedCard || !selectedUsuario) {
             Swal.fire({ 
                 title: 'Atención', 
-                text: 'Debe seleccionar una tarjeta y un usuario para continuar.', 
+                text: 'Debe seleccionar una tarjeta y un socio para continuar.', 
                 icon: 'warning',
                 confirmButtonColor: '#0d6efd'
             });

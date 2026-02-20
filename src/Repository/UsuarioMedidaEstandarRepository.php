@@ -35,4 +35,19 @@ class UsuarioMedidaEstandarRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    /**
+     * @return UsuarioMedidaEstandar[]
+     */
+    public function findAllActiveByUsuario(Usuario $usuario): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.usuario = :usuario')
+            ->andWhere('u.active = :active')
+            ->setParameter('usuario', $usuario)
+            ->setParameter('active', true)
+            ->orderBy('u.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }
