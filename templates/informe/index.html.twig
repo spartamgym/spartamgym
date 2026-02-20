@@ -34,6 +34,16 @@
             padding: 0.44rem 0.5rem;
             white-space: nowrap;
         }
+        .report-users-list {
+            max-height: 360px;
+            overflow-y: auto;
+        }
+        .report-users-list .table {
+            margin-bottom: 0;
+        }
+        #promedioSemanalChart {
+            max-height: 320px;
+        }
     </style>
 {% endblock %}
 
@@ -109,6 +119,46 @@
                         <canvas id="ingresosSexoHoraChart"></canvas>
                     </div>
                 </div>
+
+                <div class="card card-custom p-4 shadow-sm mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                        <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-person-lines-fill me-2 text-primary"></i>Promedio semanal por socio</h5>
+                        <small class="text-muted">Selecciona un socio para ver llegada, salida y duracion promedio por dia</small>
+                    </div>
+                    <div class="table-responsive report-users-list">
+                        <table class="table table-sm table-hover align-middle">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="border-0">Socio</th>
+                                    <th class="border-0">Cédula</th>
+                                    <th class="border-0 text-end">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for socio in socios %}
+                                    <tr>
+                                        <td class="fw-semibold text-dark">{{ socio.nombre }}</td>
+                                        <td>{{ socio.cedula }}</td>
+                                        <td class="text-end">
+                                            <button
+                                                type="button"
+                                                class="btn btn-sm btn-outline-primary open-weekly-average-btn"
+                                                data-user-name="{{ socio.nombre }}"
+                                                data-endpoint="{{ path('app_informe_usuario_promedio_semanal', {id: socio.id}) }}"
+                                            >
+                                                <i class="bi bi-bar-chart-line me-1"></i> Ver promedio
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted">No hay socios registrados.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <!-- Panel Lateral de Resumen -->
@@ -156,6 +206,23 @@
                                 <button class="btn btn-outline-success btn-sm text-start"><i class="bi bi-file-earmark-excel me-2"></i>Exportar Excel</button>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="promedioSemanalModal" tabindex="-1" aria-labelledby="promedioSemanalTitulo" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="promedioSemanalTitulo">Promedio semanal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small mb-3" id="promedioSemanalResumen">Selecciona un socio para ver llegada, salida y duracion promedio por dia.</p>
+                    <div style="height: 320px;">
+                        <canvas id="promedioSemanalChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -326,6 +393,187 @@
                         legend: { position: 'bottom' }
                     }
                 }
+            });
+
+            const weeklyButtons = document.querySelectorAll('.open-weekly-average-btn');
+            const weeklyModalElement = document.getElementById('promedioSemanalModal');
+            const weeklyTitleElement = document.getElementById('promedioSemanalTitulo');
+            const weeklySummaryElement = document.getElementById('promedioSemanalResumen');
+            const weeklyChartCanvas = document.getElementById('promedioSemanalChart');
+
+            let weeklyAverageChart = null;
+            const weeklyModal = weeklyModalElement && typeof bootstrap !== 'undefined'
+                ? new bootstrap.Modal(weeklyModalElement)
+                : null;
+
+            const resetWeeklyChart = () => {
+                if (weeklyAverageChart) {
+                    weeklyAverageChart.destroy();
+                    weeklyAverageChart = null;
+                }
+            };
+
+            const renderWeeklyChart = (chartPayload) => {
+                if (!weeklyChartCanvas) {
+                    return;
+                }
+
+                const labels = Array.isArray(chartPayload.labels) ? chartPayload.labels : [];
+                const llegadaHoras = Array.isArray(chartPayload.llegada_horas) ? chartPayload.llegada_horas : [];
+                const salidaHoras = Array.isArray(chartPayload.salida_horas) ? chartPayload.salida_horas : [];
+                const duracionHoras = Array.isArray(chartPayload.duracion_horas) ? chartPayload.duracion_horas : [];
+                const llegadaLabel = Array.isArray(chartPayload.llegada_label) ? chartPayload.llegada_label : [];
+                const salidaLabel = Array.isArray(chartPayload.salida_label) ? chartPayload.salida_label : [];
+                const duracionLabel = Array.isArray(chartPayload.duracion_label) ? chartPayload.duracion_label : [];
+                const sesiones = Array.isArray(chartPayload.sesiones) ? chartPayload.sesiones : [];
+
+                const ctxWeekly = weeklyChartCanvas.getContext('2d');
+                weeklyAverageChart = new Chart(ctxWeekly, {
+                    type: 'bar',
+                    data: {
+                        labels,
+                        datasets: [
+                            {
+                                type: 'line',
+                                label: 'Llegada promedio',
+                                data: llegadaHoras,
+                                yAxisID: 'yHora',
+                                borderColor: '#2563eb',
+                                backgroundColor: '#2563eb',
+                                borderWidth: 2,
+                                pointRadius: 4,
+                                tension: 0.25
+                            },
+                            {
+                                type: 'line',
+                                label: 'Salida promedio',
+                                data: salidaHoras,
+                                yAxisID: 'yHora',
+                                borderColor: '#f97316',
+                                backgroundColor: '#f97316',
+                                borderWidth: 2,
+                                pointRadius: 4,
+                                tension: 0.25
+                            },
+                            {
+                                type: 'bar',
+                                label: 'Duracion promedio',
+                                data: duracionHoras,
+                                yAxisID: 'yDuracion',
+                                backgroundColor: 'rgba(5, 150, 105, 0.6)',
+                                borderColor: '#059669',
+                                borderWidth: 1,
+                                borderRadius: 8
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => {
+                                        const sesionesDia = sesiones[context.dataIndex] || 0;
+                                        if (context.dataset.label === 'Llegada promedio') {
+                                            return `Llegada: ${llegadaLabel[context.dataIndex] || '--'} (${sesionesDia} sesiones)`;
+                                        }
+                                        if (context.dataset.label === 'Salida promedio') {
+                                            return `Salida: ${salidaLabel[context.dataIndex] || '--'} (${sesionesDia} sesiones)`;
+                                        }
+                                        return `Duracion: ${duracionLabel[context.dataIndex] || '--'} (${sesionesDia} sesiones)`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            yHora: {
+                                position: 'left',
+                                beginAtZero: true,
+                                min: 0,
+                                max: 24,
+                                ticks: {
+                                    callback: (value) => `${String(Math.floor(value)).padStart(2, '0')}:00`
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Hora promedio'
+                                }
+                            },
+                            yDuracion: {
+                                position: 'right',
+                                beginAtZero: true,
+                                grid: {
+                                    drawOnChartArea: false
+                                },
+                                ticks: {
+                                    callback: (value) => `${value} h`
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Duracion promedio'
+                                }
+                            }
+                        }
+                    }
+                });
+            };
+
+            weeklyButtons.forEach((button) => {
+                button.addEventListener('click', async () => {
+                    const endpoint = button.dataset.endpoint || '';
+                    const userName = button.dataset.userName || 'Socio';
+
+                    if (!endpoint) {
+                        return;
+                    }
+
+                    if (weeklyTitleElement) {
+                        weeklyTitleElement.textContent = `Promedio semanal de ${userName}`;
+                    }
+                    if (weeklySummaryElement) {
+                        weeklySummaryElement.textContent = 'Cargando datos del socio...';
+                    }
+
+                    resetWeeklyChart();
+                    if (weeklyModal) {
+                        weeklyModal.show();
+                    }
+
+                    try {
+                        const response = await fetch(endpoint, {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+                        const payload = await response.json();
+
+                        if (!response.ok || payload.status !== 'success') {
+                            throw new Error(payload.message || 'No fue posible cargar la información.');
+                        }
+
+                        const chartPayload = payload.chart || {};
+                        const totalSesiones = Number(chartPayload.total_sesiones || 0);
+                        const duracionGeneral = chartPayload.promedio_duracion_general_label || '--';
+
+                        if (weeklySummaryElement) {
+                            weeklySummaryElement.textContent = `Sesiones analizadas: ${totalSesiones} | Duracion promedio general: ${duracionGeneral}`;
+                        }
+
+                        renderWeeklyChart(chartPayload);
+                    } catch (error) {
+                        if (weeklySummaryElement) {
+                            weeklySummaryElement.textContent = 'No se pudo cargar la gráfica.';
+                        }
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error instanceof Error ? error.message : 'No se pudo cargar la gráfica del socio.'
+                        });
+                    }
+                });
             });
         });
     </script>

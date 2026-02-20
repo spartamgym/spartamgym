@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Repository\ColaCardsRepository;
 use App\Repository\PlanUsuarioRepository;
+use App\Repository\UsuarioRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -13,7 +15,8 @@ final class InformeController extends AbstractController
     #[Route('/informe', name: 'app_informe')]
     public function index(
         PlanUsuarioRepository $planUsuarioRepository,
-        ColaCardsRepository $colaCardsRepository
+        ColaCardsRepository $colaCardsRepository,
+        UsuarioRepository $usuarioRepository
     ): Response
     {
         $ingresosPorMes = $planUsuarioRepository->getIngresosPorMes();
@@ -21,6 +24,7 @@ final class InformeController extends AbstractController
         $topUsuarios = $planUsuarioRepository->getTopUsuarios();
         $movimientosPorHora = $colaCardsRepository->getMovimientosPorHora();
         $ingresosPorHoraSexoRaw = $colaCardsRepository->getIngresosPorHoraSexo();
+        $usuarios = $usuarioRepository->findBy([], ['nombre' => 'ASC']);
 
         // Calcular total ingresos históricos
         $totalIngresos = array_reduce($ingresosPorMes, function($carry, $item) {
@@ -113,7 +117,38 @@ final class InformeController extends AbstractController
             'top_usuarios' => $topUsuarios,
             'total_ingresos' => $totalIngresos,
             'ingresos_mes_actual' => $ingresosMesActual,
-            'socios_activos' => $statsPlanes['vigentes']
+            'socios_activos' => $statsPlanes['vigentes'],
+            'socios' => array_map(static fn ($usuario): array => [
+                'id' => $usuario->getId(),
+                'nombre' => (string) ($usuario->getNombre() ?? 'Sin nombre'),
+                'cedula' => (string) ($usuario->getCedula() ?? 'Sin cedula'),
+            ], $usuarios),
+        ]);
+    }
+
+    #[Route('/informe/usuario/{id}/promedio-semanal', name: 'app_informe_usuario_promedio_semanal', methods: ['GET'])]
+    public function promedioSemanalUsuario(
+        int $id,
+        UsuarioRepository $usuarioRepository,
+        ColaCardsRepository $colaCardsRepository
+    ): JsonResponse
+    {
+        $usuario = $usuarioRepository->find($id);
+        if (!$usuario instanceof \App\Entity\Usuario) {
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => 'Usuario no encontrado.',
+            ], 404);
+        }
+
+        return new JsonResponse([
+            'status' => 'success',
+            'usuario' => [
+                'id' => $usuario->getId(),
+                'nombre' => $usuario->getNombre(),
+                'cedula' => $usuario->getCedula(),
+            ],
+            'chart' => $colaCardsRepository->getPromedioHorasPorDiaSemana($usuario->getId()),
         ]);
     }
 }

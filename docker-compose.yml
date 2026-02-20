@@ -1,0 +1,71 @@
+name: alex
+
+services:
+  spartamgym:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spartamgym_app
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      APP_ENV: dev
+      TZ: America/Bogota
+      APP_TIMEZONE: America/Bogota
+      DATABASE_URL: mysql://user:password@db:3306/spartamgym?serverVersion=mariadb-10.11.2&charset=utf8mb4
+      MERCURE_URL: http://mercure/.well-known/mercure
+      MERCURE_PUBLIC_URL: http://localhost:3000/.well-known/mercure
+      MERCURE_JWT_SECRET: 405b1be9d020f1f196158e7d300bda0f204756b3045641dd508c9b814a3baa08
+      MERCURE_PUBLISHER_JWT_KEY: 405b1be9d020f1f196158e7d300bda0f204756b3045641dd508c9b814a3baa08
+      MERCURE_SUBSCRIBER_JWT_KEY: 405b1be9d020f1f196158e7d300bda0f204756b3045641dd508c9b814a3baa08
+      IA_WEBHOOK_URL: https://n8n.stellarco.online/webhook/be47826a-0d18-4a00-9ea1-c36c7df43af9
+      IA_LOGS_TOKEN: 23c6ef0705f479a5a8562703ffefe54a6d63aa39019637c8
+      IA_RATE_LIMIT_ENABLED: "1"
+      IA_RATE_LIMIT_MAX_REQUESTS: "8"
+      IA_RATE_LIMIT_WINDOW_SECONDS: "60"
+      IA_WEBHOOK_TIMEOUT_SECONDS: "45"
+      IA_WEBHOOK_MAX_RETRIES: "2"
+      IA_WEBHOOK_RETRY_DELAY_MS: "400"
+      IA_LOG_RETENTION_DAYS: "90"
+      IA_LOG_RETENTION_INTERVAL_SECONDS: "3600"
+      IA_MAX_PAYLOAD_BYTES: "16384"
+      IA_MAX_RUTINAS_PER_MONTH: "2"
+    depends_on:
+      - db
+      - mercure
+
+  db:
+    image: mariadb:10.11
+    container_name: spartamgym_db
+    restart: always
+    environment:
+      TZ: America/Bogota
+      MARIADB_ROOT_PASSWORD: root_password
+      MARIADB_DATABASE: spartamgym
+      MARIADB_USER: user
+      MARIADB_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  mercure:
+    image: dunglas/mercure
+    container_name: spartamgym_mercure
+    restart: unless-stopped
+    environment:
+      TZ: America/Bogota
+      SERVER_NAME: ":80"
+      MERCURE_JWT_SECRET: 405b1be9d020f1f196158e7d300bda0f204756b3045641dd508c9b814a3baa08
+      MERCURE_PUBLISHER_JWT_KEY: 405b1be9d020f1f196158e7d300bda0f204756b3045641dd508c9b814a3baa08
+      MERCURE_SUBSCRIBER_JWT_KEY: 405b1be9d020f1f196158e7d300bda0f204756b3045641dd508c9b814a3baa08
+      MERCURE_EXTRA_DIRECTIVES: |
+        cors_origins http://localhost http://127.0.0.1
+    ports:
+      - "3000:80"
+
+volumes:
+  db_data:
+    name: alex_db_data
