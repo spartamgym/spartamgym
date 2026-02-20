@@ -27,7 +27,7 @@ class PlanUsuarioRepository extends ServiceEntityRepository
         $sql = "
             SELECT 
                 DATE_FORMAT(fecha_inicio, '%Y-%m') as mes, 
-                SUM(precio) as total 
+                SUM(CASE WHEN contabiliza_ingreso = 1 THEN precio ELSE 0 END) as total 
             FROM plan_usuario 
             WHERE fecha_inicio IS NOT NULL
             GROUP BY mes 
@@ -39,12 +39,19 @@ class PlanUsuarioRepository extends ServiceEntityRepository
 
     public function getEstadisticasPlanes(): array
     {
-        $qb = $this->createQueryBuilder('p');
-        $today = new \DateTime();
+        $today = (new \DateTime())->setTime(0, 0, 0);
 
         $vigentes = $this->createQueryBuilder('p')
             ->select('count(p.id)')
-            ->where('p.fecha_fin >= :today')
+            ->where('p.fecha_inicio <= :today')
+            ->andWhere('p.fecha_fin >= :today')
+            ->setParameter('today', $today)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $programados = $this->createQueryBuilder('p')
+            ->select('count(p.id)')
+            ->where('p.fecha_inicio > :today')
             ->setParameter('today', $today)
             ->getQuery()
             ->getSingleScalarResult();
@@ -58,6 +65,7 @@ class PlanUsuarioRepository extends ServiceEntityRepository
 
         return [
             'vigentes' => $vigentes,
+            'programados' => $programados,
             'vencidos' => $vencidos
         ];
     }
@@ -67,6 +75,8 @@ class PlanUsuarioRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('p')
             ->select('u.nombre', 'SUM(p.precio) as total_gastado', 'count(p.id) as planes_comprados')
             ->join('p.usuario', 'u')
+            ->andWhere('p.contabiliza_ingreso = :contabilizaIngreso')
+            ->setParameter('contabilizaIngreso', true)
             ->groupBy('u.id')
             ->orderBy('total_gastado', 'DESC')
             ->setMaxResults($limit)

@@ -24,7 +24,7 @@ class ColaCards
 
 
     #[ORM\Column()]
-    private ?bool $ingreso = false;
+    private ?bool $ingreso = null;
 
     #[ORM\Column()]
     private ?bool $verificado = false;
@@ -76,10 +76,18 @@ class ColaCards
         return $this->ingreso;
     }
 
-    #[ORM\PrePersist]
-    public function setIngreso(): static
+    public function setIngreso(bool $ingreso): static
     {
-        $this->ingreso = true;
+        $this->ingreso = $ingreso;
+        return $this;
+    }
+
+    #[ORM\PrePersist]
+    public function initializeIngreso(): static
+    {
+        if ($this->ingreso === null) {
+            $this->ingreso = true;
+        }
         return $this;
     }
 

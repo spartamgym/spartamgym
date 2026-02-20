@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Control de Ingreso - SpartaMGym{% endblock %}
+{% block title %}Control de Acceso - SpartaMGym{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -68,7 +68,7 @@
                     </div>
                     
                     <button type="submit" class="btn btn-primary btn-lg w-100 btn-rounded fw-bold py-3 shadow-sm">
-                        REGISTRAR ENTRADA
+                        REGISTRAR MOVIMIENTO
                     </button>
                 </form>
 
@@ -90,7 +90,7 @@
         responseDiv.textContent = 'Procesando...';
 
         try {
-            const response = await fetch("{{ path('app_home_updated') }}", {
+            const response = await fetch("{{ path('app_update_identificador_movimiento') }}", {
                 method: 'POST',
                 body: formData
             });
@@ -98,10 +98,11 @@
             const data = await response.json();
             
             if (data.status === 'success') {
+                const isSalida = data.action === 'salida';
                 responseDiv.className = 'mt-4 text-center alert alert-success border-0 shadow-sm fw-bold';
                 Swal.fire({
                     icon: 'success',
-                    title: '¡Bienvenido!',
+                    title: isSalida ? 'Salida registrada' : '¡Bienvenido!',
                     text: data.message,
                     timer: 3000,
                     showConfirmButton: false

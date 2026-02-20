@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Rutina IA</title>
+    <style>
+        body {
+            font-family: DejaVu Sans, Arial, sans-serif;
+            color: #1f2937;
+            line-height: 1.5;
+            font-size: 12px;
+            margin: 24px;
+        }
+        h1 {
+            font-size: 20px;
+            margin-bottom: 6px;
+            color: #0f172a;
+        }
+        .meta {
+            margin-bottom: 16px;
+            color: #475569;
+        }
+        .content {
+            padding: 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+        }
+        .footer {
+            margin-top: 18px;
+            font-size: 11px;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rutina Personalizada - SpartaMGym</h1>
+    <div class="meta">
+        <strong>Socio:</strong> {{ nombre }}<br>
+        <strong>Fecha:</strong> {{ fecha|date('Y-m-d H:i') }}
+    </div>
+    <div class="content">
+        {{ contenido|raw }}
+    </div>
+    <div class="footer">
+        Documento generado desde el sistema interno de SpartaMGym.
+    </div>
+</body>
+</html>

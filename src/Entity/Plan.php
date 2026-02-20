@@ -28,6 +28,9 @@ class Plan
     #[ORM\Column(nullable: true)]
     private ?array $detalle = null;
 
+    #[ORM\Column(options: ['default' => 1])]
+    private ?int $max_beneficiarios = 1;
+
 
     public function getId(): ?int
     {
@@ -90,11 +93,24 @@ class Plan
             'precio' => $this->getPrecio(),
             'tiempo' => $this->getTiempo(),
             'detalle' => $this->getDetalle(),
+            'max_beneficiarios' => $this->getMaxBeneficiarios(),
         ];
     }
 
     public function getDetalleToString(): string
     {
         return implode(',', $this->detalle ?? []);
+    }
+
+    public function getMaxBeneficiarios(): int
+    {
+        return max(1, (int)($this->max_beneficiarios ?? 1));
+    }
+
+    public function setMaxBeneficiarios(?int $maxBeneficiarios): static
+    {
+        $this->max_beneficiarios = max(1, (int)($maxBeneficiarios ?? 1));
+
+        return $this;
     }
 }

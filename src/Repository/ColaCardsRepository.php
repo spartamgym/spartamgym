@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\ColaCards;
+use App\Entity\Usuario;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -24,6 +25,37 @@ class ColaCardsRepository extends ServiceEntityRepository
 
     public function getAllCardsActive(): array
     {
-        return $this->findBy(['verificado' => false]);
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.ingreso = :ingreso')
+            ->setParameter('ingreso', true)
+            ->orderBy('c.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findOpenByCode(string $code): ?ColaCards
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.code = :code')
+            ->andWhere('c.ingreso = :ingreso')
+            ->setParameter('code', $code)
+            ->setParameter('ingreso', true)
+            ->orderBy('c.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findOpenByUsuario(Usuario $usuario): ?ColaCards
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.usuario = :usuario')
+            ->andWhere('c.ingreso = :ingreso')
+            ->setParameter('usuario', $usuario)
+            ->setParameter('ingreso', true)
+            ->orderBy('c.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

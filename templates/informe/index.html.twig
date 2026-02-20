@@ -187,10 +187,10 @@
             new Chart(ctxEstado, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Vigentes', 'Vencidos'],
+                    labels: ['Vigentes', 'Programados', 'Vencidos'],
                     datasets: [{
-                        data: [planesStats.vigentes, planesStats.vencidos],
-                        backgroundColor: ['#10b981', '#ef4444'],
+                        data: [planesStats.vigentes, planesStats.programados || 0, planesStats.vencidos],
+                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
                         borderWidth: 0
                     }]
                 },

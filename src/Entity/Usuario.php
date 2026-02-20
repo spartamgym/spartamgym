@@ -60,6 +60,12 @@ class Usuario
     #[ORM\OneToMany(targetEntity: ColaCards::class, mappedBy: 'usuario')]
     private Collection $colaCards;
 
+    /**
+     * @var Collection<int, UsuarioMedidaEstandar>
+     */
+    #[ORM\OneToMany(targetEntity: UsuarioMedidaEstandar::class, mappedBy: 'usuario')]
+    private Collection $medidaEstandarAsignaciones;
+
 
 
     #[ORM\OneToOne(inversedBy: 'usuario', cascade: ['persist', 'remove'])]
@@ -71,6 +77,7 @@ class Usuario
         $this->datofisicos = new ArrayCollection();
         $this->plan = new ArrayCollection();
         $this->colaCards = new ArrayCollection();
+        $this->medidaEstandarAsignaciones = new ArrayCollection();
     }
 
 
@@ -222,6 +229,7 @@ class Usuario
             'img'             => $this->getImg(),
             'datofisicos'     => array_map(fn($df) => $df->toArray(), $this->getDatofisicos()->toArray()),
             'planes'            => array_map(fn($pu) => $pu->toArray(), $this->getPlan()->toArray()),
+            'medida_estandar' => $this->getMedidaEstandarActual()?->toArray(),
         ];
     }
 
@@ -302,9 +310,9 @@ class Usuario
 
     public function isPlanVigente(): bool
     { 
-        //buscamos el plan vigente
+        // Acceso basado en vigencia real del plan, no solo en bandera predefinida.
         foreach ($this->plan as $p) {
-            if ($p->isVigente() && $p->isPredefinido()) {
+            if ($p->isVigente()) {
                 return true;
             }
         }
@@ -332,7 +340,7 @@ class Usuario
 
     public function removeColaCards(ColaCards $colaCards): static
     {
-        if ($this->plan->removeElement($colaCards)) {
+        if ($this->colaCards->removeElement($colaCards)) {
             // set the owning side to null (unless already changed)
             if ($colaCards->getUsuario() === $this) {
                 $colaCards->setUsuario(null);
@@ -348,6 +356,49 @@ class Usuario
             $plan->setPredefinido(false);
         }
         return $this;
+    }
+
+    /**
+     * @return Collection<int, UsuarioMedidaEstandar>
+     */
+    public function getMedidaEstandarAsignaciones(): Collection
+    {
+        return $this->medidaEstandarAsignaciones;
+    }
+
+    public function addMedidaEstandarAsignacion(UsuarioMedidaEstandar $asignacion): static
+    {
+        if (!$this->medidaEstandarAsignaciones->contains($asignacion)) {
+            $this->medidaEstandarAsignaciones->add($asignacion);
+            $asignacion->setUsuario($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMedidaEstandarAsignacion(UsuarioMedidaEstandar $asignacion): static
+    {
+        if ($this->medidaEstandarAsignaciones->removeElement($asignacion)) {
+            if ($asignacion->getUsuario() === $this) {
+                $asignacion->setUsuario(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getMedidaEstandarActual(): ?UsuarioMedidaEstandar
+    {
+        $actual = null;
+        foreach ($this->medidaEstandarAsignaciones as $asignacion) {
+            if ($asignacion->isActive()) {
+                if (!$actual instanceof UsuarioMedidaEstandar || $asignacion->getId() > $actual->getId()) {
+                    $actual = $asignacion;
+                }
+            }
+        }
+
+        return $actual;
     }
 
 }

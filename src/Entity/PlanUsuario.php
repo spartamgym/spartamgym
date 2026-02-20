@@ -43,6 +43,18 @@ class PlanUsuario
     #[ORM\Column(nullable: true)]
     private ?array $detalle = null;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => true])]
+    private bool $contabiliza_ingreso = true;
+
+    #[ORM\Column(length: 64, nullable: true)]
+    private ?string $grupo_compartido = null;
+
+    #[ORM\Column(options: ['default' => 1])]
+    private int $orden_beneficiario = 1;
+
+    #[ORM\Column(options: ['default' => 1])]
+    private int $total_beneficiarios_grupo = 1;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -119,8 +131,30 @@ class PlanUsuario
     //validar si el plan esta vigente o no
     public function statusPlanArray(): array
     {
-        $today = (new \DateTime())->setTime(0, 0, 0);
-        $fechaFin = (clone $this->getFechaFin())->setTime(0, 0, 0);
+        $fechaInicio = $this->getFechaInicio();
+        $fechaFinRaw = $this->getFechaFin();
+
+        if (!$fechaInicio instanceof \DateTimeInterface || !$fechaFinRaw instanceof \DateTimeInterface) {
+            return [
+                'estado' => 'vencido',
+                'dias_restantes' => 0,
+                'vigente' => false
+            ];
+        }
+
+        $today = new \DateTimeImmutable('today');
+        $inicio = new \DateTimeImmutable($fechaInicio->format('Y-m-d'));
+        $fechaFin = new \DateTimeImmutable($fechaFinRaw->format('Y-m-d'));
+
+        // Plan programado: aun no inicia.
+        if ($today < $inicio) {
+            $diff = $today->diff($inicio);
+            return [
+                'estado' => 'programado',
+                'dias_restantes' => $diff->days,
+                'vigente' => false
+            ];
+        }
 
         if ($today <= $fechaFin) {
             $diff = $today->diff($fechaFin);
@@ -203,6 +237,54 @@ class PlanUsuario
 
         return $this;
     }
+
+    public function isContabilizaIngreso(): bool
+    {
+        return $this->contabiliza_ingreso;
+    }
+
+    public function setContabilizaIngreso(bool $contabilizaIngreso): static
+    {
+        $this->contabiliza_ingreso = $contabilizaIngreso;
+
+        return $this;
+    }
+
+    public function getGrupoCompartido(): ?string
+    {
+        return $this->grupo_compartido;
+    }
+
+    public function setGrupoCompartido(?string $grupoCompartido): static
+    {
+        $this->grupo_compartido = $grupoCompartido;
+
+        return $this;
+    }
+
+    public function getOrdenBeneficiario(): int
+    {
+        return max(1, $this->orden_beneficiario);
+    }
+
+    public function setOrdenBeneficiario(int $ordenBeneficiario): static
+    {
+        $this->orden_beneficiario = max(1, $ordenBeneficiario);
+
+        return $this;
+    }
+
+    public function getTotalBeneficiariosGrupo(): int
+    {
+        return max(1, $this->total_beneficiarios_grupo);
+    }
+
+    public function setTotalBeneficiariosGrupo(int $totalBeneficiariosGrupo): static
+    {
+        $this->total_beneficiarios_grupo = max(1, $totalBeneficiariosGrupo);
+
+        return $this;
+    }
     #[ORM\PrePersist]
     public function copiar_plan(): void
     {
@@ -212,9 +294,16 @@ class PlanUsuario
             $this->setPrecio($this->getPlan()->getPrecio());
             $this->setTiempo($this->getPlan()->getTiempo());
             $this->setDetalle($this->getPlan()->getDetalle());
-            $this->setFechaInicio(new \DateTime());
-            //fecha final la sacamos con los dias que tenga el plan + la fecha de inicio
-            $this->setFechaFin((new \DateTime())->modify('+' . $this->getTiempo() . ' day'));
+
+            if (!$this->getFechaInicio() instanceof \DateTimeInterface) {
+                $this->setFechaInicio(new \DateTime());
+            }
+
+            if (!$this->getFechaFin() instanceof \DateTimeInterface) {
+                $fechaInicio = clone $this->getFechaInicio();
+                // fecha final = fecha inicio + dias del plan
+                $this->setFechaFin((clone $fechaInicio)->modify('+' . ((int)$this->getTiempo()) . ' day'));
+            }
         }
     }
 
@@ -231,6 +320,12 @@ class PlanUsuario
             'precio' => $this->getPrecio(),
             'tiempo' => $this->getTiempo(),
             'detalle' => $this->getDetalle(),
+            'contabiliza_ingreso' => $this->isContabilizaIngreso(),
+            'grupo_compartido' => $this->getGrupoCompartido(),
+            'orden_beneficiario' => $this->getOrdenBeneficiario(),
+            'total_beneficiarios_grupo' => $this->getTotalBeneficiariosGrupo(),
+            'fecha_inicio' => $this->getFechaInicio()?->format('Y-m-d'),
+            'fecha_fin' => $this->getFechaFin()?->format('Y-m-d'),
             'predefinido' => $this->isPredefinido() ? 'si' : 'no',
             'is_predefinido' => $this->isPredefinido(),
             'status_plan' => $this->statusPlanEstado(),

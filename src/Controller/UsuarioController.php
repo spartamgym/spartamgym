@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\MedidaEstandar;
+use App\Repository\MedidaEstandarRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -10,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Repository\UsuarioRepository;
 use App\Repository\DatoFisicoRepository;
 use App\Repository\PlanUsuarioRepository;
+use App\Service\UsuarioMedidaEstandarService;
 
 final class UsuarioController extends AbstractController
 {
@@ -22,9 +25,15 @@ final class UsuarioController extends AbstractController
     }
 
     #[Route('/usuario/registro', name: 'app_usuario_registro')]
-    public function registro(Request $request, UsuarioRepository $usuarioRepository): JsonResponse
+    public function registro(
+        Request $request,
+        UsuarioRepository $usuarioRepository,
+        MedidaEstandarRepository $medidaEstandarRepository,
+        UsuarioMedidaEstandarService $usuarioMedidaEstandarService
+    ): JsonResponse
     {
-        $id = $request->request->get('id');
+        $id = (int) $request->request->get('id', 0);
+        $isNew = $id <= 0;
         /** @var UploadedFile|null $imagen */
         $img = $request->files->get('img');
         $nombre = $request->request->get('nombre');
@@ -34,6 +43,7 @@ final class UsuarioController extends AbstractController
         $fecha_nacimiento = $request->request->get('fecha_nacimiento');
         $eps = $request->request->get('eps');
         $correo = $request->request->get('correo');
+        $idMedidaEstandar = $request->request->get('id_medida_estandar');
 
         //validar todos los campos
         if (empty($nombre) || empty($cedula) || empty($celular) || empty($direccion) || empty($fecha_nacimiento) || empty($eps) || empty($correo)) {
@@ -41,7 +51,7 @@ final class UsuarioController extends AbstractController
         }
 
 
-        if ($id > 0) {
+        if (!$isNew) {
             $usuario = $usuarioRepository->find($id);
             if (!$usuario instanceof \App\Entity\Usuario) {
                 return new JsonResponse(['status' => 'error', 'message' => 'Usuario no encontrado.'], 404);
@@ -82,8 +92,22 @@ final class UsuarioController extends AbstractController
                   $usuario->setImg('img/profile-img.jpeg');
             }
         }
-    
+
         $usuarioRepository->save($usuario);
+
+        $medidaEstandar = null;
+        if ($idMedidaEstandar !== null && $idMedidaEstandar !== '') {
+            $medidaEstandar = $medidaEstandarRepository->find((int) $idMedidaEstandar);
+            if (!$medidaEstandar instanceof MedidaEstandar) {
+                return new JsonResponse(['status' => 'error', 'message' => 'Medida estándar no encontrada.'], 404);
+            }
+        } elseif ($isNew) {
+            $medidaEstandar = $medidaEstandarRepository->findOneBy(['active' => true], ['id' => 'ASC']);
+        }
+
+        if ($medidaEstandar instanceof MedidaEstandar) {
+            $usuarioMedidaEstandarService->assignFromTemplate($usuario, $medidaEstandar);
+        }
 
         return new JsonResponse(['status' => 'success', 'message' => 'Registro de usuario exitoso.']);
     }
@@ -95,6 +119,7 @@ final class UsuarioController extends AbstractController
         $data = [];
 
         foreach ($usuarios as $usuario) {
+            $medidaEstandar = $usuario->getMedidaEstandarActual();
             $data[] = [
                 'id' => $usuario->getId(),
                 'nombre' => $usuario->getNombre(),
@@ -106,6 +131,8 @@ final class UsuarioController extends AbstractController
                 'correo' => $usuario->getCorreo(),
                 'img' => $usuario->getImg(),
                 'code' => $usuario->getCard() ? $usuario->getCard()->getCode() : 'sin asignar',
+                'medida_estandar_nombre' => $medidaEstandar?->getNombreReferencia() ?? 'sin asignar',
+                'medida_estandar_id' => $medidaEstandar?->getMedidaEstandar()?->getId(),
             ];
         }
 
@@ -131,8 +158,25 @@ final class UsuarioController extends AbstractController
         $pierna      = $request->request->get('pierna');
         $pantorrilla = $request->request->get('pantorrilla');
 
-        //validar todos los campos
-        if (empty($altura) || empty($imc) || empty($peso) || empty($cintura) || empty($gluteos) || empty($brazo) || empty($pecho) || empty($pierna) || empty($pantorrilla)) {
+        // validar campos obligatorios y numericos
+        $numericData = [
+            'peso' => $peso,
+            'altura' => $altura,
+            'imc' => $imc,
+            'cintura' => $cintura,
+            'gluteos' => $gluteos,
+            'brazo' => $brazo,
+            'pecho' => $pecho,
+            'pierna' => $pierna,
+            'pantorrilla' => $pantorrilla,
+        ];
+        foreach ($numericData as $field => $value) {
+            if ($value === null || $value === '' || !is_numeric($value)) {
+                return new JsonResponse(['status' => 'error', 'message' => "Campo inválido: {$field}"], 400);
+            }
+        }
+
+        if ($id_usuario === null || $id_usuario === '') {
             return new JsonResponse(['status' => 'error', 'message' => 'Todos los campos son obligatorios.'], 400);
         }
 
@@ -146,27 +190,25 @@ final class UsuarioController extends AbstractController
             if (!$usuario instanceof \App\Entity\Usuario) {
                 return new JsonResponse(['status' => 'error', 'message' => 'Usuario no encontrado.'], 404);
             }
+            if (!$usuario->getMedidaEstandarActual()) {
+                return new JsonResponse(['status' => 'error', 'message' => 'Primero debes asignar una medida estándar al usuario.'], 400);
+            }
             $datoFisico = new \App\Entity\DatoFisico();
-            $datoFisico->setColor($usuario->hasDatoFisico() ? '#0000FF' : '#FF0000');
+            $datoFisico->setColor($usuario->hasDatoFisico() ? '#2563EB' : '#0EA5E9');
             $datoFisico->setUsuario($usuario);
         }
 
-
-
-
-        $datoFisico->setPeso($peso);
-        $datoFisico->setAltura($altura);
-        $datoFisico->setImc($imc);
-        $datoFisico->setCintura($cintura);
-        $datoFisico->setGluteos($gluteos);
-        $datoFisico->setBrazo($brazo);
-        $datoFisico->setPecho($pecho);
-        $datoFisico->setPierna($pierna);
-        $datoFisico->setPantorrilla($pantorrilla);
+        $datoFisico->setPeso((float) $peso);
+        $datoFisico->setAltura((float) $altura);
+        $datoFisico->setImc((float) $imc);
+        $datoFisico->setCintura((int) $cintura);
+        $datoFisico->setGluteos((int) $gluteos);
+        $datoFisico->setBrazo((int) $brazo);
+        $datoFisico->setPecho((int) $pecho);
+        $datoFisico->setPierna((int) $pierna);
+        $datoFisico->setPantorrilla((int) $pantorrilla);
 
         $datoFisicoRepository->save($datoFisico);
-
-
 
         return new JsonResponse(['status' => 'success', 'message' => 'Registro de usuario exitoso.']);
     }
@@ -232,5 +274,49 @@ final class UsuarioController extends AbstractController
             $data[] = $medida->toArray();
         }
         return new JsonResponse($data);
+    }
+
+    #[Route('/usuario/medida_estandar/listar', name: 'app_usuario_medida_estandar_listar', methods: ['GET'])]
+    public function listarMedidasEstandar(MedidaEstandarRepository $medidaEstandarRepository): JsonResponse
+    {
+        $medidas = $medidaEstandarRepository->findAllActive();
+        return new JsonResponse(array_map(
+            fn(MedidaEstandar $medida) => $medida->toArray(),
+            $medidas
+        ));
+    }
+
+    #[Route('/usuario/medida_estandar/asignar', name: 'app_usuario_medida_estandar_asignar', methods: ['POST'])]
+    public function asignarMedidaEstandar(
+        Request $request,
+        UsuarioRepository $usuarioRepository,
+        MedidaEstandarRepository $medidaEstandarRepository,
+        UsuarioMedidaEstandarService $usuarioMedidaEstandarService
+    ): JsonResponse
+    {
+        $idUsuario = (int) $request->request->get('id_usuario', 0);
+        $idMedidaEstandar = (int) $request->request->get('id_medida_estandar', 0);
+
+        if ($idUsuario <= 0 || $idMedidaEstandar <= 0) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Usuario y medida estándar son obligatorios.'], 400);
+        }
+
+        $usuario = $usuarioRepository->find($idUsuario);
+        if (!$usuario instanceof \App\Entity\Usuario) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Usuario no encontrado.'], 404);
+        }
+
+        $medidaEstandar = $medidaEstandarRepository->find($idMedidaEstandar);
+        if (!$medidaEstandar instanceof MedidaEstandar) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Medida estándar no encontrada.'], 404);
+        }
+
+        $asignacion = $usuarioMedidaEstandarService->assignFromTemplate($usuario, $medidaEstandar);
+
+        return new JsonResponse([
+            'status' => 'success',
+            'message' => 'Medida estándar asignada correctamente.',
+            'asignacion' => $asignacion->toArray(),
+        ]);
     }
 }

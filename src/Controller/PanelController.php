@@ -35,6 +35,7 @@ final class PanelController extends AbstractController
         $precio = $request->request->get('precio');
         $tiempo = $request->request->get('tiempo');
         $detalle = $request->request->get('detalle');
+        $maxBeneficiarios = (int)$request->request->get('max_beneficiarios', 1);
 
         if ($id > 0) {
             $plan = $planRepository->find($id);
@@ -44,11 +45,15 @@ final class PanelController extends AbstractController
         } else {
             $plan = new \App\Entity\Plan();
         }
+        if ($maxBeneficiarios < 1) {
+            return new JsonResponse(['status' => 'error', 'message' => 'La cantidad de beneficiarios debe ser mayor o igual a 1.'], 400);
+        }
         $plan->setNombre($nombre);
         $plan->setPrecio((int)$precio);
         $plan->setTiempo($tiempo);
         $detalleArray = array_map('trim', explode(',', $detalle));
         $plan->setDetalle($detalleArray);
+        $plan->setMaxBeneficiarios($maxBeneficiarios);
         $planRepository->save($plan);
 
         return  new JsonResponse(['status' => 'success', 'message' => 'Plan guardado exitosamente.']);
@@ -68,6 +73,7 @@ final class PanelController extends AbstractController
                 'precio' => $plan->getPrecio(),
                 'tiempo' => $plan->getTiempo(),
                 'detalle' => $plan->getDetalleToString(),
+                'max_beneficiarios' => $plan->getMaxBeneficiarios(),
 
             ];
         }
@@ -210,7 +216,17 @@ final class PanelController extends AbstractController
     #[Route('/panel/listar_usuario_sin_plan', name: 'app_panel_usuarios_sin_plan')]
     public function usuariosSinPlan(UsuarioRepository $usuarioRepository): JsonResponse
     {
-        $usuarios = $usuarioRepository->findAll();
+        $usuarios = array_filter(
+            $usuarioRepository->findAll(),
+            static function ($usuario): bool {
+                foreach ($usuario->getPlan() as $planUsuario) {
+                    if (in_array($planUsuario->statusPlanEstado(), ['vigente', 'programado'], true)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        );
 
         $data = [];
         foreach ($usuarios as $usuario) {
@@ -230,28 +246,122 @@ final class PanelController extends AbstractController
         PlanRepository $planRepository,
         PlanUsuarioRepository $planUsuarioRepository
     ): JsonResponse {
+        $idsUsuariosRaw = [];
+        try {
+            $idsUsuariosRaw = $request->request->all('id_usuarios');
+        } catch (\Throwable) {
+            $idUsuariosEscalar = $request->request->get('id_usuarios');
+            if (!empty($idUsuariosEscalar)) {
+                $idsUsuariosRaw[] = $idUsuariosEscalar;
+            }
+        }
+
         $idUsuario = $request->request->get('id_usuario');
-        $idPlan = $request->request->get('id_plan');    
-        //buscar el usuario y el plan por id
-        $usuario = $usuarioRepository->find($idUsuario);
+        if (!empty($idUsuario)) {
+            $idsUsuariosRaw[] = $idUsuario;
+        }
+
+        $idsUsuarios = array_values(array_unique(array_filter(
+            array_map(static fn($id) => (int)$id, $idsUsuariosRaw),
+            static fn($id) => $id > 0
+        )));
+        $idPlan = $request->request->get('id_plan');
+        $fechaInicioRaw = $request->request->get('fecha_inicio');
+        //buscar el plan por id
         $plan = $planRepository->find($idPlan);
         //verificar que existan
-        if (!$usuario instanceof \App\Entity\Usuario) {
-            return new JsonResponse(['status' => 'error', 'message' => 'Usuario no encontrado.'], 404);
+        if (count($idsUsuarios) === 0) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Debe seleccionar al menos un usuario.'], 400);
         }
         if (!$plan instanceof \App\Entity\Plan) {
             return new JsonResponse(['status' => 'error', 'message' => 'Plan no encontrado.'], 404);
         }
-        //validar que no haya un plan activo
-        if ($usuario->hasActivePlan()) {
-           // return new JsonResponse(['status' => 'error', 'message' => 'El usuario ya tiene un plan activo.'], 400);
+
+        $maxBeneficiarios = $plan->getMaxBeneficiarios();
+        if (count($idsUsuarios) > $maxBeneficiarios) {
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => sprintf('El plan "%s" solo permite %d beneficiario(s).', $plan->getNombre(), $maxBeneficiarios)
+            ], 400);
         }
-        //luego vincular el plan al usuario
-        $planUsuario = new \App\Entity\PlanUsuario();
-        $planUsuario->setUsuario($usuario);
-        $planUsuario->setPlan($plan);
-        $planUsuarioRepository->save($planUsuario);
-       
+
+        $usuariosEncontrados = $usuarioRepository->findBy(['id' => $idsUsuarios]);
+        $usuariosPorId = [];
+        foreach ($usuariosEncontrados as $usuarioEncontrado) {
+            $usuariosPorId[$usuarioEncontrado->getId()] = $usuarioEncontrado;
+        }
+        foreach ($idsUsuarios as $idUsuarioSeleccionado) {
+            if (!isset($usuariosPorId[$idUsuarioSeleccionado])) {
+                return new JsonResponse(['status' => 'error', 'message' => sprintf('Usuario con ID %d no encontrado.', $idUsuarioSeleccionado)], 404);
+            }
+        }
+
+        $usuariosConPlanVigente = [];
+        foreach ($idsUsuarios as $idUsuarioSeleccionado) {
+            $usuarioValidar = $usuariosPorId[$idUsuarioSeleccionado];
+            foreach ($usuarioValidar->getPlan() as $planUsuarioExistente) {
+                if (in_array($planUsuarioExistente->statusPlanEstado(), ['vigente', 'programado'], true)) {
+                    $usuariosConPlanVigente[] = $usuarioValidar->getNombre() ?: ('ID ' . $idUsuarioSeleccionado);
+                    break;
+                }
+            }
+        }
+        if (count($usuariosConPlanVigente) > 0) {
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => 'No se puede asignar plan porque ya tienen uno vigente/programado: ' . implode(', ', $usuariosConPlanVigente),
+            ], 409);
+        }
+
+        $fechaInicio = null;
+        if (!empty($fechaInicioRaw)) {
+            try {
+                $fechaInicio = new \DateTime($fechaInicioRaw);
+                $fechaInicio->setTime(0, 0, 0);
+            } catch (\Throwable) {
+                return new JsonResponse(['status' => 'error', 'message' => 'La fecha de inicio es invalida.'], 400);
+            }
+        }
+
+        $totalBeneficiariosGrupo = count($idsUsuarios);
+        $grupoCompartido = null;
+        if ($totalBeneficiariosGrupo > 1) {
+            try {
+                $grupoCompartido = 'PC-' . strtoupper(bin2hex(random_bytes(8)));
+            } catch (\Throwable) {
+                $grupoCompartido = 'PC-' . strtoupper(uniqid('', true));
+            }
+        }
+
+        foreach ($idsUsuarios as $index => $idUsuarioSeleccionado) {
+            $usuario = $usuariosPorId[$idUsuarioSeleccionado];
+            $usuario->resetPlanes();
+
+            $planUsuario = new \App\Entity\PlanUsuario();
+            $planUsuario->setUsuario($usuario);
+            $planUsuario->setPlan($plan);
+            if ($fechaInicio instanceof \DateTimeInterface) {
+                $planUsuario->setFechaInicio(\DateTime::createFromInterface($fechaInicio));
+            }
+            $planUsuario->setPredefinido(true);
+            $planUsuario->setContabilizaIngreso($index === 0);
+            $planUsuario->setGrupoCompartido($grupoCompartido);
+            $planUsuario->setOrdenBeneficiario($index + 1);
+            $planUsuario->setTotalBeneficiariosGrupo($totalBeneficiariosGrupo);
+
+            $planUsuarioRepository->save($planUsuario, $index === ($totalBeneficiariosGrupo - 1));
+        }
+
+        if ($totalBeneficiariosGrupo > 1) {
+            return new JsonResponse([
+                'status' => 'success',
+                'message' => sprintf(
+                    'Plan compartido vinculado a %d usuarios. Se contabilizo una sola venta para reportes.',
+                    $totalBeneficiariosGrupo
+                )
+            ]);
+        }
+
         return new JsonResponse(['status' => 'success', 'message' => 'Plan vinculado al usuario exitosamente.']);
     }
 

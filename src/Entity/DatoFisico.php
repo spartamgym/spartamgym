@@ -16,8 +16,8 @@ class DatoFisico
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $peso = null;
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $peso = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $cintura = null;
@@ -37,8 +37,8 @@ class DatoFisico
     #[ORM\Column(nullable: true)]
     private ?int $pantorrilla = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $altura = null;
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $altura = null;
 
     #[ORM\Column(nullable: true)]
     private ?float $imc = null;
@@ -56,12 +56,12 @@ class DatoFisico
         return $this->id;
     }
 
-    public function getPeso(): ?int
+    public function getPeso(): ?float
     {
         return $this->peso;
     }
 
-    public function setPeso(?int $peso): static
+    public function setPeso(?float $peso): static
     {
         $this->peso = $peso;
 
@@ -152,12 +152,12 @@ class DatoFisico
         return $this;
     }
 
-    public function getAltura(): ?int
+    public function getAltura(): ?float
     {
         return $this->altura;
     }
 
-    public function setAltura(?int $altura): static
+    public function setAltura(?float $altura): static
     {
         $this->altura = $altura;
 

@@ -83,6 +83,7 @@
                         </h5>
                         <form id="form-datos-fisicos">
                             <input type="hidden" id="id_medida" name="id" value="0">
+                            <input type="hidden" id="id_usuario_medida" name="id_usuario" value="0">
                             <div class="row g-2">
                                 <div class="col-6 mb-2">
                                     <label class="form-label small mb-1">Cintura (cm)</label>
@@ -170,6 +171,12 @@
                                     <label class="form-label small fw-bold">EPS / Salud</label>
                                     <input type="text" class="form-control" id="eps" name="eps" placeholder="Entidad de salud">
                                 </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Referencia Estándar</label>
+                                    <select class="form-select" id="id_medida_estandar" name="id_medida_estandar">
+                                        <option value="">Cargando...</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="mt-4 d-flex gap-2">
@@ -209,6 +216,7 @@
                                 <th data-field="cedula" data-sortable="true">Cédula</th>
                                 <th data-field="celular">Celular</th>
                                 <th data-field="code" data-formatter="cardFormatter">Acceso</th>
+                                <th data-field="medida_estandar_nombre" data-formatter="medidaEstandarFormatter">Ref. Estándar</th>
                                 <th data-field="img" data-formatter="imgFormatter" data-align="center">Perfil</th>
                                 <th data-field="operate" data-formatter="accionesFormatter" data-events="operateEvents" data-align="center">Acciones</th>
                             </tr>
@@ -283,6 +291,13 @@
         return `<span class="badge bg-info text-dark shadow-sm"><i class="bi bi-credit-card-2-front me-1"></i>${value}</span>`;
     }
 
+    function medidaEstandarFormatter(value) {
+        if (!value || value === 'sin asignar') {
+            return '<span class="badge bg-light text-muted border">Sin referencia</span>';
+        }
+        return `<span class="badge bg-secondary-subtle text-secondary border border-secondary">${value}</span>`;
+    }
+
     function priceFormatter(value) {
         return '<span class="fw-bold">$' + parseInt(value).toLocaleString() + '</span>';
     }
@@ -294,6 +309,7 @@
 
     function planActivoFormatter(value) {
         if (value === 'vigente') return '<span class="badge bg-success-subtle text-success border border-success px-3">VIGENTE</span>';
+        if (value === 'programado') return '<span class="badge bg-warning-subtle text-warning border border-warning px-3">PROGRAMADO</span>';
         return '<span class="badge bg-danger-subtle text-danger border border-danger px-3">VENCIDO</span>';
     }
 
@@ -312,6 +328,27 @@
 
     function accionesFormatterMedidas() {
         return `<button class="btn btn-link btn-sm p-0 editar_medida"><i class="bi bi-pencil-square"></i></button>`;
+    }
+
+    async function cargarMedidasEstandar(selectedId = null) {
+        const select = document.getElementById('id_medida_estandar');
+        try {
+            const response = await fetch("{{ path('app_usuario_medida_estandar_listar') }}");
+            const medidas = await response.json();
+            select.innerHTML = '<option value="">Selecciona una referencia</option>';
+            medidas.forEach((medida) => {
+                const option = document.createElement('option');
+                option.value = medida.id;
+                option.textContent = medida.nombre;
+                select.appendChild(option);
+            });
+            if (selectedId) {
+                select.value = String(selectedId);
+            }
+        } catch (error) {
+            console.error('No se pudieron cargar medidas estándar:', error);
+            select.innerHTML = '<option value="">No disponible</option>';
+        }
     }
 
     // Lógica de formulario y eventos
@@ -334,9 +371,36 @@
         });
     });
 
+    document.getElementById('form-datos-fisicos').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        const selectedUserId = document.getElementById('id_usuario_medida').value || document.getElementById('id').value;
+
+        if (!selectedUserId || selectedUserId === '0') {
+            Swal.fire('Atención', 'Primero debes seleccionar un usuario para guardar sus medidas.', 'warning');
+            return;
+        }
+
+        formData.set('id_usuario', selectedUserId);
+
+        const data = await enviarDatos("{{ path('app_datos_fisicos_registro') }}", formData);
+        if (data && data.status === 'success') {
+            Swal.fire({ icon: 'success', title: 'Medidas guardadas', timer: 1800, showConfirmButton: false });
+            document.getElementById('id_medida').value = 0;
+
+            const refreshData = new FormData();
+            refreshData.append('id', selectedUserId);
+            const medidas = await enviarDatos("{{ path('app_usuario_medidas') }}", refreshData);
+            if (medidas) {
+                $('#table_medidas').bootstrapTable('load', medidas);
+            }
+        }
+    });
+
     window.operateEvents = {
         'click .editar': (e, value, row) => {
             document.getElementById('id').value = row.id;
+            document.getElementById('id_usuario_medida').value = row.id;
             document.getElementById('imagenPerfilPreview').src = row.img ? row.img : '{{ asset('img/profile-img.jpeg') }}';
             document.getElementById('nombre').value = row.nombre;
             document.getElementById('cedula').value = row.cedula;
@@ -345,6 +409,7 @@
             document.getElementById('fecha_nacimiento').value = row.fecha_nacimiento;
             document.getElementById('eps').value = row.eps;
             document.getElementById('correo').value = row.correo;
+            cargarMedidasEstandar(row.medida_estandar_id || null);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         },
         'click .desvincular': async (e, value, row) => {
@@ -363,6 +428,7 @@
             }
         },
         'click .planes': async (e, value, row) => {
+            document.getElementById('id_usuario_medida').value = row.id;
             const formData = new FormData();
             formData.append('id', row.id);
             let planes = await enviarDatos("{{ path('app_usuario_planes') }}", formData);
@@ -403,7 +469,9 @@
     function resetForm() {
         document.getElementById('form-usuario').reset();
         document.getElementById('id').value = 0;
+        document.getElementById('id_usuario_medida').value = 0;
         document.getElementById('imagenPerfilPreview').src = '{{ asset('img/profile-img.jpeg') }}';
+        document.getElementById('id_medida_estandar').value = '';
     }
 
     document.getElementById('reset-form-user').addEventListener('click', resetForm);
@@ -416,5 +484,7 @@
             reader.readAsDataURL(file);
         }
     });
+
+    cargarMedidasEstandar();
 </script>
 {% endblock %}

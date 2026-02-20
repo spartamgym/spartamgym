@@ -49,7 +49,11 @@
                 <h2 class="fw-bold mb-0">Inscripción de Socios</h2>
                 <p class="mb-0 opacity-75">Asigna membresías activas a los usuarios registrados</p>
             </div>
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 align-items-center">
+                <div class="d-flex align-items-center bg-white rounded px-2 py-1 shadow-sm">
+                    <label for="fecha-inicio-plan" class="small text-muted me-2 mb-0">Inicio</label>
+                    <input id="fecha-inicio-plan" type="date" class="form-control form-control-sm border-0 p-0" value="{{ 'now'|date('Y-m-d') }}">
+                </div>
                 <button id="btn-unir" class="btn btn-success btn-action shadow-sm">
                     <i class="bi bi-link-45deg me-2"></i>Confirmar Inscripción
                 </button>
@@ -85,6 +89,7 @@
                                 <th data-field="nombre" data-sortable="true">Nombre</th>
                                 <th data-field="precio" data-formatter="priceFormatter">Precio</th>
                                 <th data-field="tiempo" data-align="center">Días</th>
+                                <th data-field="max_beneficiarios" data-align="center">Benef.</th>
                             </tr>
                         </thead>
                     </table>
@@ -95,8 +100,11 @@
             <div class="col-lg-6">
                 <div class="card-custom p-4">
                     <h5 class="table-title">
-                        <i class="bi bi-person-check-fill me-2 text-success"></i>2. Seleccione un Usuario
+                        <i class="bi bi-person-check-fill me-2 text-success"></i>2. Seleccione Uno o Más Usuarios
                     </h5>
+                    <div id="shared-plan-info" class="alert alert-light border small py-2 px-3 mb-3">
+                        Seleccione un plan para ver el máximo de beneficiarios permitidos.
+                    </div>
                     <table id="table_usuarios"
                            class="table"
                            data-url="{{ path('app_panel_usuarios_sin_plan') }}"
@@ -105,7 +113,7 @@
                            data-pagination="true"
                            data-page-size="5"
                            data-click-to-select="true"
-                           data-single-select="true"
+                           data-single-select="false"
                            data-classes="table table-hover"
                            data-header-style="headerStyle">
                         <thead>
@@ -130,23 +138,65 @@
         return '<span class="fw-bold">$' + parseInt(value).toLocaleString() + '</span>';
     }
 
+    function getSelectedUsers() {
+        const users = $('#table_usuarios').bootstrapTable('getSelections');
+        return Array.isArray(users) ? users : [];
+    }
+
+    function updateSharedPlanInfo() {
+        const selectedPlan = $('#table_planes').bootstrapTable('getSelections')[0];
+        const selectedUsers = getSelectedUsers();
+        const info = document.getElementById('shared-plan-info');
+        if (!info) {
+            return;
+        }
+
+        if (!selectedPlan) {
+            info.className = 'alert alert-light border small py-2 px-3 mb-3';
+            info.textContent = 'Seleccione un plan para ver el máximo de beneficiarios permitidos.';
+            return;
+        }
+
+        const maxBeneficiarios = parseInt(selectedPlan.max_beneficiarios || 1, 10);
+        const esValido = selectedUsers.length <= maxBeneficiarios;
+        info.className = 'alert ' + (esValido ? 'alert-success' : 'alert-danger') + ' border small py-2 px-3 mb-3';
+        info.textContent = `Plan "${selectedPlan.nombre}": ${selectedUsers.length} seleccionado(s) de máximo ${maxBeneficiarios} beneficiario(s).`;
+    }
+
+    $('#table_planes').on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table load-success.bs.table', updateSharedPlanInfo);
+    $('#table_usuarios').on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table load-success.bs.table', updateSharedPlanInfo);
+    document.addEventListener('DOMContentLoaded', updateSharedPlanInfo);
+
     document.getElementById('btn-unir').addEventListener('click', function() {
-        const selectedUser = $('#table_usuarios').bootstrapTable('getSelections')[0];
+        const selectedUsers = getSelectedUsers();
         const selectedPlan = $('#table_planes').bootstrapTable('getSelections')[0];
     
-        if (!selectedUser || !selectedPlan) {
+        if (!selectedPlan || selectedUsers.length === 0) {
             Swal.fire({ 
                 title: 'Selección Incompleta', 
-                text: 'Debe elegir un plan y un usuario de las tablas anteriores.', 
+                text: 'Debe elegir un plan y al menos un usuario de las tablas anteriores.', 
                 icon: 'info', 
                 confirmButtonColor: '#3b82f6' 
             });
             return;
         }
 
+        const maxBeneficiarios = parseInt(selectedPlan.max_beneficiarios || 1, 10);
+        if (selectedUsers.length > maxBeneficiarios) {
+            Swal.fire({
+                title: 'Cupo excedido',
+                text: `Este plan admite máximo ${maxBeneficiarios} beneficiario(s) por asignación.`,
+                icon: 'warning',
+                confirmButtonColor: '#dc3545'
+            });
+            return;
+        }
+
+        const nombres = selectedUsers.map((user) => user.nombre).join(', ');
+
         Swal.fire({
             title: '¿Confirmar Inscripción?',
-            text: `Se asignará el plan "${selectedPlan.nombre}" al usuario "${selectedUser.nombre}"`,
+            text: `Se asignará el plan "${selectedPlan.nombre}" a ${selectedUsers.length} usuario(s): ${nombres}`,
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#198754',
@@ -154,8 +204,11 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 const formData = new FormData();
-                formData.append('id_usuario', selectedUser.id);
                 formData.append('id_plan', selectedPlan.id);
+                formData.append('fecha_inicio', document.getElementById('fecha-inicio-plan').value);
+                selectedUsers.forEach((user) => {
+                    formData.append('id_usuarios[]', user.id);
+                });
 
                 fetch('{{ path('app_panel_vincular_usuario_plan') }}', {
                     method: 'POST',
@@ -173,6 +226,7 @@
                         $('#table_usuarios').bootstrapTable('refresh');
                         $('#table_usuarios').bootstrapTable('uncheckAll');
                         $('#table_planes').bootstrapTable('uncheckAll');
+                        updateSharedPlanInfo();
                     } else {
                         Swal.fire('Error', data.message, 'error');
                     }
